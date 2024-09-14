@@ -1,0 +1,16 @@
+.login
+{
+    margin:0 auto;
+    width: 400px;
+}
+.loginform
+{
+    border: solid;
+    border-color: black;
+    border-width: 0px;
+}
+
+buttonlogin{
+    background-color: rgb(167, 255, 171);
+    align-items:center ;
+}
