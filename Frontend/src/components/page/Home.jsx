@@ -1,9 +1,7 @@
 import React from "react";
 import "./Home.css"
 import Navbar from "../Navbar.jsx"
-import "../Navbar.css"
 import Footer from "../Footer.jsx"
-import "../Footer.css"
 
 function Home()
 {
@@ -11,7 +9,7 @@ function Home()
     <div className="home">
         <Navbar />
         <div className="banner">
-            ฺBanner เด่วค่อยทำ
+            ฺBanner img
         </div>
         <div className="home_container">
             <div>
@@ -23,21 +21,21 @@ function Home()
                 </div>
             </div>
             <div>
-                แปะรูป
+                <span><img src="src/components/image/vckimg.jpg" width="500" height="300"></img></span>
             </div>
         </div>
         <div className="ourservice">
             บริการของเรา
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            
+        <br/>
+        
         </div>
+        <div className="gal-img">
+            <span><img src="src/components/image/gal-1.jpg" width="300" height="300"></img></span>
+            <span><img src="src/components/image/gal-1.jpg" width="300" height="300"></img></span>
+            <span><img src="src/components/image/gal-1.jpg" width="300" height="300"></img></span>
+            <span><img src="src/components/image/gal-1.jpg" width="300" height="300"></img></span>
+        </div>
+
     </div>
     <Footer />
     </>

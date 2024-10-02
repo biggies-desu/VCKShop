@@ -1,8 +1,6 @@
 import React from "react";
 import Navbar from "../Navbar.jsx"
-import "../Navbar.css"
 import Footer from "../Footer.jsx"
-import "../Footer.css"
 
 function Queue()
 {

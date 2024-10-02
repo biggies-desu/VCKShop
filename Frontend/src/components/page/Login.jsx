@@ -1,7 +1,5 @@
 import React from "react";
-import "./Login.css"
 import Navbar from "../Navbar.jsx"
-import "../Navbar.css"
 import axios from 'axios'
 
 var userfortest = [];

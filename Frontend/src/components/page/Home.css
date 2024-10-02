@@ -16,9 +16,9 @@ body {
     height: 100%;
     justify-content: space-between;
     display:flex;
-    border: solid;
-    border-color: rgb(148, 25, 25);
-    border-width: 1px;
+    /*border: solid;
+    border-color: rgb(35, 182, 79);
+    border-width: 1px;*/
 }
 .banner
 {
@@ -26,9 +26,9 @@ body {
     align-items:center;
     justify-content: center;
     margin: 0 auto;
-    border: solid;
-    border-color: black;
-    border-width: 1px;
+    /*border: solid;
+    border-color: rgb(35, 182, 79);
+    border-width: 1px;*/
 }
 
 .ourservice
@@ -37,9 +37,9 @@ body {
     display: flex;
     justify-content: center;
     font-size: 2.5vw;
-    border: solid;
+    /*border: solid;
     border-color: rgb(35, 182, 79);
-    border-width: 1px;
+    border-width: 1px;*/
 }
 
 .title
@@ -59,4 +59,19 @@ body {
     /* border: solid;
     border-color: black;
     border-width: 1px; */
+}
+
+.gal-img
+{
+    display:flex;
+    align-items:center;
+    justify-content: center;
+    margin: 0 auto;
+    /*border: solid;
+    border-color: rgb(35, 182, 79);
+    border-width: 1px;*/
+}
+.gal-img span
+{
+    padding: 10px;
 }
