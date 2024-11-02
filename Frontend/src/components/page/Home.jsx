@@ -6,17 +6,17 @@ import Footer from "../Footer.jsx"
 function Home()
 {
     return <>
-    <div className="home">
+    <div className="relative bg-orange-200 border-2 border-black">
         <Navbar />
-        <div className="banner">
-            ฺBanner img
+        <div className="flex items-center justify-center m-auto">
+            ฺ......
         </div>
-        <div className="home_container">
+        <div className="items-center justify-between flex px-[15%] ">
             <div>
-                <div className="title">
+                <div className="text-5xl">
                     วิชัยการยางVCKRacingShop
                 </div>
-                <div className="description">
+                <div className="text-3xl mt-10">
                     รายละเอียด
                 </div>
             </div>
@@ -24,12 +24,11 @@ function Home()
                 <span><img src="src/components/image/vckimg.jpg" width="500" height="300"></img></span>
             </div>
         </div>
-        <div className="ourservice">
+        <div className="items-center flex justify-center text-3xl mt-10 mb-5">
             บริการของเรา
         <br/>
-        
         </div>
-        <div className="gal-img">
+        <div className="items-center flex justify-center space-x-5 mb-10">
             <span><img src="src/components/image/gal-1.jpg" width="300" height="300"></img></span>
             <span><img src="src/components/image/gal-1.jpg" width="300" height="300"></img></span>
             <span><img src="src/components/image/gal-1.jpg" width="300" height="300"></img></span>

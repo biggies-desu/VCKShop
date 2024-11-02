@@ -14,6 +14,7 @@ import Queue from './components/page/Queue.jsx'
 import Calc from './components/page/Calc.jsx'
 import Aboutus from './components/page/Aboutus.jsx'
 import Login from './components/page/Login.jsx'
+import Admin from './components/page/Admin.jsx'
 
 function App() {
   return (<> 
@@ -24,6 +25,7 @@ function App() {
       <Route path='/calc' element={<Calc/>}/>
       <Route path='/aboutus' element={<Aboutus/>}/>
       <Route path='/login' element={<Login/>}/>
+      <Route path='/admin' element={<Admin/>}/>
     </Routes>
     </BrowserRouter>
     </>
