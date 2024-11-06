@@ -1,5 +1,4 @@
 import React from "react";
-import "./Home.css"
 import Navbar from "../Navbar.jsx"
 import Footer from "../Footer.jsx"
 
@@ -11,28 +10,28 @@ function Home()
         <div className="flex items-center justify-center m-auto">
             ฺ......
         </div>
-        <div className="items-center justify-between flex px-[15%] ">
+        <div className="items-center justify-between flex px-[15%] w-auto">
             <div>
-                <div className="text-5xl">
+                <div className="text-[2.5vw]">
                     วิชัยการยางVCKRacingShop
                 </div>
-                <div className="text-3xl mt-10">
+                <div className="text-[1.5vw] mt-10">
                     รายละเอียด
                 </div>
             </div>
             <div>
-                <span><img src="src/components/image/vckimg.jpg" width="500" height="300"></img></span>
+                <span><img src="src/components/image/vckimg.jpg" class="max-w-[400px] w-full h-auto"></img></span>
             </div>
         </div>
-        <div className="items-center flex justify-center text-3xl mt-10 mb-5">
+        <div className="items-center flex justify-center text-[2vw] mt-10 mb-5">
             บริการของเรา
         <br/>
         </div>
         <div className="items-center flex justify-center space-x-5 mb-10">
             <span><img src="src/components/image/gal-1.jpg" width="300" height="300"></img></span>
+            <span><img src="src/components/image/gal-2.jpg" width="300" height="300"></img></span>
             <span><img src="src/components/image/gal-1.jpg" width="300" height="300"></img></span>
-            <span><img src="src/components/image/gal-1.jpg" width="300" height="300"></img></span>
-            <span><img src="src/components/image/gal-1.jpg" width="300" height="300"></img></span>
+            <span><img src="src/components/image/gal-3.jpg" width="300" height="300"></img></span>
         </div>
 
     </div>

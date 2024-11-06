@@ -79,6 +79,7 @@ app.post('/login', function (req, res) {
     {
       throw err
     }
+    //hardcode fr
     else if (results.length > 0 && results[0].id != 3) //if account exist (other acc)
     {
       res.send("Login successful")
