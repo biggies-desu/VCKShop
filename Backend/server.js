@@ -3,6 +3,7 @@ const mysql = require('mysql')
 const axios = require('axios')
 const cors = require('cors')
 const FormData = require('form-data');
+const multer  = require('multer')
 
 //require dotenv
 require('dotenv').config();
@@ -52,7 +53,6 @@ app.get('/notifylinetest',(req,res) =>
         console.log(error);
       });
       res.end()
-      
     }
 )
 
@@ -63,6 +63,59 @@ app.get('/api/user',(req,res) => {
         return res.json(data)
       })
     })
+
+app.get('/api/allsparepart',(req,res) => {
+      const sqlcommand = "SELECT * FROM sparepart"
+      db.query(sqlcommand,(err,data) => {
+        if(err)     return res.json(err);
+        return res.json(data)
+      })
+    })
+  
+app.post('/api/searchquery',function (req,res) {
+    let search_query = req.body.search_query
+    const sqlcommand = "SELECT * FROM `sparepart` where `SparePart_Name` LIKE CONCAT('%',?,'%') OR `SparePart_ProductID` LIKE CONCAT('%',?,'%')"
+    db.query(sqlcommand,[search_query,search_query],function(err,results)
+  {
+    if (err)
+    {
+      throw err
+    }
+    else
+    {
+      res.json(results)
+    }
+  })
+})
+
+app.post('/api/addproduct', function (req,res) {
+  let productname = req.body.productname
+  let productID = req.body.productID
+  let productcatagory = req.body.productcatagory
+  let productamount = req.body.productamount
+  let productprice = req.body.productprice
+  let productbrand = req.body.productbrand
+  let productmodel = req.body.productmodel
+  let productyear = req.body.productyear
+  let productdescription = req.body.productdescription
+  let productimage = req.body.productimage
+
+  console.log(req.body)
+  
+  const sqlcommand = "INSERT INTO `sparepart` (SparePart_ProductID, SparePart_Name, SparePart_Amount, SparePart_Price, SparePart_Brand, SparePart_Model, SparePart_Year, SparePart_Description, SparePart_Image, SparePart_Type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+  db.query(sqlcommand,[productID,productname,productamount,productprice,productbrand,productmodel,productyear,productdescription,productimage,productcatagory],function(err,results)
+  {
+    if(err)
+    {
+      throw err
+    }
+    else
+    {
+      res.json(results)
+    }
+  }
+)
+})
 
 app.post('/login', function (req, res) {
   let username = req.body.username;
@@ -103,6 +156,7 @@ app.post('/login', function (req, res) {
     res.end()
  }
 })
+
 
 app.listen(5000, () => 
     console.log("Server is running....")
