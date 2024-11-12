@@ -27,7 +27,6 @@ app.get('/',(req, res) => {
 
 
 //test line api
-
 let data = new FormData();
 data.append('message', 'ทดสอบๆการส่ง API Line');
 
@@ -56,8 +55,10 @@ app.get('/notifylinetest',(req,res) =>
     }
 )
 
+//todo, create table if not exist
+
 app.get('/api/user',(req,res) => {
-      const sqlcommand = "SELECT * FROM users"
+      const sqlcommand = "SELECT * FROM user"
       db.query(sqlcommand,(err,data) => {
         if(err)     return res.json(err);
         return res.json(data)
@@ -65,7 +66,7 @@ app.get('/api/user',(req,res) => {
     })
 
 app.get('/api/allsparepart',(req,res) => {
-      const sqlcommand = "SELECT * FROM sparepart"
+      const sqlcommand = "SELECT * FROM `sparepart` join `category` ON sparepart.Category_ID = category.Category_ID;"
       db.query(sqlcommand,(err,data) => {
         if(err)     return res.json(err);
         return res.json(data)
@@ -88,6 +89,118 @@ app.post('/api/searchquery',function (req,res) {
   })
 })
 
+app.get('/api/getdropdowncategory',(req,res) => {
+  const sqlcommand = "SELECT Category_Name FROM category"
+  db.query(sqlcommand,(err,data) => {
+    if(err)     return res.json(err);
+    return res.json(data)
+  })
+})
+app.get('/api/getdropdownbrand',(req,res) => {
+  const sqlcommand = "SELECT SparePart_Brand_Name FROM sparepart_brand"
+  db.query(sqlcommand,(err,data) => {
+    if(err)     return res.json(err);
+    return res.json(data)
+  })
+})
+
+app.post('/api/getdropdownmodel',function (req,res) {
+  let brandname = req.body.brandname
+  console.log(req.body)
+  const sqlcommand = `SELECT DISTINCT SparePart_Model_Name FROM sparepart_model
+                      JOIN SparePart_Brand ON sparepart_model.SparePart_Brand_ID = SparePart_Brand.SparePart_Brand_ID
+                      WHERE SparePart_Brand.SparePart_Brand_Name = ?`;
+  db.query(sqlcommand,[brandname],function(err,results)
+  {
+      if (err)
+      {
+        return res.json(err)
+      }
+      else
+      {
+        res.json(results)
+      }
+  })
+})
+
+app.post('/api/getdropdownyear',function (req,res) {
+  let modelname = req.body.modelname
+  console.log(req.body)
+  const sqlcommand = `SELECT DISTINCT SparePart_Model_Year FROM sparepart_model 
+                      WHERE SparePart_Model_Name = ?;`
+  db.query(sqlcommand,[modelname],function(err,results)
+  {
+      if (err)
+      {
+        return res.json(err)
+      }
+      else
+      {
+        res.json(results)
+      }
+  })
+})
+
+app.get('/api/getdropdownservice', function(req,res)
+{
+  const sqlcommand = `SELECT Service_Name from service`
+  db.query(sqlcommand,(err,data) => {
+    if(err)
+    {
+      return res.json(err)
+    }
+    else
+    {
+      res.json(data)
+    }
+  })
+})
+
+app.post('/api/addqueue', function (req,res) {
+  let fullName = req.body.fullname
+
+  let firstName = req.body.firstname
+  let lastName = req.body.lastname
+  let phoneNumber = req.body.phoneNumber
+  let email = req.body.email
+
+  let date = req.body.date
+  let time = req.body.time
+  let serviceType = req.body.serviceType
+  let details = req.body.details
+  let userID = req.body.userID || null //gonna check this again when login cookie/session are done
+  console.log(req.body)
+  //insert to booking table
+  const sqlcommand1 = `INSERT INTO booking (Booking_Date,	Booking_Time,	Booking_FirstName, Booking_LastName, User_ID, Booking_Description, Service_ID)
+                      VALUES (?,?,?,?,?,?,
+                      (SELECT Service_ID FROM service WHERE Service_Name = ?)
+                      )`
+      db.query(sqlcommand1,[date,time,firstName,lastName,userID,details,serviceType],(err,data1) => {
+        if(err)
+        {
+          return res.json(err)
+        }
+        //res.json(data1)
+        //console.log(data1)
+        //detail service type into queue
+        const insertid = data1.insertId
+        const sqlcommand2 = `INSERT INTO queue (Booking_ID, Queue_Status)
+                            VALUES (?, 'ยังไม่เสร็จสิ้น')`
+            db.query(sqlcommand2,[insertid],(err,data2) => {
+              if(err)
+              {
+                return res.json(eer)
+              }
+              else
+              {
+                  res.json(data2)
+              }
+            })
+      }) 
+  //ยังไม่มี login เป็นหลักแหล่งเลยอะ
+
+})
+
 app.post('/api/addproduct', function (req,res) {
   let productname = req.body.productname
   let productID = req.body.productID
@@ -101,29 +214,39 @@ app.post('/api/addproduct', function (req,res) {
   let productimage = req.body.productimage
 
   console.log(req.body)
-  
-  const sqlcommand = "INSERT INTO `sparepart` (SparePart_ProductID, SparePart_Name, SparePart_Amount, SparePart_Price, SparePart_Brand, SparePart_Model, SparePart_Year, SparePart_Description, SparePart_Image, SparePart_Type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-  db.query(sqlcommand,[productID,productname,productamount,productprice,productbrand,productmodel,productyear,productdescription,productimage,productcatagory],function(err,results)
+  if (productname && productcatagory && productprice && productamount && productbrand && productmodel && productyear)
   {
-    if(err)
+    const sqlcommand = `INSERT INTO sparepart (SparePart_Name, SparePart_ProductID, SparePart_Amount, SparePart_Price, SparePart_Description, SparePart_Image, SparePart_Brand_ID, SparePart_Model_ID, Category_ID)
+    VALUES (
+      ?,?,?,?,?,?,
+      (SELECT SparePart_Brand_ID FROM sparepart_brand WHERE SparePart_Brand_Name = ?),
+      (SELECT SparePart_Model_ID FROM sparepart_model WHERE SparePart_Model_Name = ? AND SparePart_Model_Year = ?),
+      (SELECT Category_ID FROM category WHERE Category_Name = ?)
+      )
+    `
+    db.query(sqlcommand,[productname,productID,productamount,productprice,productdescription,productimage,productbrand,productmodel,productyear,productcatagory],function(err,results)
     {
-      throw err
+      if(err)
+      {
+        res.send(err)
+      }
+      else
+      {
+        res.json(results)
+      }
     }
-    else
-    {
-      res.json(results)
-    }
-  }
-)
+  )}
+
 })
 
 app.post('/login', function (req, res) {
   let username = req.body.username;
 	let password = req.body.password;
+  console.log(req.body)
   //get user/pass in body and check in database
   if (username && password)
   {
-    const sqlcommand = 'SELECT * FROM `users` WHERE `username` = BINARY ? and `password` = BINARY ?'
+    const sqlcommand = 'SELECT * FROM `user` WHERE `User_Username` = BINARY ? and `User_Password` = BINARY ?'
     db.query(sqlcommand,[username,password],function(err, results)
   {
     //use this as debugging only!!!!
@@ -133,12 +256,12 @@ app.post('/login', function (req, res) {
       throw err
     }
     //hardcode fr
-    else if (results.length > 0 && results[0].id != 3) //if account exist (other acc)
+    else if (results.length > 0 && results[0].User_ID != 3) //if account exist (other acc)
     {
       res.send("Login successful")
       res.end()
     }
-    else if (results.length > 0 && results[0].id == 3) //if account exist (and admin acc), kinda hardcode tho
+    else if (results.length > 0 && results[0].User_ID == 3) //if account exist (and admin acc), kinda hardcode tho
     {
       res.send("Login successful as Admin")
       res.end()

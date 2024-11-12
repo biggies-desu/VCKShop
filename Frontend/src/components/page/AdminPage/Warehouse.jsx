@@ -46,8 +46,6 @@ function Warehouse()
         setisaddproductmodal(true)
     }
 
-    
-
     function edititem()
     {
         event.preventDefault()
@@ -105,7 +103,7 @@ function Warehouse()
                         <td class='text-start px-3 py-2'>{item.SparePart_Image}</td>
                         <td class='text-start px-3 py-2'>{item.SparePart_ProductID}</td>
                         <td class='text-start px-3 py-2'>{item.SparePart_Name}</td>
-                        <td class='text-start px-3 py-2'>{item.SparePart_Type}</td>
+                        <td class='text-start px-3 py-2'>{item.Category_Name}</td>
                         <td class='text-start px-3 py-2'>{item.SparePart_Amount}</td>
                         <td class='text-start px-3 py-2'>{item.SparePart_Price}</td>
                         
