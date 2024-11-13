@@ -4,10 +4,23 @@ import Modal_Addproduct from "./Modal_Addproduct.jsx"
 
 function Warehouse()
 {
-    const [search_query, setsearch_query] = useState("")
-    const [apidata, setapidata] = useState([])
+    const [search_query, setsearch_query] = useState("");
+    const [apidata, setapidata] = useState([]);
+    const [isaddproductmodal, setisaddproductmodal] = useState(false);
+    const [isDeleteModalOpen, setisDeleteModalOpen] = useState('');
+    const [deleteId, setDeleteId] = useState('');
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editProduct, setEditProduct] = useState(null);
 
-    const [isaddproductmodal, setisaddproductmodal] = useState(false)
+    const openModal = (id) => {
+        setDeleteId(id);
+        setisDeleteModalOpen(true);
+    };
+    
+    const closeModal = () => {
+        setDeleteId('');
+        setisDeleteModalOpen(false);
+    };
 
     useEffect(() => {
         //fetch database as we open warehouse page
@@ -28,8 +41,7 @@ function Warehouse()
         axios.post('http://localhost:5000/api/searchquery', //post search query
             {
                 search_query: search_query
-            }
-            )
+            })
         .then((res) => {    
             console.log(res)
             setapidata(res.data)
@@ -39,99 +51,154 @@ function Warehouse()
         });
     }
     
-    function addproduct()
-    {
-        event.preventDefault()
-        console.log("addproduct")
-        setisaddproductmodal(true)
+    function addproduct() {
+        event.preventDefault();
+        console.log("addproduct");
+        setisaddproductmodal(true);
     }
 
-    function edititem()
-    {
-        event.preventDefault()
-        console.log("edit")
+    function openEditModal(item) {
+        setEditProduct(item);  // Set the selected item to edit
+        setIsEditModalOpen(true);  // Open the modal
     }
 
-    function deleteitem()
-    {
-        event.preventDefault()
-        console.log("deleteitem")
+    function closeEditModal() {
+        setIsEditModalOpen(false);  // Close the modal
     }
+
+    function updateProduct() {
+        axios.put(`http://localhost:5000/api/updatesparepart/${editProduct.SparePart_ID}`, {
+            productamount: editProduct.SparePart_Amount,
+            productprice: editProduct.SparePart_Price,
+        })
+        .then((res) => {
+            // Update the local state after the update is successful
+            setapidata(apidata.map(item => item.SparePart_ID === editProduct.SparePart_ID ? editProduct : item));
+            setIsEditModalOpen(false);  // Close the modal after update
+        })
+        .catch((err) => {
+            console.log("Error updating product", err);
+        });
+    }
+
+    function deleteitem(id) {
+        openModal(id);
+    }
+
+    function confirmDelete() {
+        axios.delete(`http://localhost:5000/api/deletesparepart/${deleteId}`)
+            .then((res) => {
+                closeModal();
+                window.location.reload();
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+
+    function cancelDelete() {
+        closeModal();
+    }
+
     //todo
     //ต้องทำ backend? กับ filter make it propoly?
 
     //console.log(apidata)
 
     return <>
-    {!isaddproductmodal && (<div class="flex flex-col justify-center">
-        <h1 className="text-[1.5vw] mb-4 text-center pt-4">รายการสินค้าคงคลัง</h1>
-        <form class="content-start mx-8 my-2">      
-            <div class="flex space-x-4 content-center">
-                <input value={search_query} type="search" id="search_query" class="block w-full p-4 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="ค้นหาชื่อ/รหัสสินค้า" onChange={e => setsearch_query(e.target.value)}/>
-                <button type='button' id="search" onClick={() => search()}><img src='/images/search-symbol.png' class='h-[2vw] w-[2vw]'></img></button>  
-                <button type='button' id="add" onClick={() => addproduct()} class='block rounded mx-4 px-6 py-2 text-[1vw] bg-blue-400 hover:bg-blue-500 active:bg-blue-700 whitespace-nowrap'>เพิ่มสินค้า</button>
+    {!isaddproductmodal && (
+        <div className="flex flex-col justify-center">
+            <h1 className="text-[1.5vw] mb-4 text-center pt-4">รายการสินค้าคงคลัง</h1>
+            <form className="content-start mx-8 my-2">
+                <div className="flex space-x-4 content-center">
+                    <input value={search_query} type="search" id="search_query" className="block w-full p-4 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="ค้นหาชื่อ/รหัสสินค้า" onChange={e => setsearch_query(e.target.value)} />
+                    <button type="button" id="search" onClick={search}><img src='/images/search-symbol.png' className='h-[2vw] w-[2vw]' /></button>
+                    <button type="button" id="add" onClick={addproduct} className="block rounded mx-4 px-6 py-2 text-[1vw] bg-blue-400 hover:bg-blue-500 active:bg-blue-700 whitespace-nowrap">เพิ่มสินค้า</button>
+                </div>
+            </form>
+            <div className="relative overflow-x-auto">
+                <table className="w-full text-left text-[1vw] table-auto">
+                    <thead>
+                        <tr>
+                            <th className="text-start px-6 py-2">รูปภาพ</th>
+                            <th className="text-start px-3 py-2">รหัสสินค้า</th>
+                            <th className="text-start px-3 py-2">ชื่อสินค้า</th>
+                            <th className="text-start px-6 py-2">ประเภท</th>
+                            <th className="text-start px-6 py-2">จำนวนคงเหลือ</th>
+                            <th className="text-start px-6 py-2">ราคาต่อหน่วย</th>
+                            <th className="text-end px-6 py-2">แก้ไข</th>
+                            <th className="text-end px-6 py-2">ลบ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {apidata.map((item, index) => (
+                            <tr key={index}>
+                                <td className="text-start px-3 py-2">{item.SparePart_Image}</td>
+                                <td className="text-start px-3 py-2">{item.SparePart_ProductID}</td>
+                                <td className="text-start px-3 py-2">{item.SparePart_Name}</td>
+                                <td className="text-start px-3 py-2">{item.Category_Name}</td>
+                                <td className="text-start px-3 py-2">{item.SparePart_Amount}</td>
+                                <td className="text-start px-3 py-2">{item.SparePart_Price}</td>
+                                <td className="text-end px-2 py-2" onClick={() => openEditModal(item)}>
+                                    <button type="button">
+                                        <svg className="mr-4 w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="gray" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
+                                        </svg>
+                                    </button>
+                                </td>
+                                <td className="text-end py-2" onClick={() => deleteitem(item.SparePart_ID)}>
+                                    <button type="button">
+                                        <svg className="mr-4 w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="red" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
+                                        </svg>
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
-        </form>
-        <div class='flex mx-4 my-4'>
-            <button type='button' id='filter_all' class='text-left block rounded mx-2 px-4 py-2 text-gray-700 bg-blue-400 hover:bg-blue-500 focus:bg-blue-500'>ทั้งหมด</button>
-            <button type='button' id='filter_wheel' class='text-left block rounded mx-2 px-4 py-2 text-gray-700 bg-blue-400 hover:bg-blue-500 focus:bg-blue-500'>ล้อ</button>
-            <button type='button' id='filter_bearings' class='text-left block rounded mx-2 px-4 py-2 text-gray-700 bg-blue-400 hover:bg-blue-500 focus:bg-blue-500'>ลูกปืน</button>
-            <button type='button' id='filter_rubber' class='text-left block rounded mx-2 px-4 py-2 text-gray-700 bg-blue-400 hover:bg-blue-500 focus:bg-blue-500'>ยาง</button>
-            <button type='button' id='filter_motor' class='text-left block rounded mx-2 px-4 py-2 text-gray-700 bg-blue-400 hover:bg-blue-500 focus:bg-blue-500'>เครื่องยนต์</button>
-            <button type='button' id='filter_oil' class='text-left block rounded mx-2 px-4 py-2 text-gray-700 bg-blue-400 hover:bg-blue-500 focus:bg-blue-500'>น้ำมันเครื่อง</button>
-            <button type='button' id='filter_etc' class='text-left block rounded mx-2 px-4 py-2 text-gray-700 bg-blue-400 hover:bg-blue-500 focus:bg-blue-500'>อื่น</button>
         </div>
+    )}
 
-        <div class='relative overflow-x-auto'>
-        <table class="w-full text-left text-[1vw] table-auto">
-            <thead>
-                <tr>
-                <th class='text-start px-6 py-2'>รูปภาพ</th>
-                <th class='text-start px-3 py-2'>รหัสสินค้า</th>
-                <th class='text-start px-3 py-2'>ชื่่อสินค้า</th>
-                <th class='text-start px-6 py-2'>ประเภท</th>
-                <th class='text-start px-6 py-2'>จำนวนคงเหลือ</th>
-                <th class='text-start px-6 py-2'>ราคาต่อหน่วย</th>
-
-                <th class='text-end px-6 py-2'>แก้ไข</th>
-                <th class='text-end px-6 py-2'>ลบ</th>
-                </tr>
-            </thead>
-            <tbody>
-                {apidata.map((item, index) => (
-                    <tr key={index}>
-                        <td class='text-start px-3 py-2'>{item.SparePart_Image}</td>
-                        <td class='text-start px-3 py-2'>{item.SparePart_ProductID}</td>
-                        <td class='text-start px-3 py-2'>{item.SparePart_Name}</td>
-                        <td class='text-start px-3 py-2'>{item.Category_Name}</td>
-                        <td class='text-start px-3 py-2'>{item.SparePart_Amount}</td>
-                        <td class='text-start px-3 py-2'>{item.SparePart_Price}</td>
-                        
-                        <td class='text-end px-2 py-2'onClick={() => edititem()}>
-                            <button type = 'button'>
-                                <svg class="mr-4 w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                <path stroke="gray" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
-                                </svg>
-                            </button>
-                        </td>
-                        <td class='text-end py-2' onClick={() => deleteitem()}>
-                            <button type = 'button'>
-                                <svg class="mr-4 w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                <path stroke="red" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
-                                </svg>
-                            </button>  
-                        </td>
-                    </tr>
-                ))}
-            </tbody>
-        </table>
+    {isEditModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-8 rounded shadow-lg w-1/3">
+                <h2 className="text-[1.5vw] mb-4">แก้ไขสินค้า</h2>
+                <form onSubmit={e => { e.preventDefault(); updateProduct(); }}>
+                    <div className="mb-4">
+                        <label className="block text-gray-700">จำนวนสินค้า</label>
+                        <input type="number" className="w-full px-4 py-2 border border-gray-300 rounded" value={editProduct.SparePart_Amount} onChange={e => setEditProduct({ ...editProduct, SparePart_Amount: e.target.value })}/>
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700">ราคาต่อหน่วย</label>
+                        <input type="number" className="w-full px-4 py-2 border border-gray-300 rounded" value={editProduct.SparePart_Price} onChange={e => setEditProduct({ ...editProduct, SparePart_Price: e.target.value })}/>
+                    </div>
+                    <div className="flex space-x-4">
+                        <button className="px-4 py-2 text-gray-700 bg-red-400 hover:bg-red-600 rounded" onClick={closeEditModal}>ยกเลิก</button>
+                        <button className="px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 rounded">บันทึก</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>)
-    }
+    )}
+
     {isaddproductmodal && (
-            <Modal_Addproduct setisaddproductmodal={setisaddproductmodal}/>
-        )}
-    </>
+        <Modal_Addproduct setisaddproductmodal={setisaddproductmodal} />
+    )}
+
+    {isDeleteModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-8 rounded shadow-lg">
+                <h2 className="text-[1.5vw] mb-4">ต้องการลบสินค้าหรือไม่</h2>
+                <div className="flex space-x-20 items-center justify-center">
+                    <button onClick={cancelDelete} className="block rounded px-4 py-2 text-gray-700 bg-red-400 hover:bg-red-600 active:bg-red-700">ยกเลิก</button>
+                    <button onClick={confirmDelete} className="block rounded px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 active:bg-green-700">ยืนยัน</button>
+                </div>
+            </div>
+        </div>
+    )}
+</>
 }
 
 export default Warehouse

@@ -56,7 +56,6 @@ app.get('/notifylinetest',(req,res) =>
 )
 
 //todo, create table if not exist
-
 app.get('/api/user',(req,res) => {
       const sqlcommand = "SELECT * FROM user"
       db.query(sqlcommand,(err,data) => {
@@ -78,12 +77,10 @@ app.post('/api/searchquery',function (req,res) {
     const sqlcommand = "SELECT * FROM `sparepart` where `SparePart_Name` LIKE CONCAT('%',?,'%') OR `SparePart_ProductID` LIKE CONCAT('%',?,'%')"
     db.query(sqlcommand,[search_query,search_query],function(err,results)
   {
-    if (err)
-    {
+    if (err){
       throw err
     }
-    else
-    {
+    else{
       res.json(results)
     }
   })
@@ -142,8 +139,7 @@ app.post('/api/getdropdownyear',function (req,res) {
 })
 
 app.get('/api/getdropdownservice', function(req,res)
-{
-  const sqlcommand = `SELECT Service_Name from service`
+{ const sqlcommand = `SELECT Service_Name from service`
   db.query(sqlcommand,(err,data) => {
     if(err)
     {
@@ -155,7 +151,6 @@ app.get('/api/getdropdownservice', function(req,res)
     }
   })
 })
-
 app.post('/api/addqueue', function (req,res) {
   let fullName = req.body.fullname
 
@@ -197,10 +192,69 @@ app.post('/api/addqueue', function (req,res) {
               }
             })
       }) 
-  //ยังไม่มี login เป็นหลักแหล่งเลยอะ
-
+  //ยังไม่มี login เป็นหลักแหล่ง
 })
 
+app.get('/api/allqueue', function (req,res){
+  const sqlcommand = `Select * from booking b
+        INNER JOIN queue q WHERE b.Booking_ID = q.Booking_ID
+        AND q.Queue_Status = 'ยังไม่เสร็จสิ้น'
+        ORDER BY DATE(b.Booking_Date), b.Booking_Time DESC`
+  db.query(sqlcommand,function(err,results)
+{
+  if(err)
+  {
+    res.send(err)
+  }
+  else
+  {
+    res.json(results)
+  }
+})
+})
+app.get('/api/queuehistory', function (req,res){
+  const sqlcommand = `Select * from booking b
+        INNER JOIN queue q WHERE b.Booking_ID = q.Booking_ID
+        ORDER BY DATE(b.Booking_Date), b.Booking_Time DESC`
+  db.query(sqlcommand,function(err,results)
+{
+  if(err)
+  {
+    res.send(err)
+  }
+  else
+  {
+    res.json(results)
+  }
+})
+})
+app.post('/api/deletequeue', function (req,res) {
+  let deletequeueno = req.body.deletequeueno
+  const sqlcommand = `UPDATE queue set Queue_Status = 'เสร็จสิ้นแล้ว' WHERE Queue_ID = ?`
+  db.query(sqlcommand,[deletequeueno], function(err, results)
+{
+  if(err) {
+    res.send(err)
+  }
+  else {
+    res.json(results)
+  }
+  })
+})
+app.post('/api/searchqueuetime', function (req,res) {
+  let time = req.body.search_time
+  const sqlcommand = `SELECT * FROM booking b
+                      INNER JOIN queue q ON b.Booking_ID = q.Booking_ID
+                      WHERE q.Queue_Status = 'ยังไม่เสร็จสิ้น'
+                      AND b.Booking_Date = ?
+                      ORDER BY DATE(b.Booking_Date), b.Booking_Time DESC;`
+  db.query(sqlcommand,[time],function(err,results){
+  if(err){
+    res.send(err)}
+  else{
+    res.json(results)
+  }})
+})
 app.post('/api/addproduct', function (req,res) {
   let productname = req.body.productname
   let productID = req.body.productID
@@ -212,18 +266,14 @@ app.post('/api/addproduct', function (req,res) {
   let productyear = req.body.productyear
   let productdescription = req.body.productdescription
   let productimage = req.body.productimage
-
   console.log(req.body)
   if (productname && productcatagory && productprice && productamount && productbrand && productmodel && productyear)
   {
     const sqlcommand = `INSERT INTO sparepart (SparePart_Name, SparePart_ProductID, SparePart_Amount, SparePart_Price, SparePart_Description, SparePart_Image, SparePart_Brand_ID, SparePart_Model_ID, Category_ID)
-    VALUES (
-      ?,?,?,?,?,?,
+    VALUES (?,?,?,?,?,?,
       (SELECT SparePart_Brand_ID FROM sparepart_brand WHERE SparePart_Brand_Name = ?),
       (SELECT SparePart_Model_ID FROM sparepart_model WHERE SparePart_Model_Name = ? AND SparePart_Model_Year = ?),
-      (SELECT Category_ID FROM category WHERE Category_Name = ?)
-      )
-    `
+      (SELECT Category_ID FROM category WHERE Category_Name = ?))`
     db.query(sqlcommand,[productname,productID,productamount,productprice,productdescription,productimage,productbrand,productmodel,productyear,productcatagory],function(err,results)
     {
       if(err)
@@ -236,9 +286,35 @@ app.post('/api/addproduct', function (req,res) {
       }
     }
   )}
-
 })
-
+app.delete('/api/deletesparepart/:id', function (req, res) {
+  const sparepartId = req.params.id;
+  console.log(req.body)
+  const sqlcommand = 'DELETE FROM sparepart WHERE SparePart_ID = ?';
+  db.query(sqlcommand, [sparepartId], function (err, result) {
+      if(err) {
+        res.send(err)
+      }
+      else{
+        res.json(result)
+      }
+  });
+});
+app.put('/api/updatesparepart/:id', function (req, res) {
+  const sparepartId = req.params.id;
+  let productamount = req.body.productamount;
+  let productprice = req.body.productprice;
+  console.log(req.body)
+  const sqlcommand = `UPDATE sparepart SET SparePart_Amount = ?, SparePart_Price = ?
+                      WHERE SparePart_ID = ?`;
+   db.query(sqlcommand, [productamount, productprice, sparepartId], function (err, results) {
+    if (err) {
+      res.send(err);
+    } else {
+      res.json(results);
+    }
+  });
+});
 app.post('/login', function (req, res) {
   let username = req.body.username;
 	let password = req.body.password;
@@ -279,7 +355,6 @@ app.post('/login', function (req, res) {
     res.end()
  }
 })
-
 
 app.listen(5000, () => 
     console.log("Server is running....")

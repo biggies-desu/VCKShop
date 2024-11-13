@@ -25,6 +25,8 @@ function Modal_Addproduct({setisaddproductmodal})
     const [dropdownmodel, setdropdownmodel] = useState([])
     const [dropdownyear, setdropdownyear] = useState([])
 
+    const [isModalSuccess, setisModalSuccess] = useState(false);
+
     //getting data suchas dropdown for category
     useEffect(() => {
         axios.all([
@@ -66,7 +68,6 @@ function Modal_Addproduct({setisaddproductmodal})
         .then((res) => {
             setdropdownmodel(res.data)
         })
-
         .catch(error=>{
             console.log(error)
         });
@@ -88,7 +89,6 @@ function Modal_Addproduct({setisaddproductmodal})
             console.log(error)
         });
     }
-
 
     function confirmtoadd()
     {
@@ -117,6 +117,13 @@ function Modal_Addproduct({setisaddproductmodal})
                 console.log(err)
             })
         setisaddproductmodal(false)
+        location.reload(); //refresh หน้าให้บนจอ มันอัพเดท
+    }
+
+    function closeSuccessPopup() {
+        setisModalSuccess(false);
+        setisaddproductmodal(false); // Close add product modal
+        window.location.reload(); // Refresh the page
     }
 
 
@@ -218,6 +225,19 @@ function Modal_Addproduct({setisaddproductmodal})
             เพิ่มรายการสินค้า
         </button>
     </div>
+
+    {isModalSuccess && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-8 rounded shadow-lg">
+                <h2 className="text-[1.5vw] mb-4">เพิ่มสินค้าเสร็จสิ้น</h2>
+                <div className="flex justify-center">
+                    <button onClick={closeSuccessPopup} className="block rounded px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-500 active:bg-green-700 focus:bg-green-500">
+                        ตกลง
+                    </button>
+                </div>
+            </div>
+        </div>
+    )}
     
     </>
 }
