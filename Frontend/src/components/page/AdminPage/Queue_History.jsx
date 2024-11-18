@@ -31,9 +31,9 @@ function Queue_History({setishistorymodal})
             <h1 className="text-[1.5vw] mb-4 pt-4 px-4 "></h1>
         </div>
         
-        <div class='relative overflow-x-auto'>
-        <table class="w-full text-left text-[1vw] table-auto">
-            <thead>
+        <div className="relative overflow-x-auto shadow-md sm:rounded-2xl">
+            <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+            <thead className="text-base text-gray-700 bg-gray-400">
                 <tr>
                 <th class='text-start px-3 py-2'>วันที่จอง</th>
                 <th class='text-start px-6 py-2'>เวลาที่จอง</th>
@@ -43,12 +43,12 @@ function Queue_History({setishistorymodal})
             </thead>
             <tbody>
                 {queuedata.map((item, index) => 
-                <tr key={index}>
+                <tr key={index} className="odd:bg-white even:bg-gray-100 border-b-2">
                     <td class ='text-start px-3 py-2'>{new Date(item.Booking_Date).toLocaleDateString('th-TH')}</td>
                     <td class ='text-start px-3 py-2'>{item.Booking_Time}</td>
                     <td class='text-end py-2' onClick={() => viewdetail(item.Queue_ID)}>
                         <button type = 'button'>
-                            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <svg class="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="black" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14"/>
                             </svg>
                         </button>  

@@ -86,9 +86,9 @@ function Queue_Management()
                     </button>  
             </div>
         </form>
-        <div class='relative overflow-x-auto'>
-        <table class="w-full text-left text-[1vw] table-auto">
-            <thead>
+        <div class='relative overflow-x-auto shadow-md sm:rounded-2xl'>
+            <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+            <thead className="text-base text-gray-700 bg-gray-400">
                 <tr>
                 <th class='text-start px-3 py-2'>วันที่จอง</th>
                 <th class='text-start px-6 py-2'>เวลาที่จอง</th>
@@ -99,7 +99,7 @@ function Queue_Management()
             </thead>
             <tbody>
                 {queuedata.map((item, index) => (
-                    <tr key={index}>
+                    <tr key={index} className="odd:bg-white even:bg-gray-100 border-b-2">
                         <td class ='text-start px-3 py-2'>{new Date(item.Booking_Date).toLocaleDateString('th-TH')}</td>
                         <td class ='text-start px-3 py-2'>{item.Booking_Time}</td>
                         <td class='text-end py-2' onClick={() => viewdetail(item.Queue_ID)}>
@@ -111,14 +111,14 @@ function Queue_Management()
                         </td>
                         <td class='text-end py-2' onClick={() => edititem(item.Queue_ID)}>
                             <button type = 'button'>
-                            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <svg class="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
                             </svg>
                             </button>  
                         </td>
                         <td class='text-end py-2' onClick={() => deleteitem(item.Queue_ID)}>
                             <button type = 'button'>
-                            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <svg class="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="green" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>
                             </svg>
                             </button>  

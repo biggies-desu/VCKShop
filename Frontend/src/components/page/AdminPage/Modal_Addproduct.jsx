@@ -112,12 +112,11 @@ function Modal_Addproduct({setisaddproductmodal})
         )
             .then((res) => {
                 console.log(res)
+                setisModalSuccess(true);
             })
             .catch((err) => {
                 console.log(err)
             })
-        setisaddproductmodal(false)
-        location.reload(); //refresh หน้าให้บนจอ มันอัพเดท
     }
 
     function closeSuccessPopup() {
@@ -221,7 +220,7 @@ function Modal_Addproduct({setisaddproductmodal})
         </div>
     </div>
     <div class='flex mx-4 my-4 justify-end'>
-        <button type='button' id='confirm' onClick={() => confirmtoadd()} class='block rounded mx-2 px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-500 active:bg-green-700 focus:bg-green-500 whitespace-nowrap'>
+        <button type='button' id='confirm' onClick={(event) => confirmtoadd(event)} class='block rounded mx-2 px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-500 active:bg-green-700 focus:bg-green-500 whitespace-nowrap'>
             เพิ่มรายการสินค้า
         </button>
     </div>
