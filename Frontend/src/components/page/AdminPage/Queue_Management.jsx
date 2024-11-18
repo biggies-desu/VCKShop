@@ -80,7 +80,10 @@ function Queue_Management()
         <form class="content-start mx-8 my-2">      
             <div class="flex space-x-4 content-center">
             <input class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date" type="date" required onChange={(e) => setsearch_time(e.target.value)}></input>
-                <button type='button' id="search" onClick={() => searchtime(search_time)}><img src='/images/search-symbol.png' class='h-[2vw] w-[2vw]'></img></button>  
+                <button type='button' id="search" onClick={() => searchtime(search_time)}><svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="black" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+                    </svg>
+                    </button>  
             </div>
         </form>
         <div class='relative overflow-x-auto'>

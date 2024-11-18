@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../Navbar.jsx";
 import Footer from "../../Footer.jsx";
+import axios from "axios";
 import { Link } from "react-router-dom";
 
 
@@ -8,38 +9,60 @@ function EstimatePrice() {
     const [brand, setBrand] = useState("");
     const [model, setModel] = useState("");
     const [service, setService] = useState("");
+    const [dropdownservice, setdropdownservice] = useState([])
     const [models, setModels] = useState([]);
+
+    const [productbrand, setproductbrand] = useState()
+    const [productmodel, setproductmodel] = useState()
+    const [dropdownbrand, setdropdownbrand] = useState([])
+    const [dropdownmodel, setdropdownmodel] = useState([])
+
     const handleAddService = () => {
         setService(""),setBrand("");
       }
 
+      useEffect(() => {
+        axios.all([
+            axios.get('http://localhost:5000/api/getdropdownbrand'),
+            axios.get('http://localhost:5000/api/getdropdownservice')
+            ])
+            
+            .then((res) => { // i copied this in modal_addprodect,jsx
+                setdropdownbrand(res[0].data)
+                setdropdownservice(res[1].data)
+            })
+            .catch((err) => {
+                console.log(err);
+              });
+        ;} ,[]);
+    
+    //run this if productbrand got update
     useEffect(() => {
-        if (brand === "Honda") {
-            setModels(["City", 
-                "Jazz", 
-                "Civic", 
-                "Accord", 
-                "HR-V", 
-                "CR-V"]);
-        }  else if (brand === "Toyota") {
-            setModels(["Yaris", 
-                "Vios", 
-                "Corolla Altis", 
-                "Camry", 
-                "Fortuner", 
-                "Hilux Revo", 
-                "Alphard"]);
-        }  else if (brand === "Ford") {
-            setModels(["Everest", 
-                "Ranger", 
-                "Mustang"]);
-        } else {
-            setModels([]);
-        }
-    }, [brand]);
+        if (productbrand) { // Only call if productbrand is set
+            getproductmodel();
+            }
+        }, [productbrand]);
+
+
+    function getproductmodel()
+    {
+        //console.log(brand);
+        axios.post('http://localhost:5000/api/getdropdownmodel',
+            {
+                brandname: productbrand
+            }
+        )
+        .then((res) => {
+            setdropdownmodel(res.data)
+        })
+        .catch(error=>{
+            console.log(error)
+        });
+    }
+
 
     const getPagePath = () => {
-        switch (model) {
+        switch (productmodel) {
             case "City":
                 return "/City";
             case "Jazz":
@@ -59,21 +82,28 @@ function EstimatePrice() {
         <div className="mb-4">
             <label className="block text-gray-700 mb-2">ค้นหาอะไหล่ตามยี่ห้อ/รุ่น</label>
             <div className="flex space-x-4">
-                <select id="brand" className="border border-gray-300 p-2 rounded w-4/12" value={brand} onChange={(e) => setBrand(e.target.value)}>
-                    <option value="" disabled selected>เลือกยี่ห้อ</option>
-                    <option value="Honda">Honda</option>
-                    <option value="Toyota">Toyota</option>
-                    <option value="Ford">Ford</option>
+                <select id="brand" value={productbrand} type="text"  onChange={e => {setproductbrand(e.target.value)}} class="block w-full p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="ยี่ห้อ">
+                <option selected value='' disabled>เลือกยี่ห้อ</option>
+                    {dropdownbrand && dropdownbrand.length > 0 && dropdownbrand.map((item, index) => (
+                    <option key={index} value={item.SparePart_Brand_Name}>
+                    {item.SparePart_Brand_Name}
+                    </option>
+                    ))}
                 </select>
-                <select id="model" className="border border-gray-300 p-2 rounded w-4/12" value={model} onChange={(e) => setModel(e.target.value)}>
-                    <option value="" disabled selected>เลือกรุ่น</option>
-                    {models.map((model) => (
-                        <option key={model} value={model}> {model} </option>
-                        ))}
+                <select id="model" value={productmodel} type="text" onChange={e =>  setproductmodel(e.target.value)} class="block w-full p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="รุ่น">
+                <option selected value='' disabled>เลือกรุ่น</option>
+                    {dropdownmodel && dropdownmodel.length > 0 && dropdownmodel.map((item, index) => (
+                    <option key={index} value={item.SparePart_Model_Name}>
+                    {item.SparePart_Model_Name}
+                    </option>
+                    ))}
                 </select>
                 <Link to={getPagePath()}>
                     <button className="p-2 rounded">
-                        <img src="src/components/image/search-symbol.png" className="h-10 w-10"/>
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="black" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+                    </svg>
+
                     </button>
                 </Link>
             </div>
@@ -82,11 +112,13 @@ function EstimatePrice() {
         <div className="mb-4">
             <label className="block text-gray-700 mb-2">บริการ</label>
             <div className="flex space-x-2">
-                <select className="border border-gray-300 p-2 rounded w-full" value={service} onChange={(e) => setService(e.target.value)}>
-                    <option value="" disabled selected>เลือกบริการ</option>
-                    <option value="ChangeParts">เปลี่ยนอะไหล่</option>
-                    <option value="OilChange">ถ่ายน้ำมันเครื่อง</option>
-                    <option value="CheckCar">ตรวจสภาพรถ</option>
+                <select id="service" value={service} type="text" onChange={e =>  setService(e.target.value)} class="block w-full p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="รุ่น">
+                <option selected value='' disabled>เลือกรุ่น</option>
+                    {dropdownservice && dropdownservice.length > 0 && dropdownservice.map((item, index) => (
+                    <option key={index} value={item.Service_Name}>
+                    {item.Service_Name}
+                    </option>
+                    ))}
                 </select>
                 <button className="bg-gray-500 text-white px-4 py-2 rounded" onClick={handleAddService} >เพิ่มเข้ารายการ</button>
             </div>
@@ -108,6 +140,13 @@ function EstimatePrice() {
                     <p class="text-2xl font-bold text-blue-600">XXX บาท</p>
                 </div>
             </div>
+      </div>
+        <div class='flex flex-row justify-between'>
+        <div></div>
+        <div></div>
+        <Link to>
+            <button class = 'text-center rounded-full bg-green-400 text-[1vw] py-4 px-4 mt-4 '>จองตอนนี้</button>
+        </Link>
       </div>
     </div>
     <Footer />

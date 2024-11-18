@@ -261,20 +261,18 @@ app.post('/api/addproduct', function (req,res) {
   let productcatagory = req.body.productcatagory
   let productamount = req.body.productamount
   let productprice = req.body.productprice
-  let productbrand = req.body.productbrand
   let productmodel = req.body.productmodel
   let productyear = req.body.productyear
   let productdescription = req.body.productdescription
   let productimage = req.body.productimage
   console.log(req.body)
-  if (productname && productcatagory && productprice && productamount && productbrand && productmodel && productyear)
+  if (productname && productcatagory && productprice && productamount && productmodel && productyear)
   {
-    const sqlcommand = `INSERT INTO sparepart (SparePart_Name, SparePart_ProductID, SparePart_Amount, SparePart_Price, SparePart_Description, SparePart_Image, SparePart_Brand_ID, SparePart_Model_ID, Category_ID)
+    const sqlcommand = `INSERT INTO sparepart (SparePart_Name, SparePart_ProductID, SparePart_Amount, SparePart_Price, SparePart_Description, SparePart_Image,  SparePart_Model_ID, Category_ID)
     VALUES (?,?,?,?,?,?,
-      (SELECT SparePart_Brand_ID FROM sparepart_brand WHERE SparePart_Brand_Name = ?),
       (SELECT SparePart_Model_ID FROM sparepart_model WHERE SparePart_Model_Name = ? AND SparePart_Model_Year = ?),
       (SELECT Category_ID FROM category WHERE Category_Name = ?))`
-    db.query(sqlcommand,[productname,productID,productamount,productprice,productdescription,productimage,productbrand,productmodel,productyear,productcatagory],function(err,results)
+    db.query(sqlcommand,[productname,productID,productamount,productprice,productdescription,productimage,productmodel,productyear,productcatagory],function(err,results)
     {
       if(err)
       {
@@ -315,6 +313,55 @@ app.put('/api/updatesparepart/:id', function (req, res) {
     }
   });
 });
+app.get('/api/getdashboard_queuenum', function (req, res) {
+  const sqlcommand = `SELECT 'All_Queue' as label, COUNT(*) as value FROM queue q JOIN booking b
+  WHERE b.Booking_ID = q.Booking_ID
+  UNION ALL
+  SELECT 'Today_Queue' as label, COUNT(*) as value FROM queue q JOIN booking b on b.Booking_ID = q.Booking_ID
+  WHERE b.Booking_Date = CURDATE()
+  UNION ALL
+  SELECT 'Monthly_Queue' as label, COUNT(*) as value FROM queue q JOIN booking b on b.Booking_ID = q.Booking_ID
+  WHERE MONTH(b.Booking_Date) = MONTH(CURRENT_DATE()) And YEAR(b.Booking_Date) = YEAR(CURRENT_DATE()) 
+  UNION ALL
+  SELECT 'Finished_Queue' as label, COUNT(*) as value FROM queue q JOIN booking b on b.Booking_ID = q.Booking_ID
+  WHERE q.Queue_Status = 'เสร็จสิ้นแล้ว'
+  UNION ALL
+  SELECT 'Unfinished_Queue' as label, COUNT(*) as value FROM queue q JOIN booking b on b.Booking_ID = q.Booking_ID
+  WHERE q.Queue_Status = 'ยังไม่เสร็จสิ้น'`
+  db.query(sqlcommand,function(err,results){
+  if(err) {res.send(err)}
+  else {res.json(results)}
+  })
+})
+
+app.get('/api/getdashboard_itemnum', function (req, res) {
+  const sqlcommand = `SELECT 'ทุกรายการ' as label, COUNT(*) as value FROM sparepart`
+  db.query(sqlcommand,function(err,results){
+  if(err) {res.send(err)}
+  else {res.json(results)}
+  })
+})
+app.get('/api/getdashboard_itemtypenum', function (req,res){
+  const sqlcommand = `SELECT Category_Name as label, COUNT(*) as value FROM sparepart s
+  JOIN category c ON s.Category_ID = c.Category_ID
+  GROUP BY c.Category_Name`
+  db.query(sqlcommand,function(err,results){
+    if(err) {res.send(err)}
+    else {res.json(results)}
+    })
+})
+app.get('/api/getdashboard_queuestatusnum', function (req, res) {
+  const sqlcommand = `SELECT 'เสร็จสิ้นแล้ว' as label, COUNT(*) as value FROM queue q JOIN booking b on b.Booking_ID = q.Booking_ID
+  WHERE q.Queue_Status = 'เสร็จสิ้นแล้ว'
+  UNION ALL
+  SELECT 'ยังไม่เสร็จสิ้น' as label, COUNT(*) as value FROM queue q JOIN booking b on b.Booking_ID = q.Booking_ID
+  WHERE q.Queue_Status = 'ยังไม่เสร็จสิ้น'`
+  db.query(sqlcommand,function(err,results){
+  if(err) {res.send(err)}
+  else {res.json(results)}
+  })
+})
+
 app.post('/login', function (req, res) {
   let username = req.body.username;
 	let password = req.body.password;
@@ -355,6 +402,31 @@ app.post('/login', function (req, res) {
     res.end()
  }
 })
+
+app.get("/sparepart", (req, res) => {
+  const ModelId = req.query.modelId; // ดึงค่าจาก query parameter
+  const query = "SELECT * FROM sparepart WHERE SparePart_Model_ID = ?"; // query ที่จะดึงข้อมูลจากฐานข้อมูล 
+  db.query(query, [ModelId], (err, results) => { // ใช้ตัวแปร ModelId แทนค่าใน query
+      if (err) {
+          res.status(500).json({ message: "Error fetching data", error: err });
+      } else {
+          res.json(results); // ส่งผลลัพธ์กลับไปยัง frontend
+      }
+  });
+});
+app.get("/sparepartcategory", (req, res) => {
+  const ModelId = req.query.modelId; // ดึงค่าจาก query parameter
+  const Category = req.query.category
+  console.log(req.query)
+  const query = `SELECT * FROM sparepart WHERE SparePart_Model_ID = ? and Category_ID = ?` // query ที่จะดึงข้อมูลจากฐานข้อมูล 
+  db.query(query, [ModelId, Category], (err, results) => { // ใช้ตัวแปร ModelId แทนค่าใน query
+      if (err) {
+          res.status(500).json({ message: "Error fetching data", error: err });
+      } else {
+          res.json(results); // ส่งผลลัพธ์กลับไปยัง frontend
+      }
+  });
+});
 
 app.listen(5000, () => 
     console.log("Server is running....")

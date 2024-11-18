@@ -4,16 +4,36 @@ import { Link } from "react-router-dom";
 import Navbar from "../../../../Navbar";
 import Footer from "../../../../Footer";
 
-function City2014() {
-    const [spareparts, setSpareParts] = useState([]);
-
+function City2024() {
+    const [sparepart, setSparePart] = useState([]);
+    const [categoryoption, setcategoryoption] = useState([]);
+    const ModelId = 3; // City2024
     useEffect(() => {
-        // เรียก API เพื่อดึงข้อมูลจาก MySQL
-        axios.get("http://localhost:5000/spareparts")
-            .then((response) => { //รับข้อมูล
-                setSpareParts(response.data); // ตั้งค่าผลลัพธ์ที่ได้ใน state
-            })
-    });
+        fetchalldata()
+    }, []);
+
+    function fetchalldata()
+    {
+        axios.all([
+            axios.get(`http://localhost:5000/sparepart?modelId=${ModelId}`),
+            axios.get(`http://localhost:5000/api/getdropdowncategory`)
+        ])
+        
+        .then((response) => {
+            setSparePart(response[0].data); // ตั้งค่าผลลัพธ์ที่ได้ใน state
+            setcategoryoption(response[1].data);
+            console.log(response)
+        })
+    }
+
+    function sortbycategory(category)
+    {
+        console.log(category)
+        axios.get(`http://localhost:5000/sparepartcategory?modelId=${ModelId}&category=${category}`) //ทำไม?
+        .then((res) => {setSparePart(res.data)
+        console.log(res)})
+        
+    }
 
     return <>
     <Navbar />
@@ -26,23 +46,22 @@ function City2014() {
                 </Link>
             </div>
             <div class="flex p-4 justify-center items-center w-full">
-                <h1 class="text-3xl font-semibold mb-6 text-center">ค้นหาจากรถยี่ห้อ Honda รุ่น City (2024)</h1>
+                <h1 class="text-3xl font-semibold mb-6 text-center">ค้นหาจากรถยี่ห้อ Honda รุ่น City (2014)</h1>
             </div>
         </div>
         <div className="container mx-auto px-4">
-            <p className="flex text-gray-900 text-2xl font-bold px-96 mb-6">หมวดหมู่</p>
+            <p className="flex text-gray-900 text-2xl font-bold px-96 mb-6 text-nowrap">หมวดหมู่</p>
             <div class="flex justify-center mb-3 space-x-4">
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-xl">ทั้งหมด</button>
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-7 rounded-xl ml-2">โช็ค</button>
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-xl ml-2">ผ้าเบรค</button>
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-xl ml-2">จานเบรค</button>
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-xl ml-2">หัวเทียน</button>
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-xl ml-2">ลูกปืน</button>
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-7 rounded-xl ml-2">อื่นๆ</button>
+            <button key="0" onClick={fetchalldata} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-xl">ทั้งหมด</button>
+                {categoryoption.map((item, index) => (
+                    <button key={index+1} onClick={() => sortbycategory(index+1)} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-xl">{item.Category_Name}</button>
+                ))}
+
             </div>
             <div className="grid lg:grid-cols-4 gap-4 m-10"> 
-                {spareparts.map((val) => (
+                {sparepart.map((val) => (
                     <div className="bg-white p-4 rounded shadow">
+                        <h1 class="text-lg font-bold">รูปสินค้า</h1>
                         <h2 className="text-lg font-bold">{val.SparePart_Name}</h2>
                         <p className="text-gray-400 mb-3">รหัสสินค้า {val.SparePart_ProductID}</p>
                         <p className="text-cyan-400 mb-3">{val.SparePart_Description}</p>
@@ -58,4 +77,4 @@ function City2014() {
         </>
 }
 
-export default City2014;
+export default City2024;

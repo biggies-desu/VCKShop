@@ -53,7 +53,7 @@ function Queue_History({setishistorymodal})
                             </svg>
                         </button>  
                     </td>
-                    <td class ='text-start px-3 py-2'>{item.Queue_Status}</td>
+                    <td class ='text-end px-3 py-2'>{item.Queue_Status}</td>
                 </tr>
 
             )

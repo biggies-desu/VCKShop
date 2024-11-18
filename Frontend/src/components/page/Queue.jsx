@@ -63,7 +63,12 @@ function Queue()
         
         if (!date) {
             setErrorDate("กรุณากรอกวันที่จอง");
-        } else if (date) {
+        } //else if (date) //ก่อนหน้า 
+        //{
+        //    //condition ดัก ไม่ให้ใส่วันก่อน
+        // }
+        else if (date)
+        {
             setErrorDate('');
         }
 

@@ -15,11 +15,8 @@ function Navbar() {
             <li id="home"class="block py-3 px-5 md:p-0 text-gray-500 bg-yellow-300 rounded hover:text-black text-[1.3vw]" aria-current="page">
                 <NavLink to ='/'>หน้าแรก</NavLink>
             </li>
-            <li id="queue"class="block py-3 px-3 md:p-0 text-gray-500 bg-yellow-300 rounded hover:text-black text-[1.3vw]" aria-current="page">
-                <NavLink to ='/queue'>จองเข้าใช้บริการอู่</NavLink>
-            </li>
             <li id="calc"class="block py-3 px-3 md:p-0 text-gray-500 bg-yellow-300 rounded hover:text-black text-[1.3vw]" aria-current="page">
-                <NavLink to ='/estimateprice'>ประเมินราคาอะไหล่</NavLink>
+                <NavLink to ='/estimateprice'>ประเมินราคาและจองเข้าใช้</NavLink>
             </li>
             <li id="aboutus"class="block py-3 px-3 md:p-0 text-gray-500 bg-yellow-300 rounded hover:text-black text-[1.3vw]" aria-current="page">
                 <NavLink to ='/aboutus'>เกี่ยวกับเรา</NavLink>
