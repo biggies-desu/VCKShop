@@ -81,7 +81,7 @@ function City2024() {
             <div className="flex justify-center mb-3 space-x-4">
             <button key="0" onClick={fetchalldata} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-xl">ทั้งหมด</button>
                 {categoryoption.map((item, index) => (
-                    <button key={index+1} onClick={() => sortbycategory(index+1)} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-xl">{item.Category_Name}</button>
+                    <button key={index+1} onClick={() => sortbycategory(index+1)} class="bg-blue-500 hover:bg-blue-700 focus:bg-blue-800 text-white font-bold py-2 px-5 rounded-xl">{item.Category_Name}</button>
                 ))}
 
             </div>

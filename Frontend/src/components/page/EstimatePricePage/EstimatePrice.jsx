@@ -145,7 +145,7 @@ function EstimatePrice() {
             <label className="block text-gray-700 mb-2">บริการ</label>
             <div className="flex space-x-2">
                 <select id="service" value={service} type="text" onChange={e =>  setService(e.target.value)} class="block w-full p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="รุ่น">
-                <option selected value='' disabled>เลือกรุ่น</option>
+                <option selected value='' disabled>เลือกบริการ</option>
                     {dropdownservice && dropdownservice.length > 0 && dropdownservice.map((item, index) => (
                     <option key={index} value={item.Service_Name}>
                     {item.Service_Name}

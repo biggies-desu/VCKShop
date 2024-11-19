@@ -27,7 +27,7 @@ function Queue_History({setishistorymodal})
     <div class='flex flex-col text-nowrap'>
         <div class='flex flex-row justify-between'>
             <button className="text-[1.5vw] mb-4 pt-4 px-6 "onClick={() => setishistorymodal(false)}>กลับ</button>
-            <h1 className="text-[1.5vw] mb-4 pt-4 px-4 ">เพิ่มรายการสินค้า</h1>
+            <h1 className="text-[1.5vw] mb-4 pt-4 px-4 ">ประวัติคิวเข้าใช้บริการ</h1>
             <h1 className="text-[1.5vw] mb-4 pt-4 px-4 "></h1>
         </div>
         

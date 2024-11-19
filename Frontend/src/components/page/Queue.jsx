@@ -266,7 +266,7 @@ function Queue()
                             data-original="#000000" />
                     </svg>
                     <h4 class="text-[2vw] text-gray-800 font-semibold mt-4">จองคิวเสร็จสิ้น!!</h4>
-                    <p class="text-sm text-gray-500 leading-relaxed mt-4 px-2">ลูกค้าสามารถเข้าใจบริการในวันเวลาที่ทำการจองไว้</p>
+                    <p class="text-sm text-gray-500 leading-relaxed mt-4 px-2">ลูกค้าสามารถเข้าใช้บริการในวันเวลาที่ทำการจองไว้</p>
                     <div class='justify-center item-center'>
                         <button type="button" onClick={() => closeconfirmnoti()} class="text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 font-medium rounded-lg text-base px-4 py-2 mt-4">ตกลง</button>
                     </div>
