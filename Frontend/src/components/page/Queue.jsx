@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../Navbar.jsx"
 import Footer from "../Footer.jsx"
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 function Queue()
 {
@@ -29,11 +30,17 @@ function Queue()
     const openConfirmedModal = () => setisModalConfirmOpen(true)
     const closeConfirmedModal = () => setisModalConfirmOpen(false)
 
+    const location = useLocation();
+    const { state } = location || {};
+    const cart = state?.cart || []; // รับข้อมูลสินค้าที่จอง
+
     useEffect(() => {
         //fetch servicetype that avaliable
+        console.log(cart)
         axios.get('http://localhost:5000/api/getdropdownservice')
             .then((res) => {
                 setservicedropdown(res.data)
+                prevdetail()
             })
             .catch((err) => {
                 console.log(err);
@@ -83,6 +90,14 @@ function Queue()
             openModal();
         }
     };
+
+    function prevdetail()
+    {
+        for(let i=0;i<cart.length;i++)
+        {
+            document.getElementById("detailed").innerHTML += cart[i].SparePart_Name+"\n"
+        }
+    }
 
     function submitqueue()
     {
@@ -210,7 +225,8 @@ function Queue()
                         //ตรงนี้ต้องpassค่าจากหน้าเลือกอะไหล่มา later db ยังก้งอยู่ 11/11/2024
                     }
                     <label className="block text-sm font-normal">รายละเอียด</label>
-                    <textarea type="text" class="w-full border border-gray-300 p-2 min-h-10 rounded" rows="4" value={details} onChange={(e) => setDetails(e.target.value)}/>
+                        <textarea type="text" id="detailed" class="w-full border border-gray-300 p-2 min-h-10 rounded" rows="4"
+                    onChange={(e) => setDetails(e.target.value)}/>
                 </div>
                     <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">ยืนยันการจอง</button>
             </form>

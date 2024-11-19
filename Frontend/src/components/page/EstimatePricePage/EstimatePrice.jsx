@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../../Navbar.jsx";
 import Footer from "../../Footer.jsx";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
 function EstimatePrice() {
@@ -16,6 +18,13 @@ function EstimatePrice() {
     const [productmodel, setproductmodel] = useState()
     const [dropdownbrand, setdropdownbrand] = useState([])
     const [dropdownmodel, setdropdownmodel] = useState([])
+
+    const location = useLocation();
+    const { state } = location || {};
+    const cart = state?.cart || []; // รับข้อมูล Array ที่ส่งมา
+    const totalPrice = cart.reduce((sum, item) => sum + item.SparePart_Price, 0);
+
+    const navigate = useNavigate();
 
     const handleAddService = () => {
         setService(""),setBrand("");
@@ -46,7 +55,6 @@ function EstimatePrice() {
 
     function getproductmodel()
     {
-        //console.log(brand);
         axios.post('http://localhost:5000/api/getdropdownmodel',
             {
                 brandname: productbrand
@@ -60,8 +68,7 @@ function EstimatePrice() {
         });
     }
 
-
-    const getPagePath = () => {
+    function getPagePath()  {
         switch (productmodel) {
             case "City":
                 return "/City";
@@ -72,7 +79,32 @@ function EstimatePrice() {
             default:
                 return "/EstimatePrice";
         }
-    };    
+    };
+
+    function Cart()  {
+        if (cart.length > 0) {
+            return (
+            <div className="">
+                {cart.map((item, index) => (
+                        <div key={index} class='flex flex-row justify-between'>
+                            <p className="text-start text-xl">{index+1}. {item.SparePart_Name}</p>
+                            <p className="text-end text-xl">{item.SparePart_Price} บาท</p>
+                        </div>
+                ))}
+                <div class="flex flex-col py-4">
+                    <p class="text-end text-gray-600">ราคารวมทั้งหมด:</p>
+                    <p class="text-end text-2xl font-bold text-blue-600">{totalPrice} บาท</p>
+                </div>
+            </div>
+        );
+        } else {
+            <p>ไม่มีข้อมูลอะไหล่</p>
+        }
+    }
+
+    const Navigatetoqueue = () => {
+        navigate('/queue',{state: {cart}})
+    }
 
     return <>
     <Navbar />
@@ -124,29 +156,11 @@ function EstimatePrice() {
             </div>
         </div>
 
-        <div class="mt-8 border-t pt-6">
-            <h2 class="text-xl font-bold mb-4">ผลการประเมินราคา</h2>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <p class="text-gray-600">ค่าอะไหล่:</p>
-                    <wp class="text-xl font-bold">XXX บาท</wp>
-                </div>
-                <div>
-                    <p class="text-gray-600">ค่าบริการ:</p>
-                    <p class="text-xl font-bold">XXX บาท</p>
-                </div>
-                <div class="col-span-2">
-                    <p class="text-gray-600">ราคารวมทั้งหมด:</p>
-                    <p class="text-2xl font-bold text-blue-600">XXX บาท</p>
-                </div>
-            </div>
-      </div>
-        <div class='flex flex-row justify-between'>
-        <div></div>
-        <div></div>
-        <Link to>
-            <button class = 'text-center rounded-full bg-green-400 text-[1vw] py-4 px-4 mt-4 '>จองตอนนี้</button>
-        </Link>
+        <div className="mt-8 border-t pt-6">
+            <h2 className="text-xl font-bold mb-4">ผลการประเมินราคา</h2>{Cart()}
+        </div>
+        <div class='flex flex-row justify-end'>
+            <button onClick={Navigatetoqueue} class = 'text-center rounded-full bg-green-400 text-[1vw] py-4 px-4 mt-4 '>จองตอนนี้</button>
       </div>
     </div>
     <Footer />
