@@ -1,13 +1,16 @@
 const express = require('express')
 const mysql = require('mysql')
-const axios = require('axios')
 const cors = require('cors')
+const request = require('request')
 const FormData = require('form-data');
 const multer  = require('multer')
+const cron = require('node-cron');
+const bodyParser = require('body-parser')
 
 //require dotenv
 require('dotenv').config();
-const linetoken = process.env.LINE_API_NOTIFICATION
+const LINE_USERID = process.env.LINE_USERID
+const LINE_ACCESSTOKEN = process.env.LINE_ACCESSTOKEN
 
 const db = mysql.createConnection({
     host: 'localhost',
@@ -25,35 +28,54 @@ app.get('/',(req, res) => {
   res.send("Hello world")
 })
 
-
-//test line api
-let data = new FormData();
-data.append('message', 'ทดสอบๆการส่ง API Line');
-
-//test
-app.get('/notifylinetest',(req,res) =>
+app.post('/api/linemessage1',(req,res) =>
 {
-    let config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: 'https://notify-api.line.me/api/notify',
-        timeout: 10000,
-        headers: { 
-          'Authorization': 'Bearer '+linetoken, 
-          ...data.getHeaders()
-        },
-        data : data
-      };
-      axios.request(config)
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-      res.end()
+  //get message
+  let message = req.body.message
+  console.log(message)
+  //set header
+  let headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${LINE_ACCESSTOKEN}`
+  }
+  //set body
+  let body = JSON.stringify({
+    "messages":[
+        {
+            "type":"text",
+            "text":message
+        }
+    ]
+})
+  //post to line api
+  request.post({
+    url: 'https://api.line.me/v2/bot/message/broadcast',
+    headers: headers,
+    body: body
+  }, (err, res, body) => {
+    console.log(res)
+  })
+})
+//using cron to schedule call line api
+//[min] [hour] [day of month] [month] [day of week]
+cron.schedule('*/5 * * * *', () => { //every 10 mins
+  const message = new Date().toLocaleString('th-TH')
+  request.post(
+    {
+      url: 'http://localhost:5000/api/linemessage1',
+      json: { message: message }, //sent message to api/linemessage1
+    },
+    (err, response, body) => {
+      if (err) {
+        console.error('Error sending scheduled message:', err);
+      } else {
+        console.log('Scheduled message sent:', body);
+      }
     }
-)
+  );
+});
+
+
 
 //todo, create table if not exist
 app.get('/api/user',(req,res) => {
