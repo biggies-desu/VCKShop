@@ -474,47 +474,6 @@ app.post('/api/login', async (req, res) => {
   }
 })
 
-app.post('/login', function (req, res) {
-  let username = req.body.username;
-	let password = req.body.password;
-  console.log(req.body)
-  //get user/pass in body and check in database
-  if (username && password)
-  {
-    const sqlcommand = 'SELECT * FROM `user` WHERE `User_Username` = BINARY ? and `User_Password` = BINARY ?'
-    db.query(sqlcommand,[username,password],function(err, results)
-  {
-    //use this as debugging only!!!!
-    //console.log(results) --> if there are query (have a username and password), you should see RowDataPacket { id: x, username: 'x', password: 'x' } as array[0], 
-    if (err) //if there is error in query
-    {
-      throw err
-    }
-    //hardcode fr
-    else if (results.length > 0 && results[0].User_ID != 3) //if account exist (other acc)
-    {
-      res.send("Login successful")
-      res.end()
-    }
-    else if (results.length > 0 && results[0].User_ID == 3) //if account exist (and admin acc), kinda hardcode tho
-    {
-      res.send("Login successful as Admin")
-      res.end()
-    }
-    else
-    {
-      res.send("Incorrect username or password!")
-      res.end()
-    }
-  })
-  }
-  else
-  {
-    res.send("You must input username and password")
-    res.end()
- }
-})
-
 app.get("/sparepart", (req, res) => {
   const ModelId = req.query.modelId; // ดึงค่าจาก query parameter
   const query = "SELECT * FROM sparepart WHERE SparePart_Model_ID = ?"; // query ที่จะดึงข้อมูลจากฐานข้อมูล 
