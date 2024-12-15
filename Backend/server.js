@@ -7,6 +7,11 @@ const multer  = require('multer')
 const cron = require('node-cron');
 const bodyParser = require('body-parser')
 
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
+const bcrypt = require("bcrypt");
+
 //require dotenv
 require('dotenv').config();
 const LINE_USERID = process.env.LINE_USERID
@@ -58,7 +63,7 @@ app.post('/api/linemessage1',(req,res) =>
 })
 //using cron to schedule call line api
 //[min] [hour] [day of month] [month] [day of week]
-cron.schedule('*/5 * * * *', () => { //every 10 mins
+cron.schedule('0 */3 * * *', () => { //every 10 mins
   const message = new Date().toLocaleString('th-TH')
   request.post(
     {
@@ -382,6 +387,91 @@ app.get('/api/getdashboard_queuestatusnum', function (req, res) {
   if(err) {res.send(err)}
   else {res.json(results)}
   })
+})
+
+//12/10/2024 add
+// Promise wrapper for db.query
+const queryAsync = (sql, params) => {
+  return new Promise((resolve, reject) => {
+    db.query(sql, params, (err, results) => {
+      if (err) return reject(err);
+      resolve(results);
+    });
+  });
+};
+
+app.post('/api/register', async (req, res) =>
+{
+  try{
+    let {username, password} = req.body
+    console.log(req.body)
+    if (!username || !password) { //if no username in register input
+      return res.status(400).json({ message: 'Username and password are required' });
+    }
+    // check that is this username alreadu register?
+    const sqlcommand1 = 'SELECT * FROM user where User_Username = ?'
+    const results = await queryAsync(sqlcommand1, [username]);
+    if (results.length > 0) {
+      return res.status(400).json({ message: 'Username already exists' });
+    }
+    //hashing password = more security
+    const passwordhash = await bcrypt.hash(password,10)
+    let userdata = {
+      User_Username: username,
+      User_Password: passwordhash
+    }
+    console.log(userdata)
+    const sqlcommand2 = 'INSERT into user SET ?'
+    await db.query(sqlcommand2,[userdata])
+    res.json({message: 'Inserted'})
+  }
+  catch (err)
+  {
+    console.log('err',err) 
+    res.status(500).json({ message: 'Internal server error', error: err.message });
+  }
+})
+
+app.post('/api/login', async (req, res) => {
+  try{
+    let {username, password} = req.body
+    console.log(req.body)
+    if (username && password) { //if in form has password, compare to database
+      const sqlcommand1 = 'SELECT * FROM user where User_Username = ?'
+      const results = await queryAsync(sqlcommand1, [username]);
+      console.log(results)
+      if (results.length > 0) { // Check if username exists in the database
+        const hashcompare = await bcrypt.compare(password,results[0].User_Password)
+        console.log(hashcompare)
+        if(!hashcompare){
+          return res.status(401).json({message: 'Password is wrong'})
+        }
+        else{
+          //check if its admin account??
+          if(results[0].User_Role === 'Customer')
+          {
+            return res.status(200).json({message: 'Login as Customer'})
+          }
+          if(results[0].User_Role === 'Admin')
+          {
+            return res.status(200).json({message: 'Login as Admin'})
+          }
+          
+        }
+      } else {
+        return res.status(401).json({ message: 'No user exist' });
+      }
+    }
+    else
+    {
+      return res.status(401).json({ message: 'Username and password are required' });
+    }
+  }
+  catch (err)
+  {
+    console.log('err', err) 
+    res.status(500).json({ message: 'Internal server error', error: err.message });
+  }
 })
 
 app.post('/login', function (req, res) {
