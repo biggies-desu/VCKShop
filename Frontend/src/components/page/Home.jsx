@@ -4,6 +4,7 @@ import Footer from "../Footer.jsx"
 
 function Home()
 {
+    event.preventDefault()
     return <>
     <div className="relative bg-orange-200 border-2 border-black">
         <Navbar />

@@ -17,7 +17,8 @@ function Modal_Addproduct({setisaddproductmodal})
     const [productyear, setproductyear] = useState()
 
     const [productdescription, setproductdescription] = useState()
-    const [productimage, setproductimage] = useState()
+    const [productimage, setproductimage] = useState(null);
+
 
     const [dropdowncategory, setdropdowncategory] = useState([])
     const [dropdownbrand, setdropdownbrand] = useState([])
@@ -90,34 +91,49 @@ function Modal_Addproduct({setisaddproductmodal})
         });
     }
 
-    function confirmtoadd()
-    {
-        event.preventDefault()
-        //for debuging
-        console.log("confirmtoadd")
-        console.log("name : ",productname)
-        axios.post('http://localhost:5000/api/addproduct',
-            {
-                productname: productname,
-                productID: productID,
-                productcatagory: productcatagory,
-                productamount: productamount,
-                productprice: productprice,
-                productbrand: productbrand,
-                productmodel: productmodel,
-                productyear: productyear,
-                productdescription: productdescription,
-                productimage: productimage
-            }
-        )
-            .then((res) => {
-                console.log(res)
-                setisModalSuccess(true);
-            })
-            .catch((err) => {
-                console.log(err)
-            })
+    function confirmtoadd(event) {
+        event.preventDefault();
+    
+        const formData = new FormData();
+        formData.append('productname', productname);
+        formData.append('productID', productID);
+        formData.append('productcatagory', productcatagory);
+        formData.append('productamount', productamount);
+        formData.append('productprice', productprice);
+        formData.append('productbrand', productbrand);
+        formData.append('productmodel', productmodel);
+        formData.append('productyear', productyear);
+        formData.append('productdescription', productdescription);
+    
+        if (productimage) {
+            formData.append('productimage', productimage);
+        }
+    
+        axios.post('http://localhost:5000/api/addproduct', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+        .then((response) => {
+            console.log('Upload success:', response.data);
+            setisModalSuccess(true);
+        })
+        .catch((error) => {
+            console.error('Upload failed:', error);
+        });
     }
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setproductimage(file); // บันทึกไฟล์ที่เลือกลงใน state
+            console.log("Selected file:", file);
+        } else {
+            console.log("No file selected");
+        }
+        console.log("Event:", e);
+        console.log("File:", e.target.files[0]);
+    };
 
     function closeSuccessPopup() {
         setisModalSuccess(false);
@@ -212,11 +228,17 @@ function Modal_Addproduct({setisaddproductmodal})
             </div>
         </div>
 
-        <div class='flex flex-row mx-4 space-x-2 py-2'>
-            <div class='flex flex-col w-full text-[1.2vw] px-2'>
-                <div class='mb-2'>รูปภาพ</div>
-                <input value={productimage} type="file" id="image" onChange={e =>  setproductimage(e.target.value)} class="block w-full p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="รูป" />
-            </div>
+        <div class='flex flex-col w-full text-[1.2vw] px-2'>
+        <div class='mb-2'>รูปภาพ</div>
+            <input type="file" id="image" accept="image/*" onChange={(e) => {const file = e.target.files[0];
+            if (file) {
+                setproductimage(file); // เก็บไฟล์ลงใน state
+                console.log("Selected file:", file.name);
+                console.log(e.target.files)
+            }
+        }} 
+        className="block w-full p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" 
+    />
         </div>
     </div>
     <div class='flex mx-4 my-4 justify-end'>

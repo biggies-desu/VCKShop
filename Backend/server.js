@@ -6,8 +6,8 @@ const FormData = require('form-data');
 const multer  = require('multer')
 const cron = require('node-cron');
 const bodyParser = require('body-parser')
-
-const jwt = require("jsonwebtoken");
+const path = require('path');
+const jsonwebtoken = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const bcrypt = require("bcrypt");
@@ -16,6 +16,7 @@ const bcrypt = require("bcrypt");
 require('dotenv').config();
 const LINE_USERID = process.env.LINE_USERID
 const LINE_ACCESSTOKEN = process.env.LINE_ACCESSTOKEN
+const JWT_SECRET = process.env.JWT_SECRET
 
 const db = mysql.createConnection({
     host: 'localhost',
@@ -27,6 +28,23 @@ const db = mysql.createConnection({
 const app = express();
 app.use(express.json())
 app.use(cors())
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+console.log("Serving static files from:", path.join(__dirname, 'uploads'));
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadPath = path.join(__dirname, 'uploads');
+    console.log('Saving to:', uploadPath); // Debug path
+    cb(null, uploadPath);
+},
+  filename: function (req, file, cb) {
+    const filename = Date.now() + '-' + file.originalname;
+    cb(null, filename)
+  }
+})
+
+const upload = multer({ storage: storage });
+
 
 //hello world
 app.get('/',(req, res) => {
@@ -282,36 +300,35 @@ app.post('/api/searchqueuetime', function (req,res) {
     res.json(results)
   }})
 })
-app.post('/api/addproduct', function (req,res) {
-  let productname = req.body.productname
-  let productID = req.body.productID
-  let productcatagory = req.body.productcatagory
-  let productamount = req.body.productamount
-  let productprice = req.body.productprice
-  let productmodel = req.body.productmodel
-  let productyear = req.body.productyear
-  let productdescription = req.body.productdescription
-  let productimage = req.body.productimage
-  console.log(req.body)
-  if (productname && productcatagory && productprice && productamount && productmodel && productyear)
-  {
-    const sqlcommand = `INSERT INTO sparepart (SparePart_Name, SparePart_ProductID, SparePart_Amount, SparePart_Price, SparePart_Description, SparePart_Image,  SparePart_Model_ID, Category_ID)
-    VALUES (?,?,?,?,?,?,
-      (SELECT SparePart_Model_ID FROM sparepart_model WHERE SparePart_Model_Name = ? AND SparePart_Model_Year = ?),
-      (SELECT Category_ID FROM category WHERE Category_Name = ?))`
-    db.query(sqlcommand,[productname,productID,productamount,productprice,productdescription,productimage,productmodel,productyear,productcatagory],function(err,results)
-    {
-      if(err)
-      {
-        res.send(err)
-      }
-      else
-      {
-        res.json(results)
-      }
+app.post('/api/addproduct', upload.single('productimage'), (req, res) => {
+  const {
+    productname,
+    productID,
+    productcatagory,
+    productamount,
+    productprice,
+    productmodel,
+    productyear,
+    productdescription,
+  } = req.body;
+  const productimage = req.file ? req.file.filename : null;
+  const sqlcommand = `INSERT INTO sparepart (SparePart_Name, SparePart_ProductID, SparePart_Amount, SparePart_Price,SparePart_Description, SparePart_Image,SparePart_Model_ID, Category_ID)
+    VALUES (
+        ?, ?, ?, ?, ?, ?,
+        (SELECT SparePart_Model_ID FROM sparepart_model WHERE SparePart_Model_Name = ? AND SparePart_Model_Year = ?),
+        (SELECT Category_ID FROM category WHERE Category_Name = ?)
+    )`;
+  db.query(sqlcommand, [
+    productname, productID, productamount, productprice, productdescription, 
+    productimage, productmodel, productyear, productcatagory
+  ], (err, results) => {
+    if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Database error' });
     }
-  )}
-})
+    res.json({ success: true, results });
+  });
+});
 app.delete('/api/deletesparepart/:id', function (req, res) {
   const sparepartId = req.params.id;
   console.log(req.body)
@@ -325,6 +342,16 @@ app.delete('/api/deletesparepart/:id', function (req, res) {
       }
   });
 });
+
+const fs = require('fs');
+if (!fs.existsSync('uploads')) {
+  fs.mkdirSync('uploads');
+}
+
+app.post("/upload", upload.single('productimage'), (req, res) => {
+  res.json({message : 'Hello Ok'})
+  })
+
 app.put('/api/updatesparepart/:id', function (req, res) {
   const sparepartId = req.params.id;
   let productamount = req.body.productamount;
@@ -442,21 +469,21 @@ app.post('/api/login', async (req, res) => {
       console.log(results)
       if (results.length > 0) { // Check if username exists in the database
         const hashcompare = await bcrypt.compare(password,results[0].User_Password)
-        console.log(hashcompare)
         if(!hashcompare){
           return res.status(401).json({message: 'Password is wrong'})
         }
-        else{
-          //check if its admin account??
+        else{ //check if its admin account??
+          //generate jwt token
+          const token = jsonwebtoken.sign({username: username, role: results[0].User_Role}, JWT_SECRET, { algorithm: 'HS256', expiresIn: '1h' })
+          console.log(token)
           if(results[0].User_Role === 'Customer')
           {
-            return res.status(200).json({message: 'Login as Customer'})
+            return res.status(200).json({message: 'Login as Customer', token})
           }
           if(results[0].User_Role === 'Admin')
           {
-            return res.status(200).json({message: 'Login as Admin'})
+            return res.status(200).json({message: 'Login as Admin', token})
           }
-          
         }
       } else {
         return res.status(401).json({ message: 'No user exist' });

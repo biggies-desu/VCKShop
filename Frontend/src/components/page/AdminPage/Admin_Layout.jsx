@@ -2,6 +2,11 @@ import React from 'react'
 import { Outlet } from 'react-router-dom'
 import { NavLink } from 'react-router-dom'
 
+function Logout_Admin()
+{
+    localStorage.removeItem('token')
+    window.location.replace('/')
+}
 
 function Admin_Layout()
 {
@@ -11,9 +16,9 @@ function Admin_Layout()
                 <div id="logo" class="flex flex-wrap items-center justify-between space-x-3 rtl:space-x-reverse p-5">
                 <img src="/images/LogoNavbar.png" class="h-8" alt="Logo" />
                 <ul>
-                    <li id="logout" class="text-[1.5vw] text-gray-500 hover:text-black list-none" aria-current="page">
-                        <NavLink to ='/'>Logout</NavLink>
-                    </li>
+                <div>
+                <button onClick={() => Logout_Admin()} id="logout" class="text-center text-[1.5vw]">ออกจากระบบ</button>
+                </div>
                  </ul>
             </div>
          </div>

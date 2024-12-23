@@ -26,10 +26,11 @@ function Warehouse() {
     useEffect(() => {
         axios.get('http://localhost:5000/api/allsparepart')
             .then((res) => {
-                setapidata(res.data)
+                console.log("API Response:", res.data);
+                setapidata(res.data);
             })
             .catch((err) => {
-                console.log(err);
+                console.error("API Error:", err);
             });
     }, []);
 
@@ -119,7 +120,7 @@ function Warehouse() {
                 </form>
                 <div className="relative overflow-auto shadow-md rounded-2xl">
                     <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-                        <thead className="text-sm text-gray-700 bg-gray-400">
+                        <thead className="text-base text-gray-700 bg-gray-400">
                             <tr>
                                 <th className="px-6 py-3">รูปภาพ</th>
                                 <th className="px-6 py-3">รหัสสินค้า</th>
@@ -135,7 +136,9 @@ function Warehouse() {
                         <tbody>
                             {apidata.map((item, index) => (
                                 <tr key={index} className="odd:bg-white even:bg-gray-100 border-b-2">
-                                    <td className="px-6 py-4">{item.SparePart_Image}</td>
+                                    <td className="px-6 py-4">{console.log('Image URL:', `http://localhost:5000/uploads/${item.SparePart_Image}`)}{console.log('SparePart_Image:', item.SparePart_Image)}{console.log('Item Structure:', item)}{item.SparePart_Image ? (
+                                        <img src={`http://localhost:5000/uploads/${item.SparePart_Image}`} alt={item.SparePart_Image}  className="h-[50px] w-[50px] object-cover rounded"/>) : ('ไม่มีรูป')}
+                                    </td>
                                     <td className="px-6 py-4">{item.SparePart_ProductID}</td>
                                     <td className="px-6 py-4">{item.SparePart_Name}</td>
                                     <td className="px-6 py-4">{item.Category_Name}</td>
