@@ -76,6 +76,8 @@ function validatepassword(passwordereg){
 
 function registerfunction()
 {
+    
+
     event.preventDefault()
     const isusernamevalid = validateusername(usernamereg.value)
     const ispasswordvalid = validatepassword(passwordreg.value)
@@ -104,8 +106,9 @@ function registerfunction()
         }
     });
     console.log("Clicked!!!")
-}
 
+    return 
+}
 function Login()
 {
     event.preventDefault()
@@ -115,16 +118,23 @@ function Login()
     const [passwordreg, setpasswordreg] = useState()
 
     const [isRegisterModalOpen, setisRegisterModalOpen] = useState(false)
-
+    const [isConfirmModalOpen, setisConfirmModalOpen] = useState(false)
+    
     function openRegisterModal(){
         setisRegisterModalOpen(true) // open modal
-        console.log("open")
     }
     function closeRegisterModel(){
         setisRegisterModalOpen(false)
-        console.log("close")
+    }
+    function openconfirmmodal(){
+        setisConfirmModalOpen(true)
     }
 
+    function closeconfirmmodal(){
+        setisConfirmModalOpen(false)
+        window.location.reload()
+    }
+    
     return <>
     <Navbar />
     <form class="flex items-center justify-center">
@@ -164,9 +174,30 @@ function Login()
             <div class="text-red-600 text-[1vw] mt-3" id="errmsgpasswordreg"></div>
             </div>
             
-            <button onClick={() => registerfunction()} id="register" class="text-center rounded-full bg-green-400 text-[1vw] w-2/5 py-2 px-1 mt-4 ">Register</button>
+            <button onClick={() => {registerfunction(), openconfirmmodal()}} id="register" class="text-center rounded-full bg-green-400 text-[1vw] w-2/5 py-2 px-1 mt-4 ">Register</button>
             </div>
         </div>)}
+
+    {isConfirmModalOpen && (
+        <div class="fixed z-50 inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center px-4">
+        <div class="relative mx-auto shadow-xl rounded-md bg-white max-w-md w-full">
+            <div class="my-8 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-14 shrink-0 fill-green-500 inline" viewBox="0 0 512 512">
+                    <path
+                        d="M383.841 171.838c-7.881-8.31-21.02-8.676-29.343-.775L221.987 296.732l-63.204-64.893c-8.005-8.213-21.13-8.393-29.35-.387-8.213 7.998-8.386 21.137-.388 29.35l77.492 79.561a20.687 20.687 0 0 0 14.869 6.275 20.744 20.744 0 0 0 14.288-5.694l147.373-139.762c8.316-7.888 8.668-21.027.774-29.344z"
+                        data-original="#000000" />
+                    <path
+                        d="M256 0C114.84 0 0 114.84 0 256s114.84 256 256 256 256-114.84 256-256S397.16 0 256 0zm0 470.487c-118.265 0-214.487-96.214-214.487-214.487 0-118.265 96.221-214.487 214.487-214.487 118.272 0 214.487 96.221 214.487 214.487 0 118.272-96.215 214.487-214.487 214.487z"
+                        data-original="#000000" />
+                </svg>
+                <h4 class="text-[2vw] text-gray-800 font-semibold mt-4">ลงทะเบียนเสร็จสิ้น กรุณาเข้าสู่ระบบ</h4>
+                <div class='justify-center item-center'>
+                    <button type="button" onClick={() => closeconfirmmodal()} class="text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 font-medium rounded-lg text-base px-4 py-2 mt-4">ตกลง</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    )}
     </>
 }
 

@@ -1,9 +1,9 @@
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, Navigate, Outlet } from 'react-router-dom'
 
 import './index.css'
 
 import { Routes , Route } from 'react-router-dom'
-import { jwtDecode } from "jwt-decode";
+
 
 import Home from './components/page/Home.jsx'
 import Queue from './components/page/Queue.jsx'
@@ -29,28 +29,37 @@ import Tax from './components/page/AdminPage/Tax.jsx'
 import Notify from './components/page/AdminPage/Notify.jsx'
 import HelpPage from './components/page/AdminPage/HelpPage.jsx'
 
+import { jwtDecode } from "jwt-decode";
+
 function App() {
   const token = localStorage.getItem('token');
-  if(token)
-  {
-    try {
-      console.log(token)
-      console.log(jwtDecode(token))
-    }
-    catch (error)
-    {
-      console.error('Invalid token:', error);
-      localStorage.removeItem('token'); // Remove invalid token
-    }
+  const Protectroute = ({role}) => {
+    if(token) //if have token, check role
+      {
+        try {
+          console.log(token)
+          console.log(jwtDecode(token))
+          if (role.includes((jwtDecode(token).role)))
+          {
+            return <Outlet /> //if role match, render
+          }
+        }
+        catch (error)
+        {
+          console.error('Invalid token:', error);
+          localStorage.removeItem('token'); // Remove invalid token
+        }
+      }
+    //if no role match, redirect to login
+    localStorage.removeItem('token')
+    return <Navigate to='/login' replace/>
   }
-
   return (<> 
     <BrowserRouter>
     <Routes>
       <Route path='/' element={<Home/>}/>
-      <Route path='/queue' element={<Queue/>}/>
-
       <Route path='/estimateprice' element={<EstimatePrice/>}/>
+      
       <Route path='/city' element={<City/>}/>
       <Route path='/city2014' element={<City2014/>}/>
       <Route path='/city2019' element={<City2019/>}/>
@@ -58,21 +67,25 @@ function App() {
       <Route path='/jazz' element={<Jazz/>}/>
       <Route path='/civic' element={<Civic/>}/>
 
+      <Route element={<Protectroute role={['Customer']} />}>
+        <Route path='/queue' element={<Queue/>}/>
+      </Route>
+    
       <Route path='/aboutus' element={<Aboutus/>}/>
       <Route path='/login' element={<Login/>}/>
-      
-      {token && jwtDecode(token).role === 'Admin' && (
-                        <Route path='/admin' element={<Admin />}>
-                            <Route index element={<AdminWelcome />} />
-                            <Route path='dashboard' element={<Dashboard />} />
-                            <Route path='account' element={<Account />} />
-                            <Route path='queue_management' element={<Queue_Management />} />
-                            <Route path='warehouse' element={<Warehouse />} />
-                            <Route path='tax' element={<Tax />} />
-                            <Route path='notify' element={<Notify />} />
-                            <Route path='helppage' element={<HelpPage />} />
-                        </Route>
-                    )}
+
+      <Route element={<Protectroute role={['Admin']} />}>
+        <Route path='/admin' element={<Admin />}>
+          <Route index element={<AdminWelcome />} />
+          <Route path='dashboard' element={<Dashboard />} />
+          <Route path='account' element={<Account />} />
+          <Route path='queue_management' element={<Queue_Management />} />
+          <Route path='warehouse' element={<Warehouse />} />
+          <Route path='tax' element={<Tax />} />
+          <Route path='notify' element={<Notify />} />
+          <Route path='helppage' element={<HelpPage />} />
+        </Route>
+      </Route>
     </Routes>
     </BrowserRouter>
     </>
