@@ -3,31 +3,31 @@ import { NavLink } from "react-router-dom"
 
 function Navbar() {
     return <>
-    <nav id="navbar" class="bg-yellow-300 border-black border-2">
-    <div id ="nav-container" class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-5">
-        <div id="logo" class="flex items-center space-x-3 rtl:space-x-reverse">
-            <NavLink to ="/">
-                <img src="images/LogoNavbar.png" class="h-8" alt="Logo" />
-            </NavLink>
-        </div>
-        <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-cta">
-        <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-yellow-300 md:space-x-12 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 ">
-            <li id="home"class="block py-3 px-5 md:p-0 text-gray-500 bg-yellow-300 rounded hover:text-black text-[1.3vw]" aria-current="page">
-                <NavLink to ='/'>หน้าแรก</NavLink>
-            </li>
-            <li id="calc"class="block py-3 px-3 md:p-0 text-gray-500 bg-yellow-300 rounded hover:text-black text-[1.3vw]" aria-current="page">
-                <NavLink to ='/estimateprice'>ประเมินราคาและจองเข้าใช้</NavLink>
-            </li>
-            <li id="aboutus"class="block py-3 px-3 md:p-0 text-gray-500 bg-yellow-300 rounded hover:text-black text-[1.3vw]" aria-current="page">
-                <NavLink to ='/aboutus'>เกี่ยวกับเรา</NavLink>
-            </li>
-            <li id="login"class="block py-3 px-3 md:p-0 text-gray-500 bg-yellow-300 rounded hover:text-black text-[1.3vw]" aria-current="page">
-                <NavLink to ='/login'>เข้าสู่ระบบ</NavLink>
-            </li>
-        </ul>
-        </div>
-    </div>
-    </nav>
+        <nav id="navbar" className="bg-yellow-300 border-black border-0">
+            <div id="nav-container" className="max-w-screen-xl flex items-center justify-between mx-auto py-1 px-4">
+                <div id="logo" className="flex items-center">
+                    <NavLink to="/">
+                            <img src="images/LogoNavbar.png" className="h-8" alt="Logo" />
+                    </NavLink>
+                    </div>
+                    <div className="hidden md:flex">
+                    <ul className="flex font-medium md:space-x-8">
+                        <li className="py-4 px-2 text-gray-700 hover:text-black">
+                            <NavLink to="/">หน้าแรก</NavLink>
+                        </li>
+                        <li className="py-4 px-2 text-gray-700 hover:text-black">
+                            <NavLink to="/estimateprice">ประเมินราคาและจองเข้าใช้</NavLink>
+                        </li>
+                        <li className="py-4 px-2 text-gray-700 hover:text-black">
+                            <NavLink to="/aboutus">เกี่ยวกับเรา</NavLink>
+                        </li>
+                        <li className="py-4 px-2 text-gray-700 hover:text-black">
+                            <NavLink to="/login">เข้าสู่ระบบ</NavLink>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
     </>
 }
 

@@ -1,11 +1,19 @@
 import React, { useState } from "react";
-import Admin_Layout from "./Admin_Layout";
+import { Outlet } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
+
+import Header from './Layout/Header'
+import Menu from './Layout/Menu'
+import Content from './Layout/Content'
+
 
 function Admin()
 {   
     return <>
     <div>
-        <Admin_Layout />
+        <Header/>
+        <Menu/>
+        <Content/>
     </div>
     </>
 }
