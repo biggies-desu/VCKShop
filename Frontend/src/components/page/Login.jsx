@@ -18,6 +18,7 @@ function loginfunction()
         //todo : auth/cookie stuff
         .then((res) => {
             //set token to localstroage
+
             const token = res.data.token
             localStorage.setItem('token', token)
             if(res.data.message === 'Login as Customer')

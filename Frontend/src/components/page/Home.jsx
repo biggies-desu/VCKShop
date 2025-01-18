@@ -1,6 +1,7 @@
 import React from "react";
 import Navbar from "../Navbar.jsx"
 import Footer from "../Footer.jsx"
+import '../../index.css'
 
 function Home()
 {
@@ -13,7 +14,7 @@ function Home()
         </div>
         <div className="items-center justify-between flex px-[15%] w-auto">
             <div>
-                <div className="text-[2.5vw]">
+                <div className="text-[2.5vw] kanit-regular">
                     วิชัยการยางVCKRacingShop
                 </div>
                 <div className="text-[1.5vw] mt-10">

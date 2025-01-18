@@ -6,7 +6,7 @@ function AboutUs()
 {
     return <>
     <Navbar />
-    <h1>เกี่ยวกับเรา</h1>
+        sfasdfsadf
     <Footer />
     </>
 }

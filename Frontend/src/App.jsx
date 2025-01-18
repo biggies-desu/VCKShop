@@ -9,12 +9,13 @@ import Home from './components/page/Home.jsx'
 import Queue from './components/page/Queue.jsx'
 
 import EstimatePrice from './components/page/EstimatePricePage/EstimatePrice.jsx'
-import City from './components/page/EstimatePricePage/Honda/City.jsx'
-import City2014 from './components/page/EstimatePricePage/Honda/City_model/City2014.jsx'
-import City2019 from './components/page/EstimatePricePage/Honda/City_model/City2019.jsx'
-import City2024 from './components/page/EstimatePricePage/Honda/City_model/City2024.jsx'
-import Jazz from './components/page/EstimatePricePage/Honda/Jazz.jsx'
-import Civic from './components/page/EstimatePricePage/Honda/Civic.jsx'
+import Ford from './components/page/EstimatePricePage/Brand/Ford.jsx'
+import Honda from './components/page/EstimatePricePage/Brand/Honda.jsx'
+import Mazda from './components/page/EstimatePricePage/Brand/Mazda.jsx'
+import Mitsubishi from './components/page/EstimatePricePage/Brand/Mitsubishi.jsx'
+import Nissan from './components/page/EstimatePricePage/Brand/Nissan.jsx'
+import Susuki from './components/page/EstimatePricePage/Brand/Suzuki.jsx'
+import Toyota from './components/page/EstimatePricePage/Brand/Toyota.jsx'
 
 import Aboutus from './components/page/Aboutus.jsx'
 import Login from './components/page/Login.jsx'
@@ -59,13 +60,14 @@ function App() {
     <Routes>
       <Route path='/' element={<Home/>}/>
       <Route path='/estimateprice' element={<EstimatePrice/>}/>
-      
-      <Route path='/city' element={<City/>}/>
-      <Route path='/city2014' element={<City2014/>}/>
-      <Route path='/city2019' element={<City2019/>}/>
-      <Route path='/city2024' element={<City2024/>}/>
-      <Route path='/jazz' element={<Jazz/>}/>
-      <Route path='/civic' element={<Civic/>}/>
+
+      <Route path='/Ford' element={<Ford/>}/>
+      <Route path='/Honda' element={<Honda/>}/>
+      <Route path='/Mazda' element={<Mazda/>}/>
+      <Route path='/Mitsubishi' element={<Mitsubishi/>}/>
+      <Route path='/Nissan' element={<Nissan/>}/>
+      <Route path='/Suzuki' element={<Susuki/>}/>
+      <Route path='/Toyota' element={<Toyota/>}/>
 
       <Route element={<Protectroute role={['Customer']} />}>
         <Route path='/queue' element={<Queue/>}/>

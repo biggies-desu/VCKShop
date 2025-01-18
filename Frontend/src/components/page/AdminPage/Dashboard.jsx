@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { PieChart } from "@mui/x-charts"
 
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Pie } from 'react-chartjs-2';
+
 
 function Dashboard()
 {
@@ -10,8 +13,11 @@ function Dashboard()
     const [queuestatusdata, setqueuestatusdata] = useState([])
     const [itemdata, setitemdata] = useState([])
     const [itemtypedata, setitemtypedata] = useState([])
-
     const [isListoflowsupplyModalOpen, setisListoflowsupplyModalOpen] = useState(false)
+    const [queuechart, setqueuechart] = useState()
+    const [itemchart, setitemchart] = useState()
+
+    ChartJS.register(ArcElement, Tooltip, Legend);
 
     useEffect(() => {
         axios.all([
@@ -25,6 +31,55 @@ function Dashboard()
                 setqueuestatusdata(res[1].data)
                 setitemdata(res[2].data)
                 setitemtypedata(res[3].data)
+
+                //set data to queuechart to display in chartjs
+                const formattedqueuechart = {
+                    labels: res[1].data.map((item) => item.label),
+                    datasets: [
+                        {
+                            data: res[1].data.map((item) => item.value),
+                            backgroundColor: [
+                                'rgba(45, 255, 185, 0.2)',
+                                'rgba(255, 99, 132, 0.2)',
+                              ],
+                              borderColor: [
+                                'rgba(45, 255, 185, 1)',
+                                'rgba(255, 99, 132, 1)',
+                                
+                              ],
+                              borderWidth: 1,
+                        }
+                    ]
+                }
+                setqueuechart(formattedqueuechart)
+                //set data to itemchart to display in chartjs
+                const formatteditemchart = {
+                    labels: res[3].data.map((item) => item.label),
+                    datasets: [
+                        {
+                            data: res[3].data.map((item) => item.value),
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)',
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)',
+                            ],
+                            borderWidth: 1,
+                        }
+                    ]
+                }
+                setitemchart(formatteditemchart)
+
                 console.log(res)
             })
             .catch((err) => {
@@ -43,74 +98,99 @@ function Dashboard()
     return <>
     <div class ='flex flex-col Justify-center'>
     <h1 class="text-[1.5vw] mb-4 text-center pt-4">Dashboard</h1>
-    <div class="grid grid-cols-2 auto-rows-min">
-    <div class = 'h-44 w-full text-nowrap' id='top1'>
-        <div class ='grid grid-cols-2 '>
-            <div class='bg-zinc-100 p-8 rounded shadow-lg mx-2 border-black border-2 flex flex-col justify-center'>
-                <div class='flex justify-center pb-4 font-bold text-[1.5vw]'>จำนวนการจองทั้งหมด</div>
-                <div class='flex justify-center font-bold text-[1.7vw]'>{queuedata[0]?.value}</div>
+    <div class="grid grid-cols-4 gap-4 px-2">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>{queuedata[0]?.value}</h3>
+                <p>จำนวนการจองทั้งหมด</p>
             </div>
-            <div class='bg-zinc-100 p-8 rounded shadow-lg mx-2 border-black border-2 flex flex-col justify-center'>
-            <div class='flex justify-center pb-4 font-bold text-[1.5vw]'>จำนวนการจองในวันนี้</div>
-            <div class='flex justify-center font-bold text-[1.7vw]'>{queuedata[1]?.value}</div>
+            <div class="icon">
+                <i class="ion ion-stats-bars"></i>
             </div>
         </div>
-    </div>
-    <div class = 'h-44 w-full text-nowrap' id ='top2'>
-        <div class ='grid grid-cols-2 '>
-        <div class='bg-zinc-100 p-8 rounded shadow-lg mx-2 border-black border-2 flex flex-col justify-center'>
-            <div class='flex justify-center pb-4 font-bold text-[1.5vw]'>จำนวนการจองในเดือนนี้</div>
-            <div class='flex justify-center font-bold text-[1.7vw]'>{queuedata[2]?.value}</div>
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>{queuedata[1]?.value}</h3>
+                <p>จำนวนการจองวันนี้</p>
             </div>
-            <div class='bg-zinc-100 p-8 rounded shadow-lg mx-2 border-black border-2 flex flex-col justify-center'>
-            <div class='flex justify-center pb-4 font-bold text-[1.5vw]'>จำนวนสินค้าที่เหลือน้อย</div>
-            <div class='flex flex-row justify-between'>
-            <div class='flex justify-center font-bold text-[1.7vw]'>1</div>
-            <div className="block rounded px-2 py-1 text-gray-700 bg-green-400 hover:bg-green-500 shadow-lg active:bg-green-700 focus:bg-green-500"
-            onClick={() => openlowsupplymodal()}>ดูรายการ</div>
-            </div>
-            
+            <div class="icon">
+                <i class="ion ion-stats-bars"></i>
             </div>
         </div>
-    </div>
-    <div class = 'h-44 w-full text-nowrap' id='top3'>
-        <div class ='grid grid-cols-2 '>
-            <div class='bg-zinc-100 p-8 rounded shadow-lg mx-2 border-black border-2 flex flex-col justify-center'>
-            <div class='flex justify-center pb-4 font-bold text-[1.5vw]'>จำนวนคิวที่เสร็จแล้ว</div>
-            <div class='flex justify-center font-bold text-[1.7vw]'>{queuestatusdata[0]?.value}</div>
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>{queuedata[2]?.value}</h3>
+                <p>จำนวนการจองเดือนนี้</p>
             </div>
-            <div class='bg-zinc-100 p-8 rounded shadow-lg mx-2 border-black border-2 flex flex-col justify-center'>
-                <div class='flex justify-center pb-4 font-bold text-[1.5vw]'>จำนวนคิวที่กำลังดำเนืนการ</div>
-                <div class='flex justify-center font-bold text-[1.7vw]'>{queuestatusdata[1]?.value}</div>
-            </div>
-            
-        </div>
-    </div>
-    <div class = 'h-44 w-full text-nowrap' id ='top4'>
-        <div class ='grid'>
-            <div class='bg-zinc-100 p-8 rounded shadow-lg mx-2 border-black border-2 flex flex-col justify-center'>
-            <div class='flex justify-center pb-4 font-bold text-[1.5vw]'>จำนวนสินค้าในคลัง</div>
-            <div class='flex justify-center font-bold text-[1.7vw]'>{itemdata[0]?.value}</div>
+            <div class="icon">
+                <i class="ion ion-stats-bars"></i>
             </div>
         </div>
-    </div>
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>1</h3>
+                <p>จำนวนอะไหล่ที่เหลือน้อย</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+            </div>
+            <div class="small-box-footer text-left px-2" onClick={() => openlowsupplymodal()}>
+                ดูรายการ
+            </div>
+        </div>
+
     
-    <div class = 'h-[20vw] w-full flex flex-col'>
-        <div class = 'text-center text-[1.5vw] font-bold pb-4'>จำนวนคิวที่มี</div>
-        <PieChart series={[{
-        data: queuestatusdata,
-        arcLabel: (item) => `${item.label}`,
-        arcLabelMinAngle: 30
-        },]}/>
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>{queuestatusdata[0]?.value}</h3>
+                <p>จำนวนการจองทั้งหมด</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+            </div>
+        </div>
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>{itemdata[0]?.value}</h3>
+                <p>จำนวนการจองวันนี้</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+            </div>
+        </div>
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>{queuestatusdata[1]?.value}</h3>
+                <p>จำนวนการจองเดือนนี้</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+            </div>
+        </div>
+        <div>
+
+        </div>
+    <div class='col-span-2'>
+        <div class = 'h-[20vw] w-full flex flex-col'>
+            <div class = 'text-center text-[1.5vw] font-bold pb-4'>จำนวนคิวที่มี</div>
+            <div class="h-[25vw] flex items-center justify-center">
+                {queuechart ? <Pie data={queuechart} /> : <div>Loading...</div>}
+            </div>
+        </div>
     </div>
-    <div class = 'h-[20vw] w-full flex flex-col'>
-        <div class = 'text-center text-[1.5vw] font-bold pb-4'>ประเภทอะไหล่ที่มีในร้าน</div>
-        <PieChart series={[{
-        data: itemtypedata,
-        arcLabel: (item) => `${item.label}`,
-        arcLabelMinAngle: 30
-        },]}/>
+    <div class='col-span-2'>
+        <div class = 'h-[20vw] w-full flex flex-col'>
+            <div class = 'text-center text-[1.5vw] font-bold pb-4'>ประเภทอะไหล่ที่มีในร้าน</div>
+            <div class="h-[25vw] flex items-center justify-center">
+                {itemchart ? <Pie data={itemchart} /> : <div>Loading...</div>}
+            </div>
+        </div>
     </div>
+
+    
+    
+
+
     </div>
     </div>
     {isListoflowsupplyModalOpen && (<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

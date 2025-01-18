@@ -9,15 +9,10 @@ import { useNavigate } from "react-router-dom";
 
 function EstimatePrice() {
     const [brand, setBrand] = useState("");
-    const [model, setModel] = useState("");
     const [service, setService] = useState("");
-    const [dropdownservice, setdropdownservice] = useState([])
-    const [models, setModels] = useState([]);
 
-    const [productbrand, setproductbrand] = useState()
-    const [productmodel, setproductmodel] = useState()
+    const [dropdownservice, setdropdownservice] = useState([])
     const [dropdownbrand, setdropdownbrand] = useState([])
-    const [dropdownmodel, setdropdownmodel] = useState([])
 
     const location = useLocation();
     const { state } = location || {};
@@ -44,38 +39,23 @@ function EstimatePrice() {
                 console.log(err);
               });
         ;} ,[]);
-    
-    //run this if productbrand got update
-    useEffect(() => {
-        if (productbrand) { // Only call if productbrand is set
-            getproductmodel();
-            }
-        }, [productbrand]);
-
-
-    function getproductmodel()
-    {
-        axios.post('http://localhost:5000/api/getdropdownmodel',
-            {
-                brandname: productbrand
-            }
-        )
-        .then((res) => {
-            setdropdownmodel(res.data)
-        })
-        .catch(error=>{
-            console.log(error)
-        });
-    }
 
     function getPagePath()  {
-        switch (productmodel) {
-            case "City":
-                return "/City";
-            case "Jazz":
-                return "/Jazz";
-            case "Civic":
-                return "/Civic";
+        switch (brand) {
+            case "Honda":
+                return "/Honda";
+            case "Toyota":
+                return "/Toyota";
+            case "Ford":
+                return "/Ford";
+            case "Nissan":
+                return "/Nissan";
+            case "Mazda":
+                return "/Mazda";
+            case "Mitsubishi":
+                return "/Mitsubishi";
+            case "Suzuki":
+                return "/Suzuki";
             default:
                 return "/EstimatePrice";
         }
@@ -114,7 +94,7 @@ function EstimatePrice() {
         <div className="mb-4">
             <label className="block text-gray-700 mb-2">ค้นหาอะไหล่ตามยี่ห้อ/รุ่น</label>
             <div className="flex space-x-4">
-                <select id="brand" value={productbrand} type="text"  onChange={e => {setproductbrand(e.target.value)}} class="block w-full p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="ยี่ห้อ">
+                <select id="brand" value={brand} type="text"  onChange={e => {setBrand(e.target.value)}} class="block w-full p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="ยี่ห้อ">
                 <option selected value='' disabled>เลือกยี่ห้อ</option>
                     {dropdownbrand && dropdownbrand.length > 0 && dropdownbrand.map((item, index) => (
                     <option key={index} value={item.SparePart_Brand_Name}>
@@ -122,20 +102,11 @@ function EstimatePrice() {
                     </option>
                     ))}
                 </select>
-                <select id="model" value={productmodel} type="text" onChange={e =>  setproductmodel(e.target.value)} class="block w-full p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="รุ่น">
-                <option selected value='' disabled>เลือกรุ่น</option>
-                    {dropdownmodel && dropdownmodel.length > 0 && dropdownmodel.map((item, index) => (
-                    <option key={index} value={item.SparePart_Model_Name}>
-                    {item.SparePart_Model_Name}
-                    </option>
-                    ))}
-                </select>
                 <Link to={getPagePath()}>
                     <button className="p-2 rounded">
-                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="black" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
-                    </svg>
-
+                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="black" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+                        </svg>
                     </button>
                 </Link>
             </div>
