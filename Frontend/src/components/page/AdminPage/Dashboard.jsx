@@ -21,10 +21,10 @@ function Dashboard()
 
     useEffect(() => {
         axios.all([
-            axios.get('http://localhost:5000/api/getdashboard_queuenum'),
-            axios.get('http://localhost:5000/api/getdashboard_queuestatusnum'),
-            axios.get('http://localhost:5000/api/getdashboard_itemnum'),
-            axios.get('http://localhost:5000/api/getdashboard_itemtypenum')
+            axios.get('http://localhost:5000/getdashboard_queuenum'),
+            axios.get('http://localhost:5000/getdashboard_queuestatusnum'),
+            axios.get('http://localhost:5000/getdashboard_itemnum'),
+            axios.get('http://localhost:5000/getdashboard_itemtypenum')
         ])
             .then((res) => {
                 setqueuedata(res[0].data)

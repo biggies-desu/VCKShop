@@ -30,7 +30,7 @@ function Mitsubishi() {
 
         axios.all([
             axios.get(`http://localhost:5000/sparepart?modelId=${modelId}`),
-            axios.get(`http://localhost:5000/api/getdropdowncategory`),
+            axios.get(`http://localhost:5000/getdropdowncategory`),
         ])
         .then((response) => {
             setSparePart(response[0].data);

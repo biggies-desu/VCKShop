@@ -9,7 +9,7 @@ function loginfunction()
 {
     event.preventDefault()
     console.log("Clicked login!")
-        axios.post('http://localhost:5000/api/login', //post username/password to login api
+        axios.post('http://localhost:5000/login', //post username/password to login api
         {
             username: username.value,
             password: password.value
@@ -88,7 +88,7 @@ function registerfunction()
         return; //exit funtion due invalid username or password
     }
 
-    axios.post('http://localhost:5000/api/register',
+    axios.post('http://localhost:5000/register',
     {
         username: usernamereg.value,
         password: passwordreg.value

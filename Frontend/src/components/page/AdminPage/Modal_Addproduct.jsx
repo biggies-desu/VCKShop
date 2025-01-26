@@ -31,8 +31,8 @@ function Modal_Addproduct({setisaddproductmodal})
     //getting data suchas dropdown for category
     useEffect(() => {
         axios.all([
-            axios.get('http://localhost:5000/api/getdropdowncategory'),
-            axios.get('http://localhost:5000/api/getdropdownbrand')
+            axios.get('http://localhost:5000/getdropdowncategory'),
+            axios.get('http://localhost:5000/getdropdownbrand')
             ])
             
             .then((res) => {
@@ -61,7 +61,7 @@ function Modal_Addproduct({setisaddproductmodal})
     function getproductmodel()
     {
         //console.log(brand);
-        axios.post('http://localhost:5000/api/getdropdownmodel',
+        axios.post('http://localhost:5000/getdropdownmodel',
             {
                 brandname: productbrand
             }
@@ -77,7 +77,7 @@ function Modal_Addproduct({setisaddproductmodal})
     function getproductyear()
     {
         //console.log(brand);
-        axios.post('http://localhost:5000/api/getdropdownyear',
+        axios.post('http://localhost:5000/getdropdownyear',
             {
                 modelname: productmodel
             }
@@ -109,7 +109,7 @@ function Modal_Addproduct({setisaddproductmodal})
             formData.append('productimage', productimage);
         }
     
-        axios.post('http://localhost:5000/api/addproduct', formData, {
+        axios.post('http://localhost:5000/addproduct', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },

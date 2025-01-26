@@ -24,7 +24,7 @@ function Warehouse() {
     };
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/allsparepart')
+        axios.get('http://localhost:5000/allsparepart')
             .then((res) => {
                 console.log("API Response:", res.data);
                 setapidata(res.data);
@@ -37,7 +37,7 @@ function Warehouse() {
     function search(event) {
         event.preventDefault();
         console.log("search : ", search_query);
-        axios.post('http://localhost:5000/api/searchquery', {
+        axios.post('http://localhost:5000/searchquery', {
             search_query: search_query
         })
         .then((res) => {
@@ -74,7 +74,7 @@ function Warehouse() {
     }
 
     function updateProduct() {
-        axios.put(`http://localhost:5000/api/updatesparepart/${editProduct.SparePart_ID}`, {
+        axios.put(`http://localhost:5000/updatesparepart/${editProduct.SparePart_ID}`, {
             productamount: editProduct.SparePart_Amount,
             productprice: editProduct.SparePart_Price,
         })
@@ -93,7 +93,7 @@ function Warehouse() {
     }
 
     function confirmDelete() {
-        axios.delete(`http://localhost:5000/api/deletesparepart/${deleteId}`)
+        axios.delete(`http://localhost:5000/deletesparepart/${deleteId}`)
             .then((res) => {
                 closeModal();
                 window.location.reload();

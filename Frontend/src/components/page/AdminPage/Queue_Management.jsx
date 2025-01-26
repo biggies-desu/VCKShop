@@ -8,7 +8,7 @@ function Queue_Management()
     const [search_time, setsearch_time] = useState('')
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/allqueue')
+        axios.get('http://localhost:5000/allqueue')
         .then((res) => {
             setqueuedata(res.data)
         })
@@ -32,7 +32,7 @@ function Queue_Management()
     function deleteitem(index)
     {
         event.preventDefault()
-        axios.post('http://localhost:5000/api/deletequeue',
+        axios.post('http://localhost:5000/deletequeue',
             {
                 deletequeueno: index
             }
@@ -57,7 +57,7 @@ function Queue_Management()
     {
         console.log(search_time)
         event.preventDefault()
-        axios.post('http://localhost:5000/api/searchqueuetime',
+        axios.post('http://localhost:5000/searchqueuetime',
             {
                 search_time: search_time
             })

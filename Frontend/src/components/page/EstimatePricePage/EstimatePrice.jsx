@@ -27,8 +27,8 @@ function EstimatePrice() {
 
       useEffect(() => {
         axios.all([
-            axios.get('http://localhost:5000/api/getdropdownbrand'),
-            axios.get('http://localhost:5000/api/getdropdownservice')
+            axios.get('http://localhost:5000/getdropdownbrand'),
+            axios.get('http://localhost:5000/getdropdownservice')
             ])
             
             .then((res) => { // i copied this in modal_addprodect,jsx

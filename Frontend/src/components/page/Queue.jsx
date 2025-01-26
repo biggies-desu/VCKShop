@@ -37,7 +37,7 @@ function Queue()
     useEffect(() => {
         //fetch servicetype that avaliable
         console.log(cart)
-        axios.get('http://localhost:5000/api/getdropdownservice')
+        axios.get('http://localhost:5000/getdropdownservice')
             .then((res) => {
                 setservicedropdown(res.data)
                 prevdetail()
@@ -118,7 +118,7 @@ function Queue()
         const lastname = namearray[1]
 
         //send data to db
-        axios.post('http://localhost:5000/api/addqueue', 
+        axios.post('http://localhost:5000/addqueue', 
             {
                 fullname: fullName,
                 firstname: firstname,

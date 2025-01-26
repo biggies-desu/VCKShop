@@ -8,7 +8,7 @@ function Queue_History({setishistorymodal})
     const [queuedata, setqueuedata] = useState([])
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/queuehistory')
+        axios.get('http://localhost:5000/queuehistory')
         .then((res) => {
             console.log(res.data)
             setqueuedata(res.data)
