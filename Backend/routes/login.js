@@ -17,6 +17,15 @@ const queryAsync = (sql, params) => {
       });
     });
 };
+
+//todo, create table if not exist
+router.get('/user',(req,res) => {
+  const sqlcommand = "SELECT * FROM user"
+  db.query(sqlcommand,(err,data) => {
+    if(err)     return res.json(err);
+    return res.json(data)
+  })
+})
   
 router.post('/register', async (req, res) =>
   {

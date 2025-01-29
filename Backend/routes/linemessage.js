@@ -2,12 +2,14 @@ const express = require('express');
 const db = require('../db')
 const cron = require('node-cron');
 const request = require('request')
+const axios = require('axios')
 const router = express.Router();
 
 require('dotenv').config();
 
 const LINE_USERID = process.env.LINE_USERID
 const LINE_ACCESSTOKEN = process.env.LINE_ACCESSTOKEN
+
 
 router.post('/linemessage',(req,res) =>
     {
@@ -28,19 +30,18 @@ router.post('/linemessage',(req,res) =>
             }
         ]
     })
-      //post to line api
-      request.post({
-        url: 'https://api.line.me/v2/bot/message/broadcast',
-        headers: headers,
-        body: body
-      }, (err, res, body) => {
-        console.log(res)
-      })
-    })
+    request.post({
+      url: 'https://api.line.me/v2/bot/message/broadcast',
+      headers: headers,
+      body: body
+    }, (err, res, body) => {
+      console.log(res)
+  })
+})
     //using cron to schedule call line api
     //[min] [hour] [day of month] [month] [day of week]
-    cron.schedule('0 */3 * * *', () => { //every 10 mins
-      const message = new Date().toLocaleString('th-TH')
+cron.schedule('0 */3 * * *', () => { // notify every 3 hours
+    const message = new Date().toLocaleString('th-TH')
       request.post(
         {
           url: 'http://localhost:5000/linemessage',
@@ -54,6 +55,6 @@ router.post('/linemessage',(req,res) =>
           }
         }
       );
-    });
+});
 
 module.exports = router
