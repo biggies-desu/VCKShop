@@ -36,14 +36,7 @@ app.use(linemessage)
 app.use(sparepart)
 app.use(upload)
 
-//todo, create table if not exist
-app.get('/user',(req,res) => {
-      const sqlcommand = "SELECT * FROM user"
-      db.query(sqlcommand,(err,data) => {
-        if(err)     return res.json(err);
-        return res.json(data)
-      })
-    })
+
 
 app.listen(5000, () => 
     console.log("Server is running....")

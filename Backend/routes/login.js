@@ -74,7 +74,7 @@ router.post('/login', async (req, res) => {
           }
           else{ //check if its admin account??
             //generate jwt token
-            const token = jsonwebtoken.sign({username: username, role: results[0].User_Role}, JWT_SECRET, { algorithm: 'HS256', expiresIn: '1h' })
+            const token = jsonwebtoken.sign({username: username, role: results[0].User_Role, user_id: results[0].User_ID}, JWT_SECRET, { algorithm: 'HS256', expiresIn: '1h' })
             console.log(token)
             if(results[0].User_Role === 'Customer')
             {

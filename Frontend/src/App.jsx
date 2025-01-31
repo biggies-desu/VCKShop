@@ -3,7 +3,7 @@ import { BrowserRouter, Navigate, Outlet } from 'react-router-dom'
 import './index.css'
 
 import { Routes , Route } from 'react-router-dom'
-
+import Navbar from './components/Navbar.jsx'
 
 import Home from './components/page/Home.jsx'
 import Queue from './components/page/Queue.jsx'
@@ -30,31 +30,53 @@ import Tax from './components/page/AdminPage/Tax.jsx'
 import Notify from './components/page/AdminPage/Notify.jsx'
 import HelpPage from './components/page/AdminPage/HelpPage.jsx'
 
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
+import { useState, useEffect } from 'react'
 
 function App() {
-  const token = localStorage.getItem('token');
-  const Protectroute = ({role}) => {
+  const [user, setUser] = useState(null);
+  useEffect(() => { //check if person login --> if not clear token --> login again
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decodeuser = jwtDecode(token)
+        setUser(decodeuser);
+      } catch (error) {
+        console.error('Invalid token:', error);
+        localStorage.removeItem('token');
+      }
+    }
+  }, []);
+
+  //debug
+  useEffect(() => {
+    if (user) {
+      console.log("User state updated (outside effect):", user); // Logs when state updates
+    }
+  }, [user]);
+
+  const Protectroute = ({ role }) => {
+    const token = localStorage.getItem('token');
     if(token) //if have token, check role
       {
         try {
-          console.log(token)
-          console.log(jwtDecode(token))
           if (role.includes((jwtDecode(token).role)))
           {
-            return <Outlet /> //if role match, render
+            return <Outlet /> //if role match, render component
           }
         }
-        catch (error)
-        {
+        catch {
+          //
           console.error('Invalid token:', error);
-          localStorage.removeItem('token'); // Remove invalid token
+          localStorage.removeItem('token');
         }
       }
-    //if no role match, redirect to login
-    localStorage.removeItem('token')
-    return <Navigate to='/login' replace/>
-  }
+      //no role match redirect to login page
+    localStorage.removeItem('token');
+    return <Navigate to='/login' replace />;
+    }
+  ;
+  
   return (<> 
     <BrowserRouter>
     <Routes>

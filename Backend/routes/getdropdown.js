@@ -67,5 +67,5 @@ router.get('/getdropdowncategory',(req,res) => {
       }
     })
   })
-
+  
 module.exports = router;
