@@ -26,7 +26,7 @@ router.put('/updatesparepart/:id', function (req, res) {
   });
 });
 
-router.delete('/api/deletesparepart/:id', function (req, res) {
+router.delete('/deletesparepart/:id', function (req, res) {
   const sparepartId = req.params.id;
   console.log(req.body)
   const sqlcommand = 'DELETE FROM sparepart WHERE SparePart_ID = ?';

@@ -19,6 +19,7 @@ import Toyota from './components/page/EstimatePricePage/Brand/Toyota.jsx'
 
 import Aboutus from './components/page/Aboutus.jsx'
 import Login from './components/page/Login.jsx'
+import Profile from './components/page/Profile.jsx'
 
 import Admin from './components/page/AdminPage/Admin.jsx'
 import AdminWelcome from './components/page/AdminPage/AdminWelcome.jsx'
@@ -93,6 +94,7 @@ function App() {
 
       <Route element={<Protectroute role={['Customer']} />}>
         <Route path='/queue' element={<Queue/>}/>
+        <Route path='/profile' element={<Profile/>}/>
       </Route>
     
       <Route path='/aboutus' element={<Aboutus/>}/>

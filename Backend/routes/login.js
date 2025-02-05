@@ -30,7 +30,7 @@ router.get('/user',(req,res) => {
 router.post('/register', async (req, res) =>
   {
     try{
-      let {username, password} = req.body
+      let {username, password, email} = req.body
       console.log(req.body)
       if (!username || !password) { //if no username in register input
         return res.status(400).json({ message: 'Username and password are required' });
@@ -45,7 +45,8 @@ router.post('/register', async (req, res) =>
       const passwordhash = await bcrypt.hash(password,10)
       let userdata = {
         User_Username: username,
-        User_Password: passwordhash
+        User_Password: passwordhash,
+        User_Email: email
       }
       console.log(userdata)
       const sqlcommand2 = 'INSERT into user SET ?'
@@ -99,6 +100,22 @@ router.post('/login', async (req, res) => {
       console.log('err', err) 
       res.status(500).json({ message: 'Internal server error', error: err.message });
     }
+})
+
+router.get('/getcurrentprofile/:userid', (req, res) => {
+  const userid = req.params.userid
+  try{
+    const sqlcommand = 'SELECT * FROM user where User_ID = ?'
+    db.query(sqlcommand,[userid], function(err,results){
+      if(err) {res.send(err)}
+      else {res.json(results)}
+    })
+  }
+  catch(err)
+  {
+    console.log('err', err) 
+    res.status(500).json({ message: 'Internal server error', error: err.message });
+  }
 })
 
 module.exports = router;

@@ -5,20 +5,46 @@ import { useState } from "react";
 
 //คิดว่าตอนทำจริงๆน่าจะประมาณนั้ https://www.youtube.com/watch?v=qqL_SA2v6BE&t=965s
 
-function loginfunction()
+
+function Login()
 {
     event.preventDefault()
-    console.log("Clicked login!")
+    const [username, setusername] = useState()
+    const [password, setpassword] = useState()
+    const [emailreg, setemailreg] = useState()
+    const [usernamereg, setusernamereg] = useState()
+    const [passwordreg, setpasswordreg] = useState()
+    const [confirmpasswordreg, setconfirmpasswordreg] = useState()
+
+    const [isRegisterModalOpen, setisRegisterModalOpen] = useState(false)
+    const [isConfirmModalOpen, setisConfirmModalOpen] = useState(false)
+    
+    function openRegisterModal(){
+        setisRegisterModalOpen(true) // open modal
+    }
+    function closeRegisterModel(){
+        setisRegisterModalOpen(false)
+    }
+    function openconfirmmodal(){
+        setisConfirmModalOpen(true)
+    }
+    function closeconfirmmodal(){
+        setisConfirmModalOpen(false)
+        window.location.reload()
+    }
+
+    function loginfunction()
+    {
+    event.preventDefault()
         axios.post('http://localhost:5000/login', //post username/password to login api
         {
-            username: username.value,
-            password: password.value
+            username: username,
+            password: password
         }
         )
-        //todo : auth/cookie stuff
         .then((res) => {
-            //set token to localstroage
-
+            if(res.status === 200)
+            {
             const token = res.data.token
             localStorage.setItem('token', token)
             if(res.data.message === 'Login as Customer')
@@ -28,6 +54,7 @@ function loginfunction()
             if(res.data.message === 'Login as Admin')
             {
                 window.location.replace("/admin");
+            }
             }
         })
         .catch(error=>{
@@ -47,54 +74,77 @@ function loginfunction()
         });
 }
 
-function validateusername(usernamereg){
+function validateusername(){
     const regex = /^.{8,}$/;
     if (!regex.test(usernamereg)){
         document.getElementById("errmsgusernamereg").innerHTML = "Username must contain at least 8 Charachers";
-        console.log("bad username")
         return false
     }
     else{
         document.getElementById("errmsgusernamereg").innerHTML = "";
-        console.log("good username")
         return true
     }
 }
 
-function validatepassword(passwordereg){
+function validatepassword(){
     const regex = /^(?=.*\d).{8,}$/;
-    if (!regex.test(passwordereg)){
+    if (!regex.test(passwordreg)){
         document.getElementById("errmsgpasswordreg").innerHTML = "Must contain at least one number and at least 8 or more characters";
-        console.log("bad password")
+        return false
+    }
+    if (confirmpasswordreg !== passwordreg)
+    {
+        document.getElementById("errmsgpasswordreg").innerHTML = "Password is not match";
         return false
     }
     else{
         document.getElementById("errmsgpasswordreg").innerHTML = "";
-        console.log("good password")
         return true
     }
 }
 
+function validatemail()
+{
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    {
+        if (!regex.test(emailreg)){
+            document.getElementById('erremailreg').innerHTML = "Invalid Email";
+            return false
+        }
+        else
+        {
+            document.getElementById('erremailreg').innerHTML = "";
+            return true
+        }
+    }
+}
+
+
 function registerfunction()
 {
-    
-
     event.preventDefault()
-    const isusernamevalid = validateusername(usernamereg.value)
-    const ispasswordvalid = validatepassword(passwordreg.value)
+    const isusernamevalid = validateusername()
+    const ispasswordvalid = validatepassword()
+    const isemailvalid = validatemail()
 
-    if(!isusernamevalid || !ispasswordvalid)
+    if(!isusernamevalid || !ispasswordvalid || !isemailvalid)
     {
         return; //exit funtion due invalid username or password
     }
 
     axios.post('http://localhost:5000/register',
     {
-        username: usernamereg.value,
-        password: passwordreg.value
+        username: usernamereg,
+        password: passwordreg,
+        email: emailreg
     })
     .then((res) => {
         console.log(res)
+        if(res.status === 200)
+        {
+            openconfirmmodal()
+            setTimeout(() => window.location.reload(), 3000)
+        }
     })
     .catch((err) => {
         console.log(err);
@@ -102,38 +152,10 @@ function registerfunction()
             console.log('Username already exists')
             document.getElementById("errmsgusernamereg").innerHTML = "Username already exists!";
         } else {
-            // Handle unexpected errors
             alert("An unexpected error occurred. Please try again.");
         }
     });
     console.log("Clicked!!!")
-
-    return 
-}
-function Login()
-{
-    event.preventDefault()
-    const [username, setusername] = useState()
-    const [password, setpassword] = useState()
-    const [usernamereg, setusernamereg] = useState()
-    const [passwordreg, setpasswordreg] = useState()
-
-    const [isRegisterModalOpen, setisRegisterModalOpen] = useState(false)
-    const [isConfirmModalOpen, setisConfirmModalOpen] = useState(false)
-    
-    function openRegisterModal(){
-        setisRegisterModalOpen(true) // open modal
-    }
-    function closeRegisterModel(){
-        setisRegisterModalOpen(false)
-    }
-    function openconfirmmodal(){
-        setisConfirmModalOpen(true)
-    }
-
-    function closeconfirmmodal(){
-        setisConfirmModalOpen(false)
-        window.location.reload()
     }
     
     return <>
@@ -170,12 +192,18 @@ function Login()
             <div class='font-bold'>Username</div>
             <input value={usernamereg} type="text" name="usernamereg" title="Must contain at least 8 Charachers" id="usernamereg" placeholder="Username" required pattern="/^.{8,}$/"onChange={e => setusernamereg(e.target.value)} class="p-[0.8vw] w-full flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md" ></input>
             <div class="text-red-600 text-[1vw] mt-3" id="errmsgusernamereg"></div>
+            <div class='font-bold'>Email</div>
+            <input value={emailreg} type="email" name="emailreg" id="email" placeholder="Email" onChange={e => setemailreg(e.target.value)} class="p-[0.8vw] w-full flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md" ></input>
+            <div class="text-red-600 text-[1vw] mt-3" id="erremailreg"></div>
             <div class ='font-bold'>Password</div>
             <input value={passwordreg} type="password" name="passwordreg" title="Must contain at least one number and at least 8 or more characters"id="passwordreg"placeholder="Password" required pattern="^(?=.*\d).{8,}$" onChange={e => setpasswordreg(e.target.value)} class="p-[0.8vw] w-full flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md" ></input>
             <div class="text-red-600 text-[1vw] mt-3" id="errmsgpasswordreg"></div>
+            <div class ='font-bold'>Confirm password</div>
+            <input value={confirmpasswordreg} type="password" name="confirmpasswordreg" title="Confirm password" id="confirmpasswordreg" placeholder="Confirm Password" required pattern="^(?=.*\d).{8,}$" onChange={e => setconfirmpasswordreg(e.target.value)} class="p-[0.8vw] w-full flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md" ></input>
+            
             </div>
             
-            <button onClick={() => {registerfunction(), openconfirmmodal()}} id="register" class="text-center rounded-full bg-green-400 text-[1vw] w-2/5 py-2 px-1 mt-4 ">Register</button>
+            <button onClick={() => {registerfunction()}} id="register" class="text-center rounded-full bg-green-400 text-[1vw] w-2/5 py-2 px-1 mt-4 ">Register</button>
             </div>
         </div>)}
 
