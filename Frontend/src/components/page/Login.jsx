@@ -103,31 +103,13 @@ function validatepassword(){
     }
 }
 
-function validatemail()
-{
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    {
-        if (!regex.test(emailreg)){
-            document.getElementById('erremailreg').innerHTML = "Invalid Email";
-            return false
-        }
-        else
-        {
-            document.getElementById('erremailreg').innerHTML = "";
-            return true
-        }
-    }
-}
-
-
 function registerfunction()
 {
     event.preventDefault()
     const isusernamevalid = validateusername()
     const ispasswordvalid = validatepassword()
-    const isemailvalid = validatemail()
 
-    if(!isusernamevalid || !ispasswordvalid || !isemailvalid)
+    if(!isusernamevalid || !ispasswordvalid)
     {
         return; //exit funtion due invalid username or password
     }
@@ -136,7 +118,6 @@ function registerfunction()
     {
         username: usernamereg,
         password: passwordreg,
-        email: emailreg
     })
     .then((res) => {
         console.log(res)
@@ -192,9 +173,6 @@ function registerfunction()
             <div class='font-bold'>Username</div>
             <input value={usernamereg} type="text" name="usernamereg" title="Must contain at least 8 Charachers" id="usernamereg" placeholder="Username" required pattern="/^.{8,}$/"onChange={e => setusernamereg(e.target.value)} class="p-[0.8vw] w-full flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md" ></input>
             <div class="text-red-600 text-[1vw] mt-3" id="errmsgusernamereg"></div>
-            <div class='font-bold'>Email</div>
-            <input value={emailreg} type="email" name="emailreg" id="email" placeholder="Email" onChange={e => setemailreg(e.target.value)} class="p-[0.8vw] w-full flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md" ></input>
-            <div class="text-red-600 text-[1vw] mt-3" id="erremailreg"></div>
             <div class ='font-bold'>Password</div>
             <input value={passwordreg} type="password" name="passwordreg" title="Must contain at least one number and at least 8 or more characters"id="passwordreg"placeholder="Password" required pattern="^(?=.*\d).{8,}$" onChange={e => setpasswordreg(e.target.value)} class="p-[0.8vw] w-full flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md" ></input>
             <div class="text-red-600 text-[1vw] mt-3" id="errmsgpasswordreg"></div>

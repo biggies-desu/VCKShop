@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../Navbar.jsx"
 import Footer from "../Footer.jsx"
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 import { useLocation } from "react-router-dom";
 
 function Queue()
@@ -37,6 +38,7 @@ function Queue()
     useEffect(() => {
         //fetch servicetype that avaliable
         console.log(cart)
+        fetchuserdata()
         axios.get('http://localhost:5000/getdropdownservice')
             .then((res) => {
                 setservicedropdown(res.data)
@@ -46,6 +48,7 @@ function Queue()
                 console.log(err);
               });
         ;} ,[]);
+
 
     const handleSubmit = (e) => {
         e.preventDefault(); // ป้องกันการรีเฟรชหน้า
@@ -146,6 +149,23 @@ function Queue()
     {
         //also redirecting to somewhere?
         closeConfirmedModal();
+    }
+
+    function fetchuserdata(){
+        const token = localStorage.getItem('token')
+        const userid = jwtDecode(token).user_id
+
+        axios.get(`http://localhost:5000/getcurrentprofile/${userid}`)
+        .then((res) => {
+            if(res.status === 200)
+            {
+                const data = res.data[0]
+                console.log(data)
+                setFullName(`${data.User_Firstname} ${data.User_Lastname}`);
+                setEmail(data.User_Email)
+                setPhoneNumber(data.User_Telephone)
+            }
+        })
     }
 
     return <>

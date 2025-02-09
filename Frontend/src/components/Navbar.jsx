@@ -26,14 +26,11 @@ function Navbar() {
     return <>
     <nav className="bg-gray-800">
     <div className="max-w-screen-xl mx-auto flex items-center justify-between px-4 py-4">
-        {/* Left Section: Logo */}
         <div id="logo" className="flex items-center">
             <NavLink to="/" className="flex items-center">
                 <img src="images/LogoNavbar.png" className="h-8 mr-2" alt="Logo" />
             </NavLink>
         </div>
-
-        {/* Right Section: Navigation Links */}
         <div className="flex space-x-8">
             <NavLink
                 to="/"

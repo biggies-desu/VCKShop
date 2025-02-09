@@ -30,7 +30,7 @@ router.get('/user',(req,res) => {
 router.post('/register', async (req, res) =>
   {
     try{
-      let {username, password, email} = req.body
+      let {username, password} = req.body
       console.log(req.body)
       if (!username || !password) { //if no username in register input
         return res.status(400).json({ message: 'Username and password are required' });
@@ -46,7 +46,6 @@ router.post('/register', async (req, res) =>
       let userdata = {
         User_Username: username,
         User_Password: passwordhash,
-        User_Email: email
       }
       console.log(userdata)
       const sqlcommand2 = 'INSERT into user SET ?'
@@ -114,6 +113,34 @@ router.get('/getcurrentprofile/:userid', (req, res) => {
   catch(err)
   {
     console.log('err', err) 
+    res.status(500).json({ message: 'Internal server error', error: err.message });
+  }
+})
+
+router.put('/updateprofile/:userid',(req,res) =>
+{
+  const userid = req.params.userid
+  let firstname = req.body.firstname
+  let lastname = req.body.lastname
+  let email = req.body.email
+  let telephone = req.body.telephone
+  console.log(req.body)
+  
+  try{
+    const sqlcommand = 'UPDATE user SET User_Firstname = ?, User_Lastname = ?, User_Email = ?, User_Telephone = ? WHERE User_ID = ?'
+    db.query(sqlcommand,[firstname,lastname,email,telephone,userid], function(err, results)
+    {
+      if (err){
+        res.send(err)
+      }
+      else{
+        res.json(results)
+      }
+    })
+  }
+  catch(err)
+  {
+    console.log('err',err)
     res.status(500).json({ message: 'Internal server error', error: err.message });
   }
 })
