@@ -38,14 +38,38 @@ router.post('/linemessage',(req,res) =>
       console.log(res)
   })
 })
+
+router.get('/getnotifyitem', (req,res) => {
+  const sqlcommand = `SELECT SparePart_Name,SparePart_Amount from sparepart where SparePart_Notify = 'true'`
+  db.query(sqlcommand,(err,results) =>
+{
+  if(err)
+  {
+    res.send(err)
+  }
+  else {
+    res.json(results)
+  }
+})
+})
     //using cron to schedule call line api
     //[min] [hour] [day of month] [month] [day of week]
-cron.schedule('0 */3 * * *', () => { // notify every 3 hours
-    const message = new Date().toLocaleString('th-TH')
+cron.schedule('0 */3 * * *', async () => { // notify every 3 hours
+  try{
+    const timestamp = new Date().toLocaleString('th-TH') //create timestamp
+    const getnotifyitemapi = await axios.get('http://localhost:5000/getnotifyitem');
+    const data = getnotifyitemapi.data
+    
+    //loop over data -> formatdata
+    const formatdata = data.map(item => {
+      return `- ${item.SparePart_Name} คงเหลือ ${item.SparePart_Amount} ชิ้น`
+    }).join(`\n`)
+
+    const message = `แจ้งเตือนอะไหล่คงเหลือ\nเวลา : ${timestamp}\n${formatdata}`
       request.post(
         {
           url: 'http://localhost:5000/linemessage',
-          json: { message: message }, //sent message to api/linemessage1
+          json: { message: message }, //sent message to api/linemessage
         },
         (err, response, body) => {
           if (err) {
@@ -55,6 +79,12 @@ cron.schedule('0 */3 * * *', () => { // notify every 3 hours
           }
         }
       );
+
+  }
+  catch(err)
+  {
+    console.log(err)
+  }
 });
 
 module.exports = router

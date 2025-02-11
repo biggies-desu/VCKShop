@@ -18,7 +18,7 @@ function Modal_Addproduct({setisaddproductmodal})
 
     const [productdescription, setproductdescription] = useState()
     const [productimage, setproductimage] = useState(null);
-
+    const [notify, setnotify] = useState(false)
 
     const [dropdowncategory, setdropdowncategory] = useState([])
     const [dropdownbrand, setdropdownbrand] = useState([])
@@ -104,6 +104,7 @@ function Modal_Addproduct({setisaddproductmodal})
         formData.append('productmodel', productmodel);
         formData.append('productyear', productyear);
         formData.append('productdescription', productdescription);
+        formData.append('notify', notify)
     
         if (productimage) {
             formData.append('productimage', productimage);
@@ -218,6 +219,13 @@ function Modal_Addproduct({setisaddproductmodal})
                     </option>
                     ))}
                 </select>
+            </div>
+        </div>
+        
+        <div class='flex flex-row mx-4 space-x-2 py-2'>
+            <div class='flex text-[1.2vw] px-2 '>
+                <input checked={notify} type="checkbox" id="notify" onChange={e => {setnotify(e.target.checked); console.log(notify)}} placeholder="แจ้งเตือนผ่านไลน์" />
+                <div class='px-2'>แจ้งเตือนผ่านไลน์</div>
             </div>
         </div>
 
