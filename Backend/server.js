@@ -15,6 +15,8 @@ const getdropdown = require('./routes/getdropdown')
 const linemessage = require('./routes/linemessage')
 const sparepart = require('./routes/sparepart')
 const upload = require('./routes/upload')
+const warehouse_log = require('./routes/warehouselog')
+
 
 app.use(express.json())
 app.use(bodyParser())
@@ -35,6 +37,7 @@ app.use(getdropdown)
 app.use(linemessage)
 app.use(sparepart)
 app.use(upload)
+app.use(warehouse_log)
 
 
 app.listen(5000, () => 

@@ -10,20 +10,27 @@ import { useNavigate } from "react-router-dom";
 function EstimatePrice() {
     const [brand, setBrand] = useState("");
     const [service, setService] = useState("");
-
+    const [selectedServices, setSelectedServices] = useState([]);
     const [dropdownservice, setdropdownservice] = useState([])
     const [dropdownbrand, setdropdownbrand] = useState([])
 
     const location = useLocation();
     const { state } = location || {};
     const cart = state?.cart || []; // รับข้อมูล Array ที่ส่งมา
-    const totalPrice = cart.reduce((sum, item) => sum + item.SparePart_Price, 0);
+    const totalPrice = [...cart, ...selectedServices].reduce((sum, item) => sum + (item.SparePart_Price || 0) + (item.Service_Price || 0),0);
+
 
     const navigate = useNavigate();
 
     const handleAddService = () => {
-        setService(""),setBrand("");
-      }
+        if (service) {
+            const selectedServiceUser = dropdownservice.find(item => item.Service_Name === service);
+            if (selectedServiceUser) {
+                setSelectedServices([...selectedServices, selectedServiceUser]);
+                setService("");
+            }
+        }
+    };
 
       useEffect(() => {
         axios.all([
@@ -31,7 +38,7 @@ function EstimatePrice() {
             axios.get('http://localhost:5000/getdropdownservice')
             ])
             
-            .then((res) => { // i copied this in modal_addprodect,jsx
+            .then((res) => {
                 setdropdownbrand(res[0].data)
                 setdropdownservice(res[1].data)
             })
@@ -60,31 +67,44 @@ function EstimatePrice() {
                 return "/EstimatePrice";
         }
     };
-
-    function Cart()  {
-        if (cart.length > 0) {
+    
+    function Cart() {
+        useEffect(() => {
+            if (cart.length > 0 && dropdownservice.length > 0) {
+                const selectedService = dropdownservice[0];
+                setSelectedServices(prevSelectedServices => [...prevSelectedServices, selectedService]);
+            }
+        }, [cart, dropdownservice]);
+    
+        if (cart.length > 0 || selectedServices.length > 0) {
             return (
-            <div className="">
-                {cart.map((item, index) => (
-                        <div key={index} class='flex flex-row justify-between'>
-                            <p className="text-start text-xl">{index+1}. {item.SparePart_Name}</p>
+                <div>
+                    {cart.map((item, index) => (
+                        <div key={index} className='flex flex-row justify-between'>
+                            <p className="text-start text-xl">{index + 1}. {item.SparePart_Name}</p>
                             <p className="text-end text-xl">{item.SparePart_Price} บาท</p>
                         </div>
-                ))}
-                <div class="flex flex-col py-4">
-                    <p class="text-end text-gray-600">ราคารวมทั้งหมด:</p>
-                    <p class="text-end text-2xl font-bold text-blue-600">{totalPrice} บาท</p>
+                    ))}
+                    {selectedServices.map((item, index) => (
+                        <div key={index} className="flex flex-row justify-between">
+                            <p className="text-start text-xl">{cart.length + index + 1}. {item.Service_Name}</p>
+                            <p className="text-end text-xl">{item.Service_Price} บาท</p>
+                        </div>
+                    ))}
+                    <div className="flex flex-col py-4">
+                        <p className="text-end text-gray-600">ราคารวมทั้งหมด:</p>
+                        <p className="text-end text-2xl font-bold text-blue-600">{totalPrice} บาท</p>
+                    </div>
                 </div>
-            </div>
-        );
+            );
         } else {
-            <p>ไม่มีข้อมูลอะไหล่</p>
+            return <p>ไม่มีข้อมูลอะไหล่</p>;
         }
     }
 
     const Navigatetoqueue = () => {
-        navigate('/queue',{state: {cart}})
-    }
+        navigate('/queue', { state: { cart, selectedServices } });
+    };    
 
     return <>
     <Navbar />
@@ -96,10 +116,8 @@ function EstimatePrice() {
             <div className="flex space-x-4">
                 <select id="brand" value={brand} type="text"  onChange={e => {setBrand(e.target.value)}} class="block w-full p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="ยี่ห้อ">
                 <option selected value='' disabled>เลือกยี่ห้อ</option>
-                    {dropdownbrand && dropdownbrand.length > 0 && dropdownbrand.map((item, index) => (
-                    <option key={index} value={item.SparePart_Brand_Name}>
-                    {item.SparePart_Brand_Name}
-                    </option>
+                    {dropdownbrand.map((item, index) => (
+                        <option key={index} value={item.SparePart_Brand_Name}>{item.SparePart_Brand_Name}</option>
                     ))}
                 </select>
                 <Link to={getPagePath()}>
@@ -117,10 +135,8 @@ function EstimatePrice() {
             <div className="flex space-x-2">
                 <select id="service" value={service} type="text" onChange={e =>  setService(e.target.value)} class="block w-full p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="รุ่น">
                 <option selected value='' disabled>เลือกบริการ</option>
-                    {dropdownservice && dropdownservice.length > 0 && dropdownservice.map((item, index) => (
-                    <option key={index} value={item.Service_Name}>
-                    {item.Service_Name}
-                    </option>
+                    {dropdownservice.map((item, index) => (
+                        <option key={index} value={item.Service_Name}>{item.Service_Name}</option> //คิดอยู่จะใช้ดีไหม dropdownservice.slice(1)
                     ))}
                 </select>
                 <button className="bg-gray-500 text-white px-4 py-2 rounded" onClick={handleAddService} >เพิ่มเข้ารายการ</button>

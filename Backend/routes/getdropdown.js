@@ -55,7 +55,7 @@ router.get('/getdropdowncategory',(req,res) => {
   })
   
   router.get('/getdropdownservice', function(req,res)
-  { const sqlcommand = `SELECT Service_Name from service`
+  { const sqlcommand = `SELECT * from service`
     db.query(sqlcommand,(err,data) => {
       if(err)
       {

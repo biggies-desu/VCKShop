@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../Navbar.jsx"
 import Footer from "../Footer.jsx"
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 import { useLocation } from "react-router-dom";
 
 function Queue()
@@ -12,19 +11,20 @@ function Queue()
     const [email, setEmail] = useState('');
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
+    const [CarRegistration, setCarRegistration] = useState('');
     const [errorFullName, setErrorFullName] = useState('');
     const [errorPhoneNumber, setErrorPhoneNumber] = useState('');
     const [errorEmail, setErrorEmail] = useState('');
     const [errorDate, setErrorDate] = useState('');
     const [errorTime, setErrorTime] = useState('');
+    const [errorCarRegistration, setErrorCarRegistration] = useState('');
     const [isModalOpen, setIsModalOpen] = useState('');
     const [serviceType, setServiceType] = useState('');
     const [details, setDetails] = useState(``);
     const [userID, setuserID] = useState('');
-
-
+    const [disabledTimes, setDisabledTimes] = useState([]);
     const [servicedropdown, setservicedropdown] = useState([])
-    
+
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
     const [isModalConfirmedOpen, setisModalConfirmOpen] = useState(false); //init ว่าลงผ่านยัง
@@ -32,26 +32,78 @@ function Queue()
     const closeConfirmedModal = () => setisModalConfirmOpen(false)
 
     const location = useLocation();
-    const { state } = location || {};
-    const cart = state?.cart || []; // รับข้อมูลสินค้าที่จอง
+    const { cart, selectedServices } = location.state || { cart: [], selectedServices: [] };
+
+    const handleDateChange = (selectedDate) => {
+        setDate(selectedDate);  // กำหนดวันที่ใหม่
+        setTime("");    // รีเซ็ตเวลาเมื่อเลือกวันใหม่
+    };
+
+    const handleTimeChange = (selectedTime) => {
+        setTime(selectedTime);
+    
+        // ตรวจสอบวันที่และเวลาที่เลือก
+        if (date && selectedTime) {
+            axios.post("http://localhost:5000/checkQueue", { date, time: selectedTime })
+                .then((res) => {
+                    const { queueCount, isFull } = res.data;
+                    // ถ้าเวลานั้นเต็มหรือจองมากกว่า 3 คน จะทำให้เวลานั้นไม่สามารถเลือกได้
+                    if (isFull || queueCount >= 3) {
+                        setDisabledTimes(prevDisabledTimes => [...prevDisabledTimes, selectedTime]);
+                    } else {
+                        // หากเวลานั้นไม่เต็มแล้ว ให้ลบออกจาก disabledTimes
+                        setDisabledTimes(prevDisabledTimes => prevDisabledTimes.filter(time => time !== selectedTime));
+                    }
+                    console.log(disabledTimes)
+                })
+                .catch((err) => console.log(err));
+        }
+    };
 
     useEffect(() => {
         //fetch servicetype that avaliable
-        console.log(cart)
-        fetchuserdata()
         axios.get('http://localhost:5000/getdropdownservice')
             .then((res) => {
                 setservicedropdown(res.data)
                 prevdetail()
-            })
-            .catch((err) => {
-                console.log(err);
-              });
-        ;} ,[]);
 
+                // ตั้งค่าเริ่มต้นให้ serviceType เป็นตัวเลือกแรกสุด
+                if (res.data.length > 0) {
+                    setServiceType(res.data[0].Service_Name);
+                }
+            })
+            .catch((err) => console.log(err))
+            
+        if (date) {
+            axios.post("http://localhost:5000/checkQueue", { date })
+                .then((res) => {
+                    const bookedTimes = res.data; 
+                    const disabled = [];
+        
+                    // ตรวจสอบว่าเวลาที่เต็มมีหรือไม่
+                    for (const time in bookedTimes) {
+                        if (bookedTimes[time] >= 3) {
+                            disabled.push(time);
+                        }
+                    }
+                    setDisabledTimes(disabled);
+                    console.log(disabledTimes)
+                })
+                .catch((err) => console.log(err));
+            }
+        }, [date]);
+    
 
     const handleSubmit = (e) => {
         e.preventDefault(); // ป้องกันการรีเฟรชหน้า
+
+        if (disabledTimes.includes(time)) {
+            setErrorTime("เวลานี้เต็มแล้ว กรุณาเลือกเวลาอื่น");
+            return;
+        }
+        console.log(date)
+        console.log(time)
+        
 
         if (!fullName) {
             setErrorFullName("กรุณากรอกชื่อ-นามสกุล");
@@ -65,20 +117,15 @@ function Queue()
             setErrorPhoneNumber('');
         }
 
-        if (!email) {
-            setErrorEmail("กรุณากรอกอีเมล");
-        } else if (email) {
-            setErrorEmail('');
-        }
+        // if (!email) {
+        //     setErrorEmail("กรุณากรอกอีเมล");
+        // } else if (email) {
+        //     setErrorEmail('');
+        // }
         
         if (!date) {
             setErrorDate("กรุณากรอกวันที่จอง");
-        } //else if (date) //ก่อนหน้า 
-        //{
-        //    //condition ดัก ไม่ให้ใส่วันก่อน
-        // }
-        else if (date)
-        {
+        } else if (date) {
             setErrorDate('');
         }
 
@@ -88,31 +135,26 @@ function Queue()
             setErrorTime('');
         }
 
+        if (!CarRegistration) {
+            setErrorCarRegistration("กรุณากรอกเลขทะเบียนรถ");
+        } else if (CarRegistration) {
+            setErrorCarRegistration('');
+        }
+
         // ตรวจสอบว่าไม่มีข้อผิดพลาดในฟิลด์ทั้งหมดหรือไม่
-        if (fullName && phoneNumber && email && date && time) {
+        if (fullName && phoneNumber && date && time && CarRegistration) {
             openModal();
         }
     };
 
-    function prevdetail()
-    {
-        for(let i=0;i<cart.length;i++)
-        {
-            document.getElementById("detailed").innerHTML += cart[i].SparePart_Name+"\n"
-        }
+    function prevdetail() {
+        let details = [...cart.map(item => item.SparePart_Name),...selectedServices.map(service => service.Service_Name)].join("\n").trim();
+        setDetails(details.replace(/\n\s*\n/g, '\n'));  // แก้ไขช่องว่างระหว่างบรรทัด
     }
 
     function submitqueue()
     {
         event.preventDefault()
-        // console.log(fullName)
-        // console.log(phoneNumber)
-        // console.log(email)
-        // console.log(date)
-        // console.log(time)
-        // console.log(serviceType)
-        // console.log(details)
-        //มันควรมี modal อะไรสักอย่าง confirm ว่าจองสำเร็จแล้ว
         closeModal();
 
         //split fullname to first+last
@@ -130,6 +172,7 @@ function Queue()
                 email: email,
                 date: date,
                 time: time,
+                CarRegistration: CarRegistration,
                 serviceType: serviceType,
                 details: details,
                 userID: userID
@@ -145,57 +188,35 @@ function Queue()
         openConfirmedModal();
     }
 
-    function closeconfirmnoti()
+    function closeconfirmmodal()
     {
-        //also redirecting to somewhere?
         closeConfirmedModal();
-    }
-
-    function fetchuserdata(){
-        const token = localStorage.getItem('token')
-        const userid = jwtDecode(token).user_id
-
-        axios.get(`http://localhost:5000/getcurrentprofile/${userid}`)
-        .then((res) => {
-            if(res.status === 200)
-            {
-                const data = res.data[0]
-                console.log(data)
-                setFullName(`${data.User_Firstname} ${data.User_Lastname}`);
-                setEmail(data.User_Email)
-                setPhoneNumber(data.User_Telephone)
-            }
-        })
+        window.location.reload();
     }
 
     return <>
     <Navbar />
-    <div class="bg-gray-100 p-6 shadow-md mx-auto w-full">
-    <h1 class="text-3xl font-semibold text-center">เครื่องมือสำหรับการจองเข้าใช้บริการอู่</h1>
+    <div className="bg-gray-100 p-6 shadow-md mx-auto w-full">
+    <h1 className="text-3xl font-semibold text-center">เครื่องมือสำหรับการจองเข้าใช้บริการอู่</h1>
 
-    <div class="flex">
-        <div class="w-1/3 p-6">
-            <h2 class="text-lg font-semibold mb-4">ระบุวันที่ต้องการจอง</h2>
-            <label class="block text-gray-700 mb-2" for="date"> วันที่จอง </label>
-            <input class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date" type="date" required onChange={(e) => setDate(e.target.value)}></input>
+    <div className="flex">
+        <div className="w-1/3 p-6">
+            <h2 className="text-lg font-semibold mb-4">ระบุวันที่ต้องการจอง</h2>
+            <label className="block text-gray-700 mb-2" for="date"> วันที่จอง </label>
+            <input className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date" type="date" min={new Date().toISOString().split("T")[0]} onChange={(e) => handleDateChange(e.target.value)}></input>
             {errorDate && <p className="text-red-500 text-sm mt-2">{errorDate}</p>}
         </div>
 
-        <div class="w-2/3  p-6">
-            <h2 class="text-lg font-semibold mb-4">ระบุเวลาที่ต้องการจอง</h2>
-            <label class="block text-gray-700 mb-2" for="time"> เวลา </label>
-            <select id="time" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" onChange={(e) => setTime(e.target.value)}>
+        <div className="w-2/3  p-6">
+            <h2 className="text-lg font-semibold mb-4">ระบุเวลาที่ต้องการจอง</h2>
+            <label className="block text-gray-700 mb-2" for="time"> เวลา </label>
+            <select id="time" className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={time} onChange={(e) => handleTimeChange(e.target.value)}>
                 <option value="" disabled selected>--:--</option>
-                <option value="09:00">09:00</option>
-                <option value="10:00">10:00</option>
-                <option value="11:00">11:00</option>
-                <option value="12:00">12:00</option>
-                <option value="13:00">13:00</option>
-                <option value="14:00">14:00</option>
-                <option value="15:00">15:00</option>
-                <option value="16:00">16:00</option>
-                <option value="17:00">17:00</option>
-                <option value="18:00">18:00</option>
+                {["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"].map(timeSlot => (
+                    <option key={timeSlot} value={timeSlot} disabled={disabledTimes.includes(timeSlot)}>
+                        {timeSlot} {disabledTimes.includes(timeSlot) ? "(ถูกจองเต็มแล้ว)" : ""}
+                    </option>
+                ))}
             </select>
             {errorTime && <p className="text-red-500 text-sm mt-2">{errorTime}</p>}
         </div>
@@ -208,7 +229,7 @@ function Queue()
                 <div class="flex space-x-4">
                     <div class="w-1/2">
                         <label class="block">ชื่อ-นามสกุล <span class="text-red-500">*</span></label>
-                        <input type="text" class="w-full border border-gray-300 p-2 rounded" placeholder="ชื่อ-นามสกุล" value={fullName} onChange={(e) => setFullName(e.target.value)}></input>
+                        <input type="FullName" class="w-full border border-gray-300 p-2 rounded" placeholder="ชื่อ-นามสกุล" value={fullName} onChange={(e) => setFullName(e.target.value)}></input>
                         {errorFullName && <p className="text-red-500 text-sm mt-2">{errorFullName}</p>}
                     </div>
                     <div class="w-1/2">
@@ -224,13 +245,17 @@ function Queue()
                     </div>
                 </div>
                 <div class="flex space-x-4">
-                    <div class="w-1/2">
-                        <label class="block text-sm font-normal">อีเมล <span class="text-red-500">*</span></label>
+                    <div class="w-1/3">
+                        <label class="block text-sm font-normal">อีเมล <span class="text-red-500 text-xs">(ไม่บังคับ)</span></label>
                         <input type="email" class="w-full border border-gray-300 p-2 rounded" placeholder="อีเมล" value={email} onChange={(e) => setEmail(e.target.value)}></input>
-                        {errorEmail && <p className="text-red-500 text-sm mt-2">{errorEmail}</p>}
                     </div>
-                    <div className="w-1/2">
-                        <label className="block text-sm font-normal">ประเภทการบริการ</label>
+                    <div class="w-1/3">
+                        <label class="block text-sm font-normal">เลขทะเบียนรถ <span class="text-red-500 text-xs">*</span></label>
+                        <input type="CarRegistration" class="w-full border border-gray-300 p-2 rounded" placeholder="เลขทะเบียนรถ" value={CarRegistration} onChange={(e) => setCarRegistration(e.target.value)}></input>
+                        {errorCarRegistration && <p className="text-red-500 text-sm mt-2">{errorCarRegistration}</p>}
+                    </div>
+                    <div className="w-1/3">
+                        <label className="block text-sm font-normal">ประเภทการบริการ <span class="text-red-500">*</span></label>
                         <select className="w-full border border-gray-300 p-2 rounded" value={serviceType} onChange={e => setServiceType(e.target.value)}>
                         {servicedropdown && servicedropdown.length > 0 && servicedropdown.map((item, index) => (
                             <option key={index} value={item.Service_Name}>
@@ -241,12 +266,8 @@ function Queue()
                     </div>
                 </div>
                 <div>
-                    {
-                        //ตรงนี้ต้องpassค่าจากหน้าเลือกอะไหล่มา later db ยังก้งอยู่ 11/11/2024
-                    }
                     <label className="block text-sm font-normal">รายละเอียด</label>
-                        <textarea type="text" id="detailed" class="w-full border border-gray-300 p-2 min-h-10 rounded" rows="4"
-                    onChange={(e) => setDetails(e.target.value)}/>
+                    <textarea type="text" id="detailed" class="w-full border border-gray-300 p-2 min-h-10 rounded" rows="4" value={details} onChange={(e) => setDetails(e.target.value)}/>
                 </div>
                     <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">ยืนยันการจอง</button>
             </form>
@@ -260,10 +281,11 @@ function Queue()
                 <div className="bg-gray-100 p-4 rounded-lg shadow-md text-left mb-4">
                     <p className="text-gray-700 mb-2"><strong>ชื่อ-นามสกุล:</strong> {fullName}</p>
                     <p className="text-gray-700 mb-2"><strong>เบอร์โทรศัพท์:</strong> {phoneNumber}</p>
-                    <p className="text-gray-700 mb-2"><strong>อีเมล:</strong> {email}</p>
+                    <p className="text-gray-700 mb-2"><strong>อีเมล:</strong> {email ? email : "-"}</p>
                     <p className="text-gray-700 mb-2"><strong>วันที่จอง:</strong> {date}</p>
                     <p className="text-gray-700 mb-2"><strong>เวลาที่จอง:</strong> {time}</p>
                     <p className="text-gray-700 mb-2"><strong>ประเภทการบริการ:</strong> {serviceType}</p>
+                    <p className="text-gray-700 mb-2"><strong>เลขทะเบียนรถ:</strong> {CarRegistration}</p>
                     <p className="text-gray-700"><strong>รายละเอียด:</strong> {details}</p>
                 </div>
                 <button onClick={closeModal} className="text-black font-medium rounded-lg text-base px-4 py-2 mt-4 mr-16">ยกเลิก</button>
@@ -288,7 +310,7 @@ function Queue()
                     <h4 class="text-[2vw] text-gray-800 font-semibold mt-4">จองคิวเสร็จสิ้น!!</h4>
                     <p class="text-sm text-gray-500 leading-relaxed mt-4 px-2">ลูกค้าสามารถเข้าใช้บริการในวันเวลาที่ทำการจองไว้</p>
                     <div class='justify-center item-center'>
-                        <button type="button" onClick={() => closeconfirmnoti()} class="text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 font-medium rounded-lg text-base px-4 py-2 mt-4">ตกลง</button>
+                        <button type="button" onClick={() => closeconfirmmodal()} class="text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 font-medium rounded-lg text-base px-4 py-2 mt-4">ตกลง</button>
                     </div>
                 </div>
             </div>

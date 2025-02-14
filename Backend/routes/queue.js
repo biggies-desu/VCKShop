@@ -4,32 +4,46 @@ const cron = require('node-cron');
 const request = require('request')
 const router = express.Router();
 
-router.post('/addqueue', function (req,res) {
-  let fullName = req.body.fullname
+// ตรวจสอบจำนวนคิวที่จองไว้ในวันและเวลานั้น
+router.post('/checkQueue', function (req, res) {
+  let date = req.body.date;
+  let time = req.body.time;
 
+  const sqlcommand = `SELECT COUNT(*) AS queueCount FROM booking WHERE Booking_Date = ? AND Booking_Time = ?`;
+  db.query(sqlcommand, [date, time], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ error: "เกิดข้อผิดพลาดภายในระบบ" });
+    }
+    const queueCount = results[0].queueCount;
+    res.json({ queueCount, isFull: queueCount >= 3 });
+  });
+});
+
+router.post('/addqueue', function (req,res) {
   let firstName = req.body.firstname
   let lastName = req.body.lastname
   let phoneNumber = req.body.phoneNumber
   let email = req.body.email
-
+  let CarRegistration = req.body.CarRegistration
   let date = req.body.date
   let time = req.body.time
   let serviceType = req.body.serviceType
   let details = req.body.details
   let userID = req.body.userID || null //gonna check this again when login cookie/session are done
   console.log(req.body)
+
   //insert to booking table
-  const sqlcommand1 = `INSERT INTO booking (Booking_Date,	Booking_Time,	Booking_FirstName, Booking_LastName, User_ID, Booking_Description, Service_ID)
-                      VALUES (?,?,?,?,?,?,
+  const sqlcommand1 = `INSERT INTO booking (Booking_Date,	Booking_Time,	Booking_FirstName, Booking_LastName, User_ID, Booking_Description, Booking_CarRegistration, Service_ID)
+                      VALUES (?,?,?,?,?,?,?,
                       (SELECT Service_ID FROM service WHERE Service_Name = ?)
                       )`
-      db.query(sqlcommand1,[date,time,firstName,lastName,userID,details,serviceType],(err,data1) => {
+      db.query(sqlcommand1,[date,time,firstName,lastName,userID,details,CarRegistration,serviceType],(err,data1) => {
         if(err)
         {
           return res.json(err)
         }
-        //res.json(data1)
-        //console.log(data1)
+        
         //detail service type into queue
         const insertid = data1.insertId
         const sqlcommand2 = `INSERT INTO queue (Booking_ID, Queue_Status)
@@ -50,9 +64,10 @@ router.post('/addqueue', function (req,res) {
 
 router.get('/allqueue', function (req,res){
   const sqlcommand = `Select * from booking b
-        INNER JOIN queue q WHERE b.Booking_ID = q.Booking_ID
+        INNER JOIN queue q ON b.Booking_ID = q.Booking_ID
+        JOIN service s ON b.Service_ID = s.Service_ID
         AND q.Queue_Status = 'ยังไม่เสร็จสิ้น'
-        ORDER BY DATE(b.Booking_Date), b.Booking_Time DESC`
+        ORDER BY DATE(b.Booking_Date) ASC, b.Booking_Time ASC`
   db.query(sqlcommand,function(err,results)
 {
   if(err)
@@ -67,7 +82,8 @@ router.get('/allqueue', function (req,res){
 })
 router.get('/queuehistory', function (req,res){
   const sqlcommand = `Select * from booking b
-        INNER JOIN queue q WHERE b.Booking_ID = q.Booking_ID
+        INNER JOIN queue q ON b.Booking_ID = q.Booking_ID
+        JOIN service s ON b.Service_ID = s.Service_ID
         ORDER BY DATE(b.Booking_Date), b.Booking_Time DESC`
   db.query(sqlcommand,function(err,results)
 {

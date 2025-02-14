@@ -55,11 +55,27 @@ router.post('/addproduct', upload.single('productimage'), (req, res) => {
        productcatagory
     ], (err, results) => {
       if (err) {
-          console.error(err);
-          return res.status(500).json({ error: 'Database error' });
+        console.error(err);
+        return res.status(500).json({ error: 'Database error' });
       }
-      res.json({ success: true, results });
-    });
+    //put it do log
+    const sparepartID = results.insertId;
+    const wltime = new Date().toLocaleString('th-TH')
+    const wlaction = 'เพิ่มสินค้า'
+    const wldescription = `เพิ่มสินค้า : ${productname} จำนวน ${productamount} ชิ้น`
+    const puttologtablesql = `INSERT INTO warehouse_log (SparePart_ID, WL_Action, WL_Time, WL_Description)
+                              VALUES (?,?,?,?)`
+
+    db.query(puttologtablesql, [sparepartID,wlaction,wltime,wldescription], (err,results) =>
+    {
+      if(err)
+      {
+        console.error(err)
+        return res.status(500).json({ error: 'Database error' });
+      }
+    })
+    res.json({ success: true, results });
   });
+});
 
 module.exports = router;

@@ -27,6 +27,7 @@ import Dashboard from './components/page/AdminPage/Dashboard.jsx'
 import Account from './components/page/AdminPage/Account.jsx'
 import Queue_Management from './components/page/AdminPage/Queue_Management.jsx'
 import Warehouse from './components/page/AdminPage/Warehouse.jsx'
+import Warehouse_History from './components/page/AdminPage/Warehouse_History.jsx'
 import Tax from './components/page/AdminPage/Tax.jsx'
 import Notify from './components/page/AdminPage/Notify.jsx'
 import HelpPage from './components/page/AdminPage/HelpPage.jsx'
@@ -107,6 +108,7 @@ function App() {
           <Route path='account' element={<Account />} />
           <Route path='queue_management' element={<Queue_Management />} />
           <Route path='warehouse' element={<Warehouse />} />
+          <Route path='warehouse_history' element={<Warehouse_History />} />
           <Route path='tax' element={<Tax />} />
           <Route path='notify' element={<Notify />} />
           <Route path='helppage' element={<HelpPage />} />

@@ -224,7 +224,7 @@ function Modal_Addproduct({setisaddproductmodal})
         
         <div class='flex flex-row mx-4 space-x-2 py-2'>
             <div class='flex text-[1.2vw] px-2 '>
-                <input checked={notify} type="checkbox" id="notify" onChange={e => {setnotify(e.target.checked); console.log(notify)}} placeholder="แจ้งเตือนผ่านไลน์" />
+                <input checked={notify} type="checkbox" id="notify" onChange={e => {setnotify(e.target.checked ? 'true' : 'false')}} placeholder="แจ้งเตือนผ่านไลน์" />
                 <div class='px-2'>แจ้งเตือนผ่านไลน์</div>
             </div>
         </div>

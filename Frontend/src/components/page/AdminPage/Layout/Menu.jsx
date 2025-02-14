@@ -44,6 +44,12 @@ export default function Menu() {
             Warehouse
             </NavLink>
             </li>
+            <li className="nav-item">
+            <NavLink to='warehouse_history' className="nav-link">
+            <i className="fas fa-history nav-icon" style={{ marginRight: "25px" }}/>
+            Warehouse History
+            </NavLink>
+            </li>
             <li class="nav-header">Other</li>
             <li className="nav-item">
             <NavLink to='tax' className="nav-link">
