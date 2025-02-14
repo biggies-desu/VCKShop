@@ -8,13 +8,13 @@ function Warehouse_History()
 
     useEffect(() => {
         axios.get('http://localhost:5000/warehouselog')
-        .then((res) => {
-            setlogdata(res.data)
-        })
-        .catch((err) => {
-            console.log(err)
-        })
-    })
+            .then((res) => {
+                setlogdata(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
 
     
     return <>
