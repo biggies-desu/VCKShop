@@ -13,6 +13,8 @@ function Warehouse() {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState('')
     const [Detail, setDetail] = useState(null)
 
+
+
     const openModal = (id) => {
         setDeleteId(id);
         setisDeleteModalOpen(true);
@@ -77,7 +79,8 @@ function Warehouse() {
         axios.put(`http://localhost:5000/updatesparepart/${editProduct.SparePart_ID}`, {
             productamount: editProduct.SparePart_Amount,
             productprice: editProduct.SparePart_Price,
-            productnotify: editProduct.SparePart_Notify ? 'true' : 'false'
+            productnotify: editProduct.SparePart_Notify ? 'true' : 'false',
+            productnotify_amount : editProduct.SparePart_NotifyAmount
         })
         .then((res) => {
             // Update the local state after the update is successful
@@ -108,6 +111,9 @@ function Warehouse() {
         closeModal();
     }
 
+    //i moved this section (apidata.map) for debugged purpose
+    //{console.log('Image URL:', `http://localhost:5000/uploads/${item.SparePart_Image}`)}{console.log('SparePart_Image:', item.SparePart_Image)}{console.log('Item Structure:', item)}
+
     return <>
         {!isaddproductmodal && (
             <div className="flex flex-col justify-center">
@@ -137,7 +143,7 @@ function Warehouse() {
                         <tbody>
                             {apidata.map((item, index) => (
                                 <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100">
-                                    <td className="px-6 py-4">{console.log('Image URL:', `http://localhost:5000/uploads/${item.SparePart_Image}`)}{console.log('SparePart_Image:', item.SparePart_Image)}{console.log('Item Structure:', item)}{item.SparePart_Image ? (
+                                    <td className="px-6 py-4">{item.SparePart_Image ? (
                                         <img src={`http://localhost:5000/uploads/${item.SparePart_Image}`} alt={item.SparePart_Image}  className="h-[50px] w-[50px] object-cover rounded"/>) : ('ไม่มีรูป')}
                                     </td>
                                     <td className="px-6 py-4">{item.SparePart_ProductID}</td>
@@ -164,7 +170,7 @@ function Warehouse() {
 
         {isEditModalOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                <div className="bg-white p-8 rounded shadow-lg w-1/3">
+                <div className="bg-white p-8 rounded shadow-lg w-1/2">
                     <h2 className="text-[1.5vw] mb-4">แก้ไขสินค้า</h2>
                     <form onSubmit={e => { e.preventDefault(); updateProduct(); }}>
                         <div className="mb-4">
@@ -176,9 +182,16 @@ function Warehouse() {
                             <input type="number" className="w-full px-4 py-2 border border-gray-300 rounded" value={editProduct.SparePart_Price} onChange={e => setEditProduct({ ...editProduct, SparePart_Price: e.target.value })}/>
                         </div>
                         <div className="mb-4">
-                            <input checked={editProduct.SparePart_Notify} type="checkbox" id="notify" onChange={e => setEditProduct({ ...editProduct, SparePart_Notify: e.target.checked})}/>
+                            <input checked={editProduct?.SparePart_Notify === true || editProduct?.SparePart_Notify === "true"} type="checkbox" id="notify" onChange={e => setEditProduct({ ...editProduct, SparePart_Notify: e.target.checked})}/>
                             แจ้งเตือนผ่านไลน์
                         </div>
+                        {(editProduct?.SparePart_Notify === true || editProduct?.SparePart_Notify === "true") && (<>
+                            <div className='flex text-[1.2vw] px-2 py-2'>
+                                <p className='px-2 text-sm'>จำนวนอะไหล่ที่ต้องการแจ้งเตือน</p>
+                                <input value={editProduct.SparePart_NotifyAmount} className='class="block p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100"' type="number" id="notify_amount" min="0" defaultValue={0} onChange={e => setEditProduct({ ...editProduct, SparePart_NotifyAmount: e.target.value})} placeholder="จำนวน" />
+                                <p className="text-red-500 text-sm mx-2 mt-2">หากตั้งไว้เป็น 0 = แจ้งเตือนตลอด, หากเป็นค่าอื่นจะแจ้งเตือนหากน้อยกว่าจำนวนที่ตั้งไว้</p>
+                            </div> 
+                        </>)}
                         <div className="flex space-x-4">
                             <button className="px-4 py-2 text-gray-700 bg-red-400 hover:bg-red-600 rounded" onClick={closeEditModal}>ยกเลิก</button>
                             <button className="px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 rounded">บันทึก</button>

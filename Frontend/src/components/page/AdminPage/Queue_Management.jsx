@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Queue_History from "./Queue_History.jsx";
+
 function Queue_Management()
 {
     const [queuedata,setqueuedata] = useState([])
@@ -12,6 +13,7 @@ function Queue_Management()
     useEffect(() => {
         axios.get('http://localhost:5000/allqueue')
         .then((res) => {
+            console.log(res.data)
             setqueuedata(res.data)
         })
         .catch((err) => {
@@ -71,64 +73,55 @@ function Queue_Management()
         setIsDetailModalOpen(true);  
     }
 
+    function CloseDetailModal(item) {
+        setIsDetailModalOpen(false);  
+    }
+
     return <>
     {!ishistorymodal && (<div>
-        <div class='flex flex-row justify-between'>
-        <h1 className="text-[1.5vw] mb-4 pt-4 px-4 "></h1>
-        <h1 className="text-[1.5vw] mb-4 pt-4 px-4 ">รายการคิวเข้าใช้บริการ</h1>
-        <button className="text-[1.5vw] mb-4 pt-4 px-6 "onClick={() => history()}>ประวัติ</button>
-        </div>
-        <form class="content-start mx-8 my-2">      
-            <div class="flex space-x-4 content-center">
-            <input class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date" type="date" required onChange={(e) => setsearch_time(e.target.value)}></input>
-                <button type='button' id="search" onClick={() => searchtime(search_time)}>
-                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="black" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
-                    </svg>
-                </button>  
+        <div className="p-6 bg-gray-100 min-h-screen">
+            <div className='flex flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg'>
+                <h1 className="text-xl font-semibold text-gray-700">รายการคิวเข้าใช้บริการ</h1>
+                <button className="text-white bg-blue-500 hover:bg-blue-700 px-6 py-2 rounded-lg text-lg transition" onClick={() => history()}>ประวัติ</button>
             </div>
-        </form>
-        <div class='relative overflow-x-auto shadow-md sm:rounded-2xl'>
-            <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-            <thead className="text-base text-gray-700 bg-gray-400">
-                <tr>
-                <th class='text-start px-3 py-2'>วันที่จอง</th>
-                <th class='text-start px-6 py-2'>เวลาที่จอง</th>
-                <th class='text-end px-6 py-2'>ดูรายละเอียด</th>
-                <th class='text-end px-6 py-2'>แก้ไข</th>
-                <th class='text-end px-6 py-2'>เสร็จแล้ว</th>
-                </tr>
-            </thead>
-            <tbody>
-                {queuedata.map((item, index) => (
-                    <tr key={index} className="odd:bg-white even:bg-gray-100 border-b-2">
-                        <td class ='text-start px-3 py-2'>{new Date(item.Booking_Date).toLocaleDateString('th-TH')}</td>
-                        <td class ='text-start px-3 py-2'>{item.Booking_Time}</td>
-                        <td class='text-end py-2'>
-                            <button type = 'button' onClick={() => openDetailModal(item)}>
-                                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="black" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14"/>
-                                </svg>
-                            </button>  
-                        </td>
-                        <td class='text-end py-2'>
-                            <button type = 'button' onClick={() => edititem(item.Queue_ID)}>
-                            <svg class="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                <path stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
-                            </svg>
-                            </button>  
-                        </td>
-                        <td class='text-end py-2'>
-                            <button type = 'button' onClick={() => deleteitem(item.Queue_ID)}>
-                            <svg class="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="green" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>
-                            </svg>
-                            </button>  
-                        </td>
-                    </tr>
-                ))}
-            </tbody>
-        </table>
+            <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex space-x-4 items-center">      
+                <input className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time(e.target.value)}/>
+                <button type='button' id="search" className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition"onClick={() => searchtime(search_time)}>
+                    <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+                    </svg>
+                </button>
+            </form>
+            <div className='relative overflow-x-auto shadow-md rounded-2xl mt-6'>
+                <table className="w-full text-sm text-left text-gray-600 bg-white shadow-md rounded-lg">
+                    <thead className="text-base text-white bg-blue-500">
+                        <tr>
+                            <th className='px-4 py-3'>วันที่จอง</th>
+                            <th className='px-6 py-3'>เวลาที่จอง</th>
+                            <th className='text-center px-6 py-3'>ดูรายละเอียด</th>
+                            <th className='text-center px-6 py-3'>แก้ไข</th>
+                            <th className='text-center px-6 py-3'>เสร็จแล้ว</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {queuedata.map((item, index) => (
+                            <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100">
+                                <td className='px-4 py-3'>{new Date(item.Booking_Date).toLocaleDateString('th-TH')}</td>
+                                <td className='px-4 py-3'>{item.Booking_Time}</td>
+                                <td className='text-center py-3'>
+                                    <button type='button' onClick={() => openDetailModal(item)} className="text-blue-500 hover:text-blue-700">📄รายละเอียด</button>  
+                                </td>
+                                <td className='text-center py-3'>
+                                    <button type='button' onClick={() => edititem(item.Queue_ID)} className="text-yellow-500 hover:text-yellow-700">✏️แก้ไข</button>
+                                </td>
+                                <td className='text-center py-3'>
+                                    <button type='button' onClick={() => deleteitem(item.Queue_ID)} className="text-green-500 hover:text-green-700">✅เสร็จสิ้น</button>  
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
         </div>
     )}
@@ -151,7 +144,7 @@ function Queue_Management()
                             <p><strong>เลขทะเบียนรถ:</strong> {Detail.Booking_CarRegistration ? Detail.Booking_CarRegistration : "-"}</p>
                         </div>
                         <div className="flex space-x-4">
-                            <button className="px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 rounded">ตกลง</button>
+                            <button type='button' onClick={CloseDetailModal} className="px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 rounded">ตกลง</button>
                         </div>
                     </form>
                 </div>

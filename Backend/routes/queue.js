@@ -28,17 +28,14 @@ router.post('/addqueue', function (req,res) {
   let CarRegistration = req.body.CarRegistration
   let date = req.body.date
   let time = req.body.time
-  let serviceType = req.body.serviceType
   let details = req.body.details
-  let userID = req.body.userID || null //gonna check this again when login cookie/session are done
+  let userID = req.body.userID
   console.log(req.body)
 
   //insert to booking table
-  const sqlcommand1 = `INSERT INTO booking (Booking_Date,	Booking_Time,	Booking_FirstName, Booking_LastName, User_ID, Booking_Description, Booking_CarRegistration, Service_ID)
-                      VALUES (?,?,?,?,?,?,?,
-                      (SELECT Service_ID FROM service WHERE Service_Name = ?)
-                      )`
-      db.query(sqlcommand1,[date,time,firstName,lastName,userID,details,CarRegistration,serviceType],(err,data1) => {
+  const sqlcommand1 = `INSERT INTO booking (Booking_Date,	Booking_Time,	Booking_FirstName, Booking_LastName, User_ID, Booking_Description, Booking_CarRegistration)
+                      VALUES (?,?,?,?,?,?,?)`
+      db.query(sqlcommand1,[date,time,firstName,lastName,userID,details,CarRegistration],(err,data1) => {
         if(err)
         {
           return res.json(err)
@@ -63,11 +60,11 @@ router.post('/addqueue', function (req,res) {
 })
 
 router.get('/allqueue', function (req,res){
-  const sqlcommand = `Select * from booking b
-        INNER JOIN queue q ON b.Booking_ID = q.Booking_ID
-        JOIN service s ON b.Service_ID = s.Service_ID
-        AND q.Queue_Status = 'ยังไม่เสร็จสิ้น'
-        ORDER BY DATE(b.Booking_Date) ASC, b.Booking_Time ASC`
+  const sqlcommand = `SELECT * 
+      FROM booking b
+      INNER JOIN queue q ON b.Booking_ID = q.Booking_ID
+      WHERE q.Queue_Status = 'ยังไม่เสร็จสิ้น'
+      ORDER BY DATE(b.Booking_Date) ASC, b.Booking_Time ASC`
   db.query(sqlcommand,function(err,results)
 {
   if(err)
@@ -81,10 +78,10 @@ router.get('/allqueue', function (req,res){
 })
 })
 router.get('/queuehistory', function (req,res){
-  const sqlcommand = `Select * from booking b
-        INNER JOIN queue q ON b.Booking_ID = q.Booking_ID
-        JOIN service s ON b.Service_ID = s.Service_ID
-        ORDER BY DATE(b.Booking_Date), b.Booking_Time DESC`
+  const sqlcommand = `SELECT * 
+          FROM booking b
+          INNER JOIN queue q ON b.Booking_ID = q.Booking_ID
+          ORDER BY DATE(b.Booking_Date), b.Booking_Time DESC`
   db.query(sqlcommand,function(err,results)
 {
   if(err)

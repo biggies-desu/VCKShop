@@ -19,6 +19,7 @@ function Modal_Addproduct({setisaddproductmodal})
     const [productdescription, setproductdescription] = useState()
     const [productimage, setproductimage] = useState(null);
     const [notify, setnotify] = useState(false)
+    const [notify_amount, setnotify_amount] = useState()
 
     const [dropdowncategory, setdropdowncategory] = useState([])
     const [dropdownbrand, setdropdownbrand] = useState([])
@@ -105,6 +106,7 @@ function Modal_Addproduct({setisaddproductmodal})
         formData.append('productyear', productyear);
         formData.append('productdescription', productdescription);
         formData.append('notify', notify)
+        formData.append('notify_amount', notify_amount)
     
         if (productimage) {
             formData.append('productimage', productimage);
@@ -177,11 +179,11 @@ function Modal_Addproduct({setisaddproductmodal})
                 </div>
                 <div class='flex flex-col'>
                     <div class='mb-2'>จำนวน</div>
-                    <input value={productamount} type="number" id="add_amount" onChange={e => setproductamount(e.target.value)} class="block w-full p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="จำนวน" required/>
+                    <input value={productamount} type="number" id="add_amount" min="0" onChange={e => setproductamount(e.target.value)} class="block w-full p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="จำนวน" required/>
                 </div>
                 <div class='flex flex-col'>
                     <div class='mb-2'>ราคาต่อหน่วย</div>
-                    <input value={productprice} type="number" id="add_price" onChange={e => setproductprice(e.target.value)} class="block w-full p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="ราคาต่อหน่วย" required/>
+                    <input value={productprice} type="number" id="add_price" min="0" onChange={e => setproductprice(e.target.value)} class="block w-full p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="ราคาต่อหน่วย" required/>
                 </div>
             </div>
         </div>
@@ -222,12 +224,21 @@ function Modal_Addproduct({setisaddproductmodal})
             </div>
         </div>
         
-        <div class='flex flex-row mx-4 space-x-2 py-2'>
+        <div class='flex flex-row mx-4 space-x-2'>
             <div class='flex text-[1.2vw] px-2 '>
-                <input checked={notify} type="checkbox" id="notify" onChange={e => {setnotify(e.target.checked ? 'true' : 'false')}} placeholder="แจ้งเตือนผ่านไลน์" />
+                <input checked={notify} type="checkbox" id="notify" onChange={e => {setnotify(e.target.checked)}} placeholder="แจ้งเตือนผ่านไลน์" />
                 <div class='px-2'>แจ้งเตือนผ่านไลน์</div>
+                {notify && (<>
+                <div className='flex text-[1.2vw] px-2'>
+                    <div className='px-2'>จำนวนอะไหล่ที่ต้องการแจ้งเตือน</div>
+                    <input value={notify_amount} className='class="block p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100"' type="number" id="notify_amount" min="0" defaultValue={0} onChange={e => setnotify_amount(e.target.value)} placeholder="จำนวน" />
+                    <p className="text-red-500 text-sm mx-2 mt-2">หากตั้งไว้เป็น 0 = แจ้งเตือนตลอด, หากเป็นค่าอื่นจะแจ้งเตือนหากน้อยกว่าจำนวนที่ตั้งไว้</p>
+                </div>   
+                </>
+            )}
             </div>
         </div>
+
 
         <div class='flex flex-row mx-4 space-x-2 py-2'>
             <div class='flex flex-col w-full text-[1.2vw] px-2'>

@@ -40,7 +40,11 @@ router.post('/linemessage',(req,res) =>
 })
 
 router.get('/getnotifyitem', (req,res) => {
-  const sqlcommand = `SELECT SparePart_Name,SparePart_Amount from sparepart where SparePart_Notify = 'true'`
+  // if sparepartnotify is true
+  // notifyamount = 0 (always notify) or amount is less than notifyamount
+  const sqlcommand = `SELECT s.*, c.Category_Name from sparepart s join category c on s.Category_ID = c.Category_ID
+                      where SparePart_Notify = 'true'
+                      and (SparePart_NotifyAmount = 0 or SparePart_Amount < SparePart_NotifyAmount)`
   db.query(sqlcommand,(err,results) =>
 {
   if(err)

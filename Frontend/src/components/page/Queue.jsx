@@ -3,6 +3,7 @@ import Navbar from "../Navbar.jsx"
 import Footer from "../Footer.jsx"
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 function Queue()
 {
@@ -30,6 +31,9 @@ function Queue()
     const [isModalConfirmedOpen, setisModalConfirmOpen] = useState(false); //init ว่าลงผ่านยัง
     const openConfirmedModal = () => setisModalConfirmOpen(true)
     const closeConfirmedModal = () => setisModalConfirmOpen(false)
+
+    const token = localStorage.getItem('token')
+    const userid = jwtDecode(token).user_id
 
     const location = useLocation();
     const { cart, selectedServices } = location.state || { cart: [], selectedServices: [] };
@@ -61,16 +65,15 @@ function Queue()
     };
 
     useEffect(() => {
-        //fetch servicetype that avaliable
-        axios.get('http://localhost:5000/getdropdownservice')
+        //fetch userid so i can put it in input
+            axios.get(`http://localhost:5000/getcurrentprofile/${userid}`)
             .then((res) => {
-                setservicedropdown(res.data)
+                const data = res.data[0]
+                const fn = `${data.User_Firstname} ${data.User_Lastname}`
+                setFullName(fn)
+                setPhoneNumber(data.User_Telephone)
+                setEmail(data.User_Email || "-")
                 prevdetail()
-
-                // ตั้งค่าเริ่มต้นให้ serviceType เป็นตัวเลือกแรกสุด
-                if (res.data.length > 0) {
-                    setServiceType(res.data[0].Service_Name);
-                }
             })
             .catch((err) => console.log(err))
             
@@ -165,27 +168,27 @@ function Queue()
         //send data to db
         axios.post('http://localhost:5000/addqueue', 
             {
-                fullname: fullName,
                 firstname: firstname,
                 lastname: lastname,
                 phoneNumber: phoneNumber,
                 email: email,
+                CarRegistration: CarRegistration,
                 date: date,
                 time: time,
-                CarRegistration: CarRegistration,
-                serviceType: serviceType,
                 details: details,
-                userID: userID
+                userID: userid
             }
         )
         .then((res) =>{
             console.log(res)
+            if(res.status === 200)
+            {
+                openConfirmedModal();
+            }
         })
         .catch(err=>{
             console.log(err)
         })
-
-        openConfirmedModal();
     }
 
     function closeconfirmmodal()
@@ -254,16 +257,6 @@ function Queue()
                         <input type="CarRegistration" class="w-full border border-gray-300 p-2 rounded" placeholder="เลขทะเบียนรถ" value={CarRegistration} onChange={(e) => setCarRegistration(e.target.value)}></input>
                         {errorCarRegistration && <p className="text-red-500 text-sm mt-2">{errorCarRegistration}</p>}
                     </div>
-                    <div className="w-1/3">
-                        <label className="block text-sm font-normal">ประเภทการบริการ <span class="text-red-500">*</span></label>
-                        <select className="w-full border border-gray-300 p-2 rounded" value={serviceType} onChange={e => setServiceType(e.target.value)}>
-                        {servicedropdown && servicedropdown.length > 0 && servicedropdown.map((item, index) => (
-                            <option key={index} value={item.Service_Name}>
-                                {item.Service_Name}
-                            </option>
-                            ))}
-                        </select>
-                    </div>
                 </div>
                 <div>
                     <label className="block text-sm font-normal">รายละเอียด</label>
@@ -284,7 +277,6 @@ function Queue()
                     <p className="text-gray-700 mb-2"><strong>อีเมล:</strong> {email ? email : "-"}</p>
                     <p className="text-gray-700 mb-2"><strong>วันที่จอง:</strong> {date}</p>
                     <p className="text-gray-700 mb-2"><strong>เวลาที่จอง:</strong> {time}</p>
-                    <p className="text-gray-700 mb-2"><strong>ประเภทการบริการ:</strong> {serviceType}</p>
                     <p className="text-gray-700 mb-2"><strong>เลขทะเบียนรถ:</strong> {CarRegistration}</p>
                     <p className="text-gray-700"><strong>รายละเอียด:</strong> {details}</p>
                 </div>

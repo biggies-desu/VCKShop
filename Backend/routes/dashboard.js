@@ -50,5 +50,17 @@ router.get('/getdashboard_queuenum', function (req, res) {
     else {res.json(results)}
     })
   })
+  router.get('/getdashboard_notifynum', function (req,res) {
+    const sqlcommand = `SELECT 'จำนวนอะไหล่ที่แจ้งเตือน' as label, COUNT(*) AS value FROM sparepart WHERE SparePart_Notify = 'true' 
+                    AND (SparePart_NotifyAmount = 0 OR SparePart_NotifyAmount > SparePart_Amount);`
+      db.query(sqlcommand,function(err,results){
+        if(err){
+          res.send(err)
+        }
+        else{
+          res.json(results)
+        }
+      })
+  })
 
 module.exports = router;

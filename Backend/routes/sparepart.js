@@ -16,6 +16,7 @@ router.put('/updatesparepart/:id', function (req, res) {
   let productamount = req.body.productamount;
   let productprice = req.body.productprice;
   let productnotify = req.body.productnotify
+  let productnotify_amount = req.body.productnotify_amount
   const getproductnamesql = `SELECT SparePart_Name FROM sparepart WHERE SparePart_ID = ?`
   //get productname first
   db.query(getproductnamesql, [sparepartId], function (err, result){
@@ -25,9 +26,9 @@ router.put('/updatesparepart/:id', function (req, res) {
     }
     const productname = result[0].SparePart_Name
     //update
-    const sqlcommand = `UPDATE sparepart SET SparePart_Amount = ?, SparePart_Price = ?, SparePart_Notify = ?
+    const sqlcommand = `UPDATE sparepart SET SparePart_Amount = ?, SparePart_Price = ?, SparePart_Notify = ?, SparePart_NotifyAmount = ?
                         WHERE SparePart_ID = ?`;
-    db.query(sqlcommand, [productamount, productprice, productnotify, sparepartId], function (err, results) {
+    db.query(sqlcommand, [productamount, productprice, productnotify, productnotify_amount, sparepartId], function (err, results) {
       if (err) {
         return res.send(err);
       }

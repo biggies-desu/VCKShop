@@ -40,17 +40,18 @@ router.post('/addproduct', upload.single('productimage'), (req, res) => {
       productmodel,
       productyear,
       productdescription,
-      notify
+      notify,
+      notify_amount
     } = req.body;
     const productimage = req.file ? req.file.filename : null;
-    const sqlcommand = `INSERT INTO sparepart (SparePart_Name, SparePart_ProductID, SparePart_Amount, SparePart_Price, SparePart_Description, SparePart_Image, SparePart_Notify, SparePart_Model_ID, Category_ID)
+    const sqlcommand = `INSERT INTO sparepart (SparePart_Name, SparePart_ProductID, SparePart_Amount, SparePart_Price, SparePart_Description, SparePart_Image, SparePart_Notify, SparePart_NotifyAmount, SparePart_Model_ID, Category_ID)
       VALUES (
-          ?, ?, ?, ?, ?, ?, ?,
+          ?, ?, ?, ?, ?, ?, ?, ?,
           (SELECT SparePart_Model_ID FROM sparepart_model WHERE SparePart_Model_Name = ? AND SparePart_Model_Year = ?),
           (SELECT Category_ID FROM category WHERE Category_Name = ?)
       )`;
     db.query(sqlcommand, [
-      productname, productID, productamount, productprice, productdescription, productimage, notify,
+      productname, productID, productamount, productprice, productdescription, productimage, notify, notify_amount,
        productmodel, productyear,
        productcatagory
     ], (err, results) => {

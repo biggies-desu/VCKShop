@@ -13,9 +13,11 @@ function Dashboard()
     const [queuestatusdata, setqueuestatusdata] = useState([])
     const [itemdata, setitemdata] = useState([])
     const [itemtypedata, setitemtypedata] = useState([])
+    const [notifydata, setnotifydata] = useState([])
     const [isListoflowsupplyModalOpen, setisListoflowsupplyModalOpen] = useState(false)
     const [queuechart, setqueuechart] = useState()
     const [itemchart, setitemchart] = useState()
+    const [notifyitem, setnotifyitem] = useState([])
 
     ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -24,13 +26,17 @@ function Dashboard()
             axios.get('http://localhost:5000/getdashboard_queuenum'),
             axios.get('http://localhost:5000/getdashboard_queuestatusnum'),
             axios.get('http://localhost:5000/getdashboard_itemnum'),
-            axios.get('http://localhost:5000/getdashboard_itemtypenum')
+            axios.get('http://localhost:5000/getdashboard_itemtypenum'),
+            axios.get('http://localhost:5000/getdashboard_notifynum'),
+            axios.get('http://localhost:5000/getnotifyitem') //in linemessage/getnotifyitem
         ])
             .then((res) => {
                 setqueuedata(res[0].data)
                 setqueuestatusdata(res[1].data)
                 setitemdata(res[2].data)
                 setitemtypedata(res[3].data)
+                setnotifydata(res[4].data)
+                setnotifyitem(res[5].data)
 
                 //set data to queuechart to display in chartjs
                 const formattedqueuechart = {
@@ -128,8 +134,8 @@ function Dashboard()
         </div>
         <div class="small-box bg-warning">
             <div class="inner">
-                <h3>1</h3>
-                <p>จำนวนอะไหล่ที่เหลือน้อย</p>
+                <h3>{notifydata[0]?.value}</h3>
+                <p>จำนวนอะไหล่ที่แจ้งเตือน</p>
             </div>
             <div class="icon">
                 <i class="ion ion-stats-bars"></i>
@@ -194,7 +200,7 @@ function Dashboard()
     </div>
     </div>
     {isListoflowsupplyModalOpen && (<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-8 rounded shadow-lg w-1/3 max-h-screen">
+            <div className="bg-white p-8 rounded shadow-lg w-1/2 max-h-screen">
             <div className="flex flex-row justify-between">
                 <h2></h2>
                 <h2 className="text-[1.5vw] text-center">รายการสินค้าที่เหลือน้อย</h2>
@@ -217,12 +223,14 @@ function Dashboard()
                         </tr>
                     </thead>
                     <tbody>
-                        <tr key='1'>
-                        <td className="text-start px-3 py-2">xxxxxx</td>
-                        <td className="text-start px-3 py-2">น้ำมันเครื่อง No.1</td>
-                        <td className="text-start px-3 py-2">น้ำมันเครื่อง</td>
-                        <td className="text-end px-1 py-2">1</td>
-                        </tr>
+                        {notifyitem.map((item,index) => (
+                            <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100">
+                                <td className="text-start py-4">{item.SparePart_ProductID}</td>
+                                <td className="text-start py-4">{item.SparePart_Name}</td>
+                                <td className="text-end py-4">{item.Category_Name}</td>
+                                <td className="text-end py-4">{item.SparePart_Amount}</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
                 </div>

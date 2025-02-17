@@ -77,6 +77,8 @@ function EstimatePrice() {
         }, [cart, dropdownservice]);
     
         if (cart.length > 0 || selectedServices.length > 0) {
+            const sparePartIds = cart.map((item) => item.SparePart_ID);
+            console.log(sparePartIds);
             return (
                 <div>
                     {cart.map((item, index) => (
