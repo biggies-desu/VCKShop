@@ -13,8 +13,6 @@ function Warehouse() {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState('')
     const [Detail, setDetail] = useState(null)
 
-
-
     const openModal = (id) => {
         setDeleteId(id);
         setisDeleteModalOpen(true);

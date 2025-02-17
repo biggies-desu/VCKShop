@@ -145,11 +145,10 @@ function Dashboard()
             </div>
         </div>
 
-    
         <div class="small-box bg-warning">
             <div class="inner">
-                <h3>{queuestatusdata[0]?.value}</h3>
-                <p>จำนวนการจองทั้งหมด</p>
+                <h3>{itemdata[0]?.value}</h3>
+                <p>จำนวนอะไหล่ในร้าน</p>
             </div>
             <div class="icon">
                 <i class="ion ion-stats-bars"></i>
@@ -157,8 +156,8 @@ function Dashboard()
         </div>
         <div class="small-box bg-warning">
             <div class="inner">
-                <h3>{itemdata[0]?.value}</h3>
-                <p>จำนวนการจองวันนี้</p>
+                <h3>{queuestatusdata[0]?.value}</h3>
+                <p>คิวที่เสร็จแล้ว</p>
             </div>
             <div class="icon">
                 <i class="ion ion-stats-bars"></i>
@@ -167,7 +166,7 @@ function Dashboard()
         <div class="small-box bg-warning">
             <div class="inner">
                 <h3>{queuestatusdata[1]?.value}</h3>
-                <p>จำนวนการจองเดือนนี้</p>
+                <p>คิวที่ยังไม่เสร็จ</p>
             </div>
             <div class="icon">
                 <i class="ion ion-stats-bars"></i>
