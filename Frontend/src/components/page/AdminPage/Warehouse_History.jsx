@@ -7,7 +7,7 @@ function Warehouse_History()
     const [logdata, setlogdata] = useState([])
 
     useEffect(() => {
-        axios.get('http://localhost:5000/warehouselog')
+        axios.get(`${import.meta.env.VITE_API_URL}/warehouselog`)
             .then((res) => {
                 setlogdata(res.data);
             })

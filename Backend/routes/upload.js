@@ -63,7 +63,7 @@ router.post('/addproduct', upload.single('productimage'), (req, res) => {
     const sparepartID = results.insertId;
     const wltime = new Date().toLocaleString('th-TH')
     const wlaction = 'เพิ่มสินค้า'
-    const wldescription = `เพิ่มสินค้า : ${productname} จำนวน ${productamount} ชิ้น`
+    const wldescription = `เพิ่มสินค้า : "${productname}" จำนวน ${productamount} หน่วย`
     const puttologtablesql = `INSERT INTO warehouse_log (SparePart_ID, WL_Action, WL_Time, WL_Description)
                               VALUES (?,?,?,?)`
 
@@ -77,6 +77,48 @@ router.post('/addproduct', upload.single('productimage'), (req, res) => {
     })
     res.json({ success: true, results });
   });
+});
+
+router.delete('/deletesparepart/:id', function (req, res) {
+  const sparepartId = req.params.id;
+  //get productname first
+  const getproductnamesql = `SELECT SparePart_Name,SparePart_Image FROM sparepart WHERE SparePart_ID = ?`
+  db.query(getproductnamesql, [sparepartId], function (err, result){
+    if(err)
+    {
+      return res.send(err)
+    }
+    const productname = result[0].SparePart_Name
+    //get image filepath
+    const filename = result[0].SparePart_Image;
+    const filePath = filename ? path.join(__dirname, 'uploads', filename) : null; //if have image get filepath of img
+    //delete image from upload folder
+    if(filename && fs.existsSync(filePath))
+    {
+      fs.unlinkSync(filePath)
+    }
+    //delete from sparepart db
+    const sqlcommand = 'DELETE FROM sparepart WHERE SparePart_ID = ?';
+    db.query(sqlcommand, [sparepartId], function (err, result2) {
+      if(err)
+      {
+        return res.send(err)
+      }
+      //put log
+      const wltime = new Date().toLocaleString('th-TH')
+      const wlaction = 'ลบสินค้า'
+      const wldescription = `ลบสินค้า : "${productname}"`
+      const puttologtablesql = `INSERT INTO warehouse_log (SparePart_ID, WL_Action, WL_Time, WL_Description)
+                                VALUES (?,?,?,?)`
+      db.query(puttologtablesql, [null,wlaction,wltime,wldescription], function (err, result3){
+        if(err)
+        {
+          return res.send(err)
+        }
+        return res.json({ success: true, message: 'Product deleted and logged successfully' });
+      })
+    });
+  })
 });
 
 module.exports = router;

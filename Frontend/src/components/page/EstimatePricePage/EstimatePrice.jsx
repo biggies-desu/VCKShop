@@ -34,8 +34,8 @@ function EstimatePrice() {
 
       useEffect(() => {
         axios.all([
-            axios.get('http://localhost:5000/getdropdownbrand'),
-            axios.get('http://localhost:5000/getdropdownservice')
+            axios.get(`${import.meta.env.VITE_API_URL}/getdropdownbrand`),
+            axios.get(`${import.meta.env.VITE_API_URL}/getdropdownservice`)
             ])
             
             .then((res) => {
@@ -63,6 +63,8 @@ function EstimatePrice() {
                 return "/Mitsubishi";
             case "Suzuki":
                 return "/Suzuki";
+            case "อื่นๆ":
+                return "/Other"
             default:
                 return "/EstimatePrice";
         }

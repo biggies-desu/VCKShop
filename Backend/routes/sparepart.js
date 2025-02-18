@@ -34,7 +34,7 @@ router.put('/updatesparepart/:id', function (req, res) {
       }
       const wltime = new Date().toLocaleString('th-TH')
       const wlaction = 'แก้ไขจำนวน/ราคาสินค้า'
-      const wldescription = `แก้ไข : ${productname} เป็นจำนวน ${productamount}, ราคา ${productprice}`
+      const wldescription = `แก้ไข : "${productname}" เป็นจำนวน ${productamount} หน่วย, ราคา ${productprice} บาท`
       const puttologtablesql = `INSERT INTO warehouse_log (SparePart_ID, WL_Action, WL_Time, WL_Description)
                                 VALUES (?,?,?,?)`
       db.query(puttologtablesql, [sparepartId, wlaction, wltime, wldescription], function (err,result2) {
@@ -45,40 +45,6 @@ router.put('/updatesparepart/:id', function (req, res) {
       })
   });
 })
-});
-
-router.delete('/deletesparepart/:id', function (req, res) {
-  const sparepartId = req.params.id;
-  //get productname first
-  const getproductnamesql = `SELECT SparePart_Name FROM sparepart WHERE SparePart_ID = ?`
-  db.query(getproductnamesql, [sparepartId], function (err, result){
-    if(err)
-    {
-      return res.send(err)
-    }
-    const productname = result[0].SparePart_Name
-    //delete from sparepart db
-    const sqlcommand = 'DELETE FROM sparepart WHERE SparePart_ID = ?';
-    db.query(sqlcommand, [sparepartId], function (err, result2) {
-      if(err)
-      {
-        return res.send(err)
-      }
-      //put log
-      const wltime = new Date().toLocaleString('th-TH')
-      const wlaction = 'ลบสินค้า'
-      const wldescription = `ลบสินค้า : ${productname}`
-      const puttologtablesql = `INSERT INTO warehouse_log (SparePart_ID, WL_Action, WL_Time, WL_Description)
-                                VALUES (?,?,?,?)`
-      db.query(puttologtablesql, [null,wlaction,wltime,wldescription], function (err, result3){
-        if(err)
-        {
-          return res.send(err)
-        }
-        return res.json({ success: true, message: 'Product deleted and logged successfully' });
-      })
-    });
-  })
 });
 
 router.get("/sparepart", (req, res) => {

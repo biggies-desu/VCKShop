@@ -23,12 +23,12 @@ function Dashboard()
 
     useEffect(() => {
         axios.all([
-            axios.get('http://localhost:5000/getdashboard_queuenum'),
-            axios.get('http://localhost:5000/getdashboard_queuestatusnum'),
-            axios.get('http://localhost:5000/getdashboard_itemnum'),
-            axios.get('http://localhost:5000/getdashboard_itemtypenum'),
-            axios.get('http://localhost:5000/getdashboard_notifynum'),
-            axios.get('http://localhost:5000/getnotifyitem') //in linemessage/getnotifyitem
+            axios.get(`${import.meta.env.VITE_API_URL}/getdashboard_queuenum`),
+            axios.get(`${import.meta.env.VITE_API_URL}/getdashboard_queuestatusnum`),
+            axios.get(`${import.meta.env.VITE_API_URL}/getdashboard_itemnum`),
+            axios.get(`${import.meta.env.VITE_API_URL}/getdashboard_itemtypenum`),
+            axios.get(`${import.meta.env.VITE_API_URL}/getdashboard_notifynum`),
+            axios.get(`${import.meta.env.VITE_API_URL}/getnotifyitem`) //in linemessage/getnotifyitem
         ])
             .then((res) => {
                 setqueuedata(res[0].data)

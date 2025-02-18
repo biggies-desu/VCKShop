@@ -10,7 +10,7 @@ function Queue_History({setishistorymodal})
     const [Detail, setDetail] = useState(null)
 
     useEffect(() => {
-        axios.get('http://localhost:5000/queuehistory')
+        axios.get(`${import.meta.env.VITE_API_URL}/queuehistory`)
         .then((res) => {
             console.log(res.data)
             setqueuedata(res.data)
