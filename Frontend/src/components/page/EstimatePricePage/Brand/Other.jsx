@@ -69,7 +69,11 @@ function Other() {
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">
+<<<<<<< HEAD
                             <h1 className="text-3xl font-semibold text-center mb-6">ค้นหารถยนต์จากยี่ห้อ Ford</h1>
+=======
+                            <h1 className="text-3xl font-semibold text-center mb-6">ค้นหาอะไหล่อื่นๆ</h1>
+>>>>>>> ee77469a8a42111fa6a126c33b47b71d08a708fb
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-4 p-4">
@@ -90,7 +94,11 @@ function Other() {
                         </button>
                     </div>
                     <div className="flex p-4 justify-center items-center w-full">
+<<<<<<< HEAD
                         <h1 className="text-3xl font-semibold text-center mb-6">ค้นหารถยนต์ Ford รุ่น {selectedModel}</h1>
+=======
+                        <h1 className="text-3xl font-semibold text-center mb-6">ค้นหาอะไหล่{selectedModel}</h1>
+>>>>>>> ee77469a8a42111fa6a126c33b47b71d08a708fb
                     </div>
                 </div>
                     <div className="grid grid-cols-3 gap-4 p-4">
@@ -111,7 +119,11 @@ function Other() {
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">
+<<<<<<< HEAD
                             <h1 className="text-3xl font-semibold text-center mb-6">ค้นหาจากรถยี่ห้อ Ford รุ่น {selectedModel} ({selectedYear})</h1>
+=======
+                            <h1 className="text-3xl font-semibold text-center mb-6">ค้นหาจาก{selectedModel} ({selectedYear})</h1>
+>>>>>>> ee77469a8a42111fa6a126c33b47b71d08a708fb
                         </div>
                     </div>
                     <p className="flex text-gray-900 text-2xl font-bold px-96 mb-6 text-nowrap">หมวดหมู่</p>
