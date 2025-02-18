@@ -20,7 +20,7 @@ function Profile()
     const userid = jwtDecode(token).user_id
     useEffect(() => {
         //fetch
-        axios.get(`http://localhost:5000/getcurrentprofile/${userid}`)
+        axios.get(`${import.meta.env.VITE_API_URL}/getcurrentprofile/${userid}`)
             .then((res) => {
                 if(res.status === 200)
                 {
@@ -44,7 +44,7 @@ function Profile()
     {
         event.preventDefault();
         console.log(userid)
-        axios.put(`http://localhost:5000/updateprofile/${userid}`,
+        axios.put(`${import.meta.env.VITE_API_URL}/updateprofile/${userid}`,
         {
             firstname: firstname,
             lastname: lastname,

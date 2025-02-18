@@ -49,8 +49,8 @@ function Honda() {
         const modelId = Honda.find((car) => car.name === selectedModel)?.models.find((model) => model.year === selectedYear)?.modelId;
 
         axios.all([
-            axios.get(`http://localhost:5000/sparepart?modelId=${modelId}`),
-            axios.get(`http://localhost:5000/getdropdowncategory`),
+            axios.get(`${import.meta.env.VITE_API_URL}/sparepart?modelId=${modelId}`),
+            axios.get(`${import.meta.env.VITE_API_URL}/getdropdowncategory`),
         ])
         .then((response) => {
             setSparePart(response[0].data);
@@ -71,7 +71,7 @@ function Honda() {
     function sortByCategory(category) {
         const modelId = Honda.find((car) => car.name === selectedModel)?.models.find((model) => model.year === selectedYear)?.modelId;
 
-        axios.get(`http://localhost:5000/sparepartcategory?modelId=${modelId}&category=${category}`)
+        axios.get(`${import.meta.env.VITE_API_URL}/sparepartcategory?modelId=${modelId}&category=${category}`)
         .then((res) => {setSparePart(res.data);});
     }
 

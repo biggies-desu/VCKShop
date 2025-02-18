@@ -64,7 +64,7 @@ router.get('/allqueue', function (req,res){
       FROM booking b
       INNER JOIN queue q ON b.Booking_ID = q.Booking_ID
       WHERE q.Queue_Status = 'ยังไม่เสร็จสิ้น'
-      ORDER BY DATE(b.Booking_Date) ASC, b.Booking_Time ASC`
+      ORDER BY DATE(b.Booking_Date) ASC`
   db.query(sqlcommand,function(err,results)
 {
   if(err)
@@ -77,6 +77,30 @@ router.get('/allqueue', function (req,res){
   }
 })
 })
+
+router.put('/updatequeue/:id', function (req, res) {
+  const bookingId  = req.params.id;
+  let bookingdate = req.body.bookingdate;
+  let bookingtime = req.body.bookingtime;
+  const getproductnamesql = `SELECT * FROM booking WHERE Booking_ID = ?`;
+  db.query(getproductnamesql, [bookingId], function (err, result){
+    if(err)
+    {
+      return res.send(err)
+    }
+    //update
+    const sqlcommand = `UPDATE booking SET Booking_Date = ?, Booking_Time = ? WHERE Booking_ID = ?`;
+    db.query(sqlcommand, [bookingdate, bookingtime, bookingId], function (err, results) {
+      if(err){
+        res.send(err)
+      }
+      else{
+        res.json(results)
+      }
+    })
+  })
+})
+
 router.get('/queuehistory', function (req,res){
   const sqlcommand = `SELECT * 
           FROM booking b
@@ -94,6 +118,7 @@ router.get('/queuehistory', function (req,res){
   }
 })
 })
+
 router.post('/deletequeue', function (req,res) {
   let deletequeueno = req.body.deletequeueno
   const sqlcommand = `UPDATE queue set Queue_Status = 'เสร็จสิ้นแล้ว' WHERE Queue_ID = ?`
@@ -107,19 +132,32 @@ router.post('/deletequeue', function (req,res) {
   }
   })
 })
-router.post('/searchqueuetime', function (req,res) {
-  let time = req.body.search_time
-  const sqlcommand = `SELECT * FROM booking b
-                      INNER JOIN queue q ON b.Booking_ID = q.Booking_ID
-                      WHERE q.Queue_Status = 'ยังไม่เสร็จสิ้น'
-                      AND b.Booking_Date = ?
-                      ORDER BY DATE(b.Booking_Date), b.Booking_Time DESC;`
-  db.query(sqlcommand,[time],function(err,results){
-  if(err){
-    res.send(err)}
-  else{
-    res.json(results)
-  }})
-})
+
+router.post('/searchqueuetime', function (req, res) {
+  let time = req.body.search_time;
+  let sqlcommand;
+  let params = [];
+
+  if (!time || time.trim() === "") {
+    sqlcommand = `SELECT * FROM booking b
+                  INNER JOIN queue q ON b.Booking_ID = q.Booking_ID
+                  WHERE q.Queue_Status = 'ยังไม่เสร็จสิ้น'
+                  ORDER BY DATE(b.Booking_Date);`
+  } else {
+    sqlcommand = `SELECT * FROM booking b
+                  INNER JOIN queue q ON b.Booking_ID = q.Booking_ID
+                  WHERE q.Queue_Status = 'ยังไม่เสร็จสิ้น'
+                  AND b.Booking_Date = ?
+                  ORDER BY DATE(b.Booking_Date);`
+    params = [time];
+  }
+
+  db.query(sqlcommand, params, function (err, results) {
+    if(err){
+      res.send(err)}
+    else{
+      res.json(results)
+    }})
+  })
 
 module.exports = router

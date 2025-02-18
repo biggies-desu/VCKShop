@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../../Navbar.jsx";
 import Footer from "../../../Footer.jsx";
 
-function Mitsubishi() {
+function Other() {
     const [selectedYear, setSelectedYear] = useState(null); 
     const [selectedModel, setSelectedModel] = useState(null); 
     const [sparepart, setSparePart] = useState([]); 
@@ -12,11 +12,9 @@ function Mitsubishi() {
     const [cart, setCart] = useState([]);
     const navigate = useNavigate();
 
-    const Mitsubishi = [
-        {   name: "ALL-NEW TRITON ATHLETE", models: [
-                { year: "2024", modelId: 82, image: "https://cf.autodeft2.pw/content/2024-04-26/thum-all-new-triton-australian-spec-double-cab-copy-8tocag.png" },
-                { year: "2019", modelId: 83, image: "src/components/image/ALL-NEW TRITON ATHLETE-2019.jpg" },
-                { year: "2014", modelId: 84, image: "src/components/image/ALL-NEW TRITON ATHLETE-2014.jpg" },],},
+    const oth = [
+        {   name: "อื่นๆ", models: [
+                { year: "N/A", modelId: 88, image: "https://fordjorcharoen.com/wp-content/uploads/2022/06/EV%E0%B9%80%E0%B8%97%E0%B8%B2.png" },],},
     ];
 
     useEffect(() => {
@@ -26,7 +24,7 @@ function Mitsubishi() {
     }, [selectedYear, selectedModel]);
 
     function fetchAllData() {
-        const modelId = Mitsubishi.find((car) => car.name === selectedModel)?.models.find((model) => model.year === selectedYear)?.modelId;
+        const modelId = oth.find((car) => car.name === selectedModel)?.models.find((model) => model.year === selectedYear)?.modelId;
 
         axios.all([
             axios.get(`${import.meta.env.VITE_API_URL}/sparepart?modelId=${modelId}`),
@@ -49,7 +47,7 @@ function Mitsubishi() {
     }
 
     function sortByCategory(category) {
-        const modelId = Mitsubishi.find((car) => car.name === selectedModel)?.models.find((model) => model.year === selectedYear)?.modelId;
+        const modelId = oth.find((car) => car.name === selectedModel)?.models.find((model) => model.year === selectedYear)?.modelId;
 
         axios.get(`${import.meta.env.VITE_API_URL}/sparepartcategory?modelId=${modelId}&category=${category}`)
         .then((res) => {setSparePart(res.data);});
@@ -71,11 +69,11 @@ function Mitsubishi() {
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">
-                            <h1 className="text-3xl font-semibold text-center mb-6">ค้นหารถยนต์จากยี่ห้อ Mitsubishi</h1>
+                            <h1 className="text-3xl font-semibold text-center mb-6">ค้นหารถยนต์จากยี่ห้อ Ford</h1>
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-4 p-4">
-                        {Mitsubishi.map((car, index) => (
+                        {oth.map((car, index) => (
                             <div key={index} className="flex flex-col items-center cursor-pointer" onClick={() => setSelectedModel(car.name)}>
                                 <img src={car.models[0].image} className="rounded-lg h-48 mb-2" alt={`${car.name}`}/>
                                 <h1 className="text-2xl font-bold">{car.name}</h1>
@@ -92,11 +90,11 @@ function Mitsubishi() {
                         </button>
                     </div>
                     <div className="flex p-4 justify-center items-center w-full">
-                        <h1 className="text-3xl font-semibold text-center mb-6">ค้นหารถยนต์ Mitsubishi รุ่น {selectedModel}</h1>
+                        <h1 className="text-3xl font-semibold text-center mb-6">ค้นหารถยนต์ Ford รุ่น {selectedModel}</h1>
                     </div>
                 </div>
                     <div className="grid grid-cols-3 gap-4 p-4">
-                        {Mitsubishi.find((car) => car.name === selectedModel)?.models.map((model, index) => (
+                        {oth.find((car) => car.name === selectedModel)?.models.map((model, index) => (
                             <div key={index} className="flex flex-col items-center cursor-pointer" onClick={() => setSelectedYear(model.year)}>
                                 <img src={model.image} className="rounded-lg h-48 mb-2" alt={`${selectedModel} ${model.year}`} />
                                 <h1 className="text-2xl font-bold">ปี : {model.year}</h1>
@@ -113,7 +111,7 @@ function Mitsubishi() {
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">
-                            <h1 className="text-3xl font-semibold text-center mb-6">ค้นหาจากรถยี่ห้อ Mitsubishi รุ่น {selectedModel} ({selectedYear})</h1>
+                            <h1 className="text-3xl font-semibold text-center mb-6">ค้นหาจากรถยี่ห้อ Ford รุ่น {selectedModel} ({selectedYear})</h1>
                         </div>
                     </div>
                     <p className="flex text-gray-900 text-2xl font-bold px-96 mb-6 text-nowrap">หมวดหมู่</p>
@@ -158,4 +156,4 @@ function Mitsubishi() {
     );
 }
 
-export default Mitsubishi;
+export default Other;

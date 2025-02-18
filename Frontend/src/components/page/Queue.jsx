@@ -48,7 +48,7 @@ function Queue()
     
         // ตรวจสอบวันที่และเวลาที่เลือก
         if (date && selectedTime) {
-            axios.post("http://localhost:5000/checkQueue", { date, time: selectedTime })
+            axios.post(`${import.meta.env.VITE_API_URL}/checkQueue`, { date, time: selectedTime })
                 .then((res) => {
                     const { queueCount, isFull } = res.data;
                     // ถ้าเวลานั้นเต็มหรือจองมากกว่า 3 คน จะทำให้เวลานั้นไม่สามารถเลือกได้
@@ -66,7 +66,7 @@ function Queue()
 
     useEffect(() => {
         //fetch userid so i can put it in input
-            axios.get(`http://localhost:5000/getcurrentprofile/${userid}`)
+            axios.get(`${import.meta.env.VITE_API_URL}/getcurrentprofile/${userid}`)
             .then((res) => {
                 const data = res.data[0]
                 const fn = `${data.User_Firstname} ${data.User_Lastname}`
@@ -78,7 +78,7 @@ function Queue()
             .catch((err) => console.log(err))
             
         if (date) {
-            axios.post("http://localhost:5000/checkQueue", { date })
+            axios.post(`${import.meta.env.VITE_API_URL}/checkQueue`, { date })
                 .then((res) => {
                     const bookedTimes = res.data; 
                     const disabled = [];
@@ -166,7 +166,7 @@ function Queue()
         const lastname = namearray[1]
 
         //send data to db
-        axios.post('http://localhost:5000/addqueue', 
+        axios.post(`${import.meta.env.VITE_API_URL}/addqueue`, 
             {
                 firstname: firstname,
                 lastname: lastname,

@@ -2,9 +2,7 @@ import React from "react";
 import Navbar from "../Navbar.jsx"
 import axios from 'axios'
 import { useState } from "react";
-
 //คิดว่าตอนทำจริงๆน่าจะประมาณนั้ https://www.youtube.com/watch?v=qqL_SA2v6BE&t=965s
-
 
 function Login()
 {
@@ -36,7 +34,7 @@ function Login()
     function loginfunction()
     {
     event.preventDefault()
-        axios.post('http://localhost:5000/login', //post username/password to login api
+        axios.post(`${import.meta.env.VITE_API_URL}/login`, //post username/password to login api
         {
             username: username,
             password: password
@@ -114,7 +112,7 @@ function registerfunction()
         return; //exit funtion due invalid username or password
     }
 
-    axios.post('http://localhost:5000/register',
+    axios.post(`${import.meta.env.VITE_API_URL}/register`,
     {
         username: usernamereg,
         password: passwordreg,

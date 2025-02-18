@@ -10,7 +10,7 @@ function Queue_History({setishistorymodal})
     const [Detail, setDetail] = useState(null)
 
     useEffect(() => {
-        axios.get('http://localhost:5000/queuehistory')
+        axios.get(`${import.meta.env.VITE_API_URL}/queuehistory`)
         .then((res) => {
             console.log(res.data)
             setqueuedata(res.data)
@@ -24,44 +24,45 @@ function Queue_History({setishistorymodal})
         setDetail(item);
         setIsDetailModalOpen(true);  
     }
+    
+    function CloseDetailModal(item) {
+        setIsDetailModalOpen(false);  
+    }
 
-    return<>
-    <div className='flex flex-col text-nowrap'>
-        <div className='flex flex-row justify-between'>
-            <button className="text-[1.5vw] mb-4 pt-4 px-6 "onClick={() => setishistorymodal(false)}>กลับ</button>
-            <h1 className="text-[1.5vw] mb-4 pt-4 px-4 ">ประวัติคิวเข้าใช้บริการ</h1>
-            <h1 className="text-[1.5vw] mb-4 pt-4 px-4 "></h1>
-        </div>
-        
-        <div className="relative overflow-x-auto shadow-md sm:rounded-2xl">
-            <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-            <thead className="text-base text-gray-700 bg-gray-400">
-                <tr>
-                <th className='text-start px-3 py-2'>วันที่จอง</th>
-                <th className='text-start px-6 py-2'>เวลาที่จอง</th>
-                <th className='text-end px-6 py-2'>ดูรายละเอียด</th>
-                <th className='text-end px-6 py-2'>สถานะ</th>
-                </tr>
-            </thead>
-            <tbody>
-                {queuedata.map((item, index) => 
-                <tr key={index} className="odd:bg-white even:bg-gray-100 border-b-2">
-                    <td className ='text-start px-3 py-2'>{new Date(item.Booking_Date).toLocaleDateString('th-TH')}</td>
-                    <td className ='text-start px-3 py-2'>{item.Booking_Time}</td>
-                    <td className='text-end py-2'>
-                        <button type = 'button' onClick={() => openDetailModal(item)}>
-                            <svg className="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                <path stroke="black" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14"/>
-                            </svg>
-                        </button>  
-                    </td>
-                    <td className={`text-end px-3 py-2 ${item.Queue_Status === "เสร็จสิ้นแล้ว" ? "text-black" : "text-red-500"}`}>{item.Queue_Status}</td>
-                </tr>
-
-            )
-        }
-            </tbody>
-        </table>
+    return<>    
+    <div className="p-6 bg-gray-100 min-h-screen">
+        <div className='flex flex-col text-nowrap'>
+            <div className='flex flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg'>
+                <button className="text-white bg-blue-500 hover:bg-blue-700 px-6 py-2 rounded-lg text-lg transition" onClick={() => setishistorymodal(false)}>กลับ</button>
+                <h1 className="text-xl font-semibold text-gray-700">ประวัติคิวเข้าใช้บริการ</h1>
+                <h1 className="text-xl font-semibold text-gray-700"></h1>
+            </div>
+            <div className="relative overflow-x-auto shadow-md rounded-2xl mt-6">
+                <table className="w-full text-sm text-left text-gray-600 bg-white shadow-md rounded-xl">
+                    <thead className="text-base text-white bg-blue-500">
+                        <tr>
+                            <th className='text-start px-4 py-3'>วันที่จอง</th>
+                            <th className='text-start px-6 py-3'>เวลาที่จอง</th>
+                            <th className='text-end px-6 py-3'>ดูรายละเอียด</th>
+                            <th className='text-end px-6 py-3'>สถานะ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {queuedata.map((item, index) => (
+                            <tr key={index} className="border-b hover:bg-blue-100">
+                                <td className='text-start px-4 py-3'>{new Date(item.Booking_Date).toLocaleDateString('th-TH')}</td>
+                                <td className='text-start px-4 py-3'>{item.Booking_Time}</td>
+                                <td className='text-end py-3'>
+                                    <button type='button' onClick={() => openDetailModal(item)} className="text-blue-500 hover:text-blue-700">📄</button>  
+                                </td>
+                                <td className={`text-end px-3 py-2 ${item.Queue_Status === "เสร็จสิ้นแล้ว" ? "text-green-500" : "text-red-500"}`}>
+                                    {item.Queue_Status}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     
@@ -80,7 +81,7 @@ function Queue_History({setishistorymodal})
                             <p><strong>เลขทะเบียนรถ:</strong> {Detail.Booking_CarRegistration ? Detail.Booking_CarRegistration : "-"}</p>
                         </div>
                         <div className="flex space-x-4">
-                            <button className="px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 rounded" onClick={() => setIsDetailModalOpen(false)}>ตกลง</button>
+                            <button type='button' className="px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 rounded" onClick={CloseDetailModal}>ตกลง</button>
                         </div>
                     </form>
                 </div>

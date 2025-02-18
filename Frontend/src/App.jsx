@@ -16,6 +16,7 @@ import Mitsubishi from './components/page/EstimatePricePage/Brand/Mitsubishi.jsx
 import Nissan from './components/page/EstimatePricePage/Brand/Nissan.jsx'
 import Susuki from './components/page/EstimatePricePage/Brand/Suzuki.jsx'
 import Toyota from './components/page/EstimatePricePage/Brand/Toyota.jsx'
+import Other from './components/page/EstimatePricePage/Brand/Other.jsx'
 
 import Aboutus from './components/page/Aboutus.jsx'
 import Login from './components/page/Login.jsx'
@@ -92,6 +93,7 @@ function App() {
       <Route path='/Nissan' element={<Nissan/>}/>
       <Route path='/Suzuki' element={<Susuki/>}/>
       <Route path='/Toyota' element={<Toyota/>}/>
+      <Route path='/Other' element={<Other/>}/>
 
       <Route element={<Protectroute role={['Customer']} />}>
         <Route path='/queue' element={<Queue/>}/>

@@ -24,7 +24,7 @@ function Warehouse() {
     };
 
     useEffect(() => {
-        axios.get('http://localhost:5000/allsparepart')
+        axios.get(`${import.meta.env.VITE_API_URL}/allsparepart`)
             .then((res) => {
                 console.log("API Response:", res.data);
                 setapidata(res.data);
@@ -37,7 +37,7 @@ function Warehouse() {
     function search(event) {
         event.preventDefault();
         console.log("search : ", search_query);
-        axios.post('http://localhost:5000/searchquery', {
+        axios.post(`${import.meta.env.VITE_API_URL}/searchquery`, {
             search_query: search_query
         })
         .then((res) => {
@@ -74,7 +74,7 @@ function Warehouse() {
     }
 
     function updateProduct() {
-        axios.put(`http://localhost:5000/updatesparepart/${editProduct.SparePart_ID}`, {
+        axios.put(`${import.meta.env.VITE_API_URL}/updatesparepart/${editProduct.SparePart_ID}`, {
             productamount: editProduct.SparePart_Amount,
             productprice: editProduct.SparePart_Price,
             productnotify: editProduct.SparePart_Notify ? 'true' : 'false',
@@ -95,7 +95,7 @@ function Warehouse() {
     }
 
     function confirmDelete() {
-        axios.delete(`http://localhost:5000/deletesparepart/${deleteId}`)
+        axios.delete(`${import.meta.env.VITE_API_URL}/deletesparepart/${deleteId}`)
             .then((res) => {
                 closeModal();
                 window.location.reload();
@@ -142,7 +142,7 @@ function Warehouse() {
                             {apidata.map((item, index) => (
                                 <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100">
                                     <td className="px-6 py-4">{item.SparePart_Image ? (
-                                        <img src={`http://localhost:5000/uploads/${item.SparePart_Image}`} alt={item.SparePart_Image}  className="h-[50px] w-[50px] object-cover rounded"/>) : ('ไม่มีรูป')}
+                                        <img src={`${import.meta.env.VITE_API_URL}/uploads/${item.SparePart_Image}`} alt={item.SparePart_Image}  className="h-[50px] w-[50px] object-cover rounded"/>) : ('ไม่มีรูป')}
                                     </td>
                                     <td className="px-6 py-4">{item.SparePart_ProductID}</td>
                                     <td className="px-6 py-4">{item.SparePart_Name}</td>
@@ -216,7 +216,7 @@ function Warehouse() {
                             <p><strong>ปี:</strong> {Detail.SparePart_Model_Year}</p>
                         </div>
                         <div className="flex space-x-4">
-                            <button className="px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 rounded">ตกลง</button>
+                            <button onClick={closeDetailModal} className="px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 rounded">ตกลง</button>
                         </div>
                     </form>
                 </div>
