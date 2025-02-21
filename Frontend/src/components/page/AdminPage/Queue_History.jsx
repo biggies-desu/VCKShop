@@ -55,8 +55,8 @@ function Queue_History({setishistorymodal})
                                 <td className='text-end py-3'>
                                     <button type='button' onClick={() => openDetailModal(item)} className="text-blue-500 hover:text-blue-700">📄</button>  
                                 </td>
-                                <td className={`text-end px-3 py-2 ${item.Queue_Status === "เสร็จสิ้นแล้ว" ? "text-green-500" : "text-red-500"}`}>
-                                    {item.Queue_Status}
+                                <td className={`text-end px-3 py-2 ${item.Booking_Status === "เสร็จสิ้นแล้ว" ? "text-green-500" : "text-red-500"}`}>
+                                    {item.Booking_Status}
                                 </td>
                             </tr>
                         ))}

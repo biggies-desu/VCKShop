@@ -3,15 +3,14 @@ const db = require('../db')
 const router = express.Router();
 
 router.get('/allsparepart',(req,res) => {
-  const sqlcommand = `SELECT * FROM sparepart join category ON sparepart.Category_ID = category.Category_ID join sparepart_model ON sparepart.SparePart_Model_ID = sparepart_model.SparePart_Model_ID JOIN sparepart_brand 
-                      ON sparepart_model.SparePart_Brand_ID = sparepart_brand.SparePart_Brand_ID ORDER BY sparepart_id DESC;`
+  const sqlcommand = `SELECT * FROM sparepart
+                    join category ON sparepart.Category_ID = category.Category_ID
+                    ORDER BY sparepart_id DESC;`
   db.query(sqlcommand,(err,data) => {
     if(err)     return res.json(err);
     return res.json(data)
   })
 })
-
-
 router.put('/updatesparepart/:id', function (req, res) {
   const sparepartId = req.params.id;
   let productamount = req.body.productamount;
@@ -50,7 +49,7 @@ router.put('/updatesparepart/:id', function (req, res) {
 
 router.get("/sparepart", (req, res) => {
   const ModelId = req.query.modelId; // ดึงค่าจาก query parameter
-  const query = "SELECT * FROM sparepart WHERE SparePart_Model_ID = ?"; // query ที่จะดึงข้อมูลจากฐานข้อมูล 
+  const query = `SELECT s.*, sml.sparepart_model_id FROM sparepart s join sparepart_model_link sml ON s.sparepart_id = sml.sparepart_id WHERE sml.sparepart_model_id = ?` // query ที่จะดึงข้อมูลจากฐานข้อมูล 
   db.query(query, [ModelId], (err, results) => { // ใช้ตัวแปร ModelId แทนค่าใน query
       if (err) {
           res.status(500).json({ message: "Error fetching data", error: err });
@@ -64,7 +63,7 @@ router.get("/sparepartcategory", (req, res) => {
   const ModelId = req.query.modelId; // ดึงค่าจาก query parameter
   const Category = req.query.category
   console.log(req.query)
-  const query = `SELECT * FROM sparepart WHERE SparePart_Model_ID = ? and Category_ID = ?` // query ที่จะดึงข้อมูลจากฐานข้อมูล 
+  const query = `SELECT s.* FROM sparepart s JOIN Sparepart_Model_link sml ON s.SparePart_ID = sml.SparePart_ID WHERE sml.SparePart_Model_ID = ? AND s.Category_ID = ?;` // query ที่จะดึงข้อมูลจากฐานข้อมูล 
   db.query(query, [ModelId, Category], (err, results) => { // ใช้ตัวแปร ModelId แทนค่าใน query
       if (err) {
           res.status(500).json({ message: "Error fetching data", error: err });
@@ -76,8 +75,12 @@ router.get("/sparepartcategory", (req, res) => {
 
 router.post('/searchquery',function (req,res) {
   let search_query = req.body.search_query
-  const sqlcommand = `SELECT * FROM sparepart JOIN category ON sparepart.Category_ID = category.Category_ID JOIN sparepart_model ON sparepart.SparePart_Model_ID = sparepart_model.SparePart_Model_ID 
-                      JOIN sparepart_brand ON sparepart_model.SparePart_Brand_ID = sparepart_brand.SparePart_Brand_ID WHERE SparePart_Name LIKE CONCAT('%', ?, '%') OR SparePart_ProductID LIKE CONCAT('%', ?, '%');`
+  const sqlcommand = `SELECT * FROM sparepart JOIN category ON sparepart.Category_ID = category.Category_ID 
+                      JOIN Sparepart_Model_link sml ON sparepart.SparePart_ID = sml.SparePart_ID 
+                      JOIN sparepart_model ON sml.SparePart_Model_ID = sparepart_model.SparePart_Model_ID 
+                      JOIN sparepart_brand ON sparepart_model.SparePart_Brand_ID = sparepart_brand.SparePart_Brand_ID 
+                      WHERE SparePart_Name LIKE CONCAT('%', ?, '%') OR SparePart_ProductID LIKE CONCAT('%', ?, '%')
+                      GROUP BY sparepart.sparepart_id`
   db.query(sqlcommand,[search_query,search_query],function(err,results)
   {
     if (err){

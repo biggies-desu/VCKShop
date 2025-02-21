@@ -150,6 +150,7 @@ function Queue_Management()
     {!ishistorymodal && (<div>
         <div className="p-6 bg-gray-100 min-h-screen">
             <div className='flex flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg'>
+                <div></div>
                 <h1 className="text-xl font-semibold text-gray-700">รายการคิวเข้าใช้บริการ</h1>
                 <button className="text-white bg-blue-500 hover:bg-blue-700 px-6 py-2 rounded-lg text-lg transition" onClick={() => history()}>ประวัติ</button>
             </div>
@@ -184,7 +185,7 @@ function Queue_Management()
                                     <button type='button' onClick={() => openEditModal(item)} className="text-yellow-500 hover:text-yellow-700">✏️แก้ไข</button>
                                 </td>
                                 <td className='text-center py-3'>
-                                    <button type='button' onClick={() => deleteitem(item.Queue_ID)} className="text-green-500 hover:text-green-700">✅เสร็จสิ้น</button>  
+                                    <button type='button' onClick={() => deleteitem(item.Booking_ID)} className="text-green-500 hover:text-green-700">✅เสร็จสิ้น</button>  
                                 </td>
                             </tr>
                         ))}

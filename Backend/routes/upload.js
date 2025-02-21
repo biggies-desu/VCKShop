@@ -37,30 +37,42 @@ router.post('/addproduct', upload.single('productimage'), (req, res) => {
       productcatagory,
       productamount,
       productprice,
-      productmodel,
-      productyear,
       productdescription,
       notify,
-      notify_amount
+      notify_amount,
+      productmodelid
     } = req.body;
+    console.log(req.body)
     const productimage = req.file ? req.file.filename : null;
-    const sqlcommand = `INSERT INTO sparepart (SparePart_Name, SparePart_ProductID, SparePart_Amount, SparePart_Price, SparePart_Description, SparePart_Image, SparePart_Notify, SparePart_NotifyAmount, SparePart_Model_ID, Category_ID)
+    const sqlcommand = `INSERT INTO sparepart (SparePart_Name, SparePart_ProductID, SparePart_Amount, SparePart_Price, SparePart_Description, SparePart_Image, SparePart_Notify, SparePart_NotifyAmount, Category_ID)
       VALUES (
           ?, ?, ?, ?, ?, ?, ?, ?,
-          (SELECT SparePart_Model_ID FROM sparepart_model WHERE SparePart_Model_Name = ? AND SparePart_Model_Year = ?),
           (SELECT Category_ID FROM category WHERE Category_Name = ?)
       )`;
     db.query(sqlcommand, [
       productname, productID, productamount, productprice, productdescription, productimage, notify, notify_amount,
-       productmodel, productyear,
        productcatagory
     ], (err, results) => {
       if (err) {
         console.error(err);
         return res.status(500).json({ error: 'Database error' });
       }
-    //put it do log
     const sparepartID = results.insertId;
+
+    const modelid = productmodelid.split(',');
+    const insertmap = modelid.map(modelid => [sparepartID, modelid
+    ]);
+    const insertsql = `INSERT INTO sparepart_model_link (sparepart_id, sparepart_model_id) VALUES ?`;
+    db.query(insertsql, [insertmap], (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json();
+      }
+    });
+
+
+    //put it do log
+    
     const wltime = new Date().toLocaleString('th-TH')
     const wlaction = 'เพิ่มสินค้า'
     const wldescription = `เพิ่มสินค้า : "${productname}" จำนวน ${productamount} หน่วย`

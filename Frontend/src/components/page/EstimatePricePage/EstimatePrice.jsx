@@ -13,12 +13,12 @@ function EstimatePrice() {
     const [selectedServices, setSelectedServices] = useState([]);
     const [dropdownservice, setdropdownservice] = useState([])
     const [dropdownbrand, setdropdownbrand] = useState([])
+    const [quantities, setQuantities] = useState({});
 
     const location = useLocation();
     const { state } = location || {};
-    const cart = state?.cart || []; // รับข้อมูล Array ที่ส่งมา
-    const totalPrice = [...cart, ...selectedServices].reduce((sum, item) => sum + (item.SparePart_Price || 0) + (item.Service_Price || 0),0);
-
+    const [cart, setCart] = useState(state?.cart || []);
+    const totalPrice = [...cart, ...selectedServices].reduce((sum, item) => sum + (item.SparePart_Price || 0) * (item.quantity || 1) + (item.Service_Price || 0),0);
 
     const navigate = useNavigate();
 
@@ -85,9 +85,9 @@ function EstimatePrice() {
                 <div>
                     {cart.map((item, index) => (
                         <div key={index} className='flex flex-row justify-between'>
-                            <p className="text-start text-xl">{index + 1}. {item.SparePart_Name}</p>
-                            <p className="text-end text-xl">{item.SparePart_Price} บาท</p>
-                        </div>
+                            <p className="text-start text-xl flex flex-row justify-between w-11/12">{index + 1}. {item.SparePart_Name}<span className="ml-auto">จำนวน :&nbsp;</span> <span className="text-red-500">{item.quantity}</span>&nbsp;รายการ</p>
+                                <p className="text-end text-xl">{item.SparePart_Price * item.quantity} บาท</p>
+                      </div>
                     ))}
                     {selectedServices.map((item, index) => (
                         <div key={index} className="flex flex-row justify-between">
@@ -95,15 +95,43 @@ function EstimatePrice() {
                             <p className="text-end text-xl">{item.Service_Price} บาท</p>
                         </div>
                     ))}
-                    <div className="flex flex-col py-4">
-                        <p className="text-end text-gray-600">ราคารวมทั้งหมด:</p>
-                        <p className="text-end text-2xl font-bold text-blue-600">{totalPrice} บาท</p>
+                    <div className="flex flex-col py-4 px-4">
+                        <div className="flex justify-end items-center gap-6">
+                            <p className="text-end text-gray-600">จำนวนสินค้าทั้งหมด</p>
+                            <p className="text-end text-gray-600">ราคารวมทั้งหมด</p>
+                        </div>
+                        <div className="flex justify-end items-center gap-6">
+                            <p className="text-end text-2xl font-bold text-blue-600">รวม <span className="text-red-600">{cart.reduce((total, item) => total + item.quantity, 0) + selectedServices.length}</span> รายการ</p>
+                            <p className="text-end text-2xl font-bold text-blue-600">{totalPrice} บาท</p>
+                        </div>
                     </div>
                 </div>
             );
         } else {
             return <p>ไม่มีข้อมูลอะไหล่</p>;
         }
+    }
+
+    function AddToCart(val) {
+        setCart((prevCart) => {
+            const existingItemIndex = prevCart.findIndex((item) => item.SparePart_ID === val.SparePart_ID);
+            const selectedQty = quantities[val.SparePart_ID] || 1;
+    
+            if (existingItemIndex !== -1) {
+                return prevCart.map((item, index) =>
+                    index === existingItemIndex
+                        ? { ...item, quantity: item.quantity + selectedQty }
+                        : item
+                );
+            } else {
+                return [...prevCart, { ...val, quantity: selectedQty }];
+            }
+        });
+    
+        setQuantities((prev) => ({
+            ...prev,
+            [val.SparePart_ID]: 1,
+        }));
     }
 
     const Navigatetoqueue = () => {

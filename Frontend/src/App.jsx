@@ -68,7 +68,7 @@ function App() {
             return <Outlet /> //if role match, render component
           }
         }
-        catch {
+        catch (error){
           //
           console.error('Invalid token:', error);
           localStorage.removeItem('token');
@@ -95,7 +95,7 @@ function App() {
       <Route path='/Toyota' element={<Toyota/>}/>
       <Route path='/Other' element={<Other/>}/>
 
-      <Route element={<Protectroute role={['Customer']} />}>
+      <Route element={<Protectroute role={[2]}/>}>
         <Route path='/queue' element={<Queue/>}/>
         <Route path='/profile' element={<Profile/>}/>
       </Route>
@@ -103,7 +103,7 @@ function App() {
       <Route path='/aboutus' element={<Aboutus/>}/>
       <Route path='/login' element={<Login/>}/>
 
-      <Route element={<Protectroute role={['Admin']} />}>
+      <Route element={<Protectroute role={[1]} />}>
         <Route path='/admin' element={<Admin />}>
           <Route index element={<AdminWelcome />} />
           <Route path='dashboard' element={<Dashboard />} />

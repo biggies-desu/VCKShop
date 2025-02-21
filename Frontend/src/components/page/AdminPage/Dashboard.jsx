@@ -173,7 +173,6 @@ function Dashboard()
             </div>
         </div>
         <div>
-
         </div>
     <div class='col-span-2'>
         <div class = 'h-[20vw] w-full flex flex-col'>

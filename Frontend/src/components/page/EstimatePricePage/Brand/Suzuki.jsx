@@ -11,6 +11,24 @@ function Suzuki() {
     const [categoryoption, setCategoryOption] = useState([]); 
     const [cart, setCart] = useState([]);
     const navigate = useNavigate();
+    const [quantities, setQuantities] = useState([]);
+    const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
+    
+    
+    const handlePlus = (id, maxAmount) => {
+        setQuantities((prev) => {
+            const currentQty = prev[id] || 1;
+            return {
+                ...prev, [id]: currentQty < maxAmount ? currentQty + 1 : maxAmount,
+            };
+        });
+    };
+        
+    const handleMinus = (id) => {
+        setQuantities((prev) => ({
+            ...prev,[id]: prev[id] > 1 ? prev[id] - 1 : 1,
+        }));
+    };
 
     const Suzuki = [
         {   name: "SWIFT", models: [
@@ -40,12 +58,27 @@ function Suzuki() {
 
     function AddToCart(val) {
         setCart((prevCart) => {
-            const exists = prevCart.some((cartItem) => cartItem.SparePart_ID === val.SparePart_ID);
-            if (!exists) {
-                return [...prevCart, val];
+            const existingItemIndex = prevCart.findIndex((item) => item.SparePart_ID === val.SparePart_ID);
+            const selectedQty = quantities[val.SparePart_ID] || 1; // ค่าจำนวนที่ผู้ใช้เลือก
+    
+            if (existingItemIndex !== -1) {
+                // ถ้ามีสินค้าชนิดนี้อยู่ในตะกร้าแล้ว ให้เพิ่มจำนวน
+                return prevCart.map((item, index) =>
+                    index === existingItemIndex
+                        ? { ...item, quantity: item.quantity + selectedQty }
+                        : item
+                );
+            } else {
+                // ถ้ายังไม่มีในตะกร้า เพิ่มใหม่
+                return [...prevCart, { ...val, quantity: selectedQty }];
             }
-            return prevCart;
         });
+    
+        // รีเซ็ตจำนวนกลับเป็น 1
+        setQuantities((prev) => ({
+            ...prev,
+            [val.SparePart_ID]: 1,
+        }));
     }
 
     function sortByCategory(category) {
@@ -132,7 +165,7 @@ function Suzuki() {
                     <div class="flex flex-wrap gap-6">
                         <a class="relative">
                             <span className="absolute top-0 left-0 mt-1 ml-1 h-full w-full rounded bg-black"></span>
-                            <button onClick={NavigateEstimate} class="fold-bold relative inline-block h-full w-full rounded border-2 border-black bg-white px-3 py-1 text-base font-bold text-black transition duration-100 hover:bg-yellow-400 hover:text-gray-900">ดูผลการประเมินราคา ({cart.length} รายการ)</button>
+                            <button onClick={NavigateEstimate} class="fold-bold relative inline-block h-full w-full rounded border-2 border-black bg-white px-3 py-1 text-base font-bold text-black transition duration-100 hover:bg-yellow-400 hover:text-gray-900">ดูผลการประเมินราคา ({totalQuantity} รายการ)</button>
                         </a>
                     </div>
                     <div className="grid lg:grid-cols-4 gap-4 m-10">
@@ -146,6 +179,12 @@ function Suzuki() {
                             <p className="text-cyan-400 mb-3">{val.SparePart_Description}</p>
                             <div className="flex items-center text-red-500">
                                 <span>*</span><p className="text-gray-700 ml-1">{val.SparePart_Price} บาท</p>
+                            </div>
+                            <p className="text-red-400 mb-3">จำนวนคงเหลือ : {val.SparePart_Amount} ชิ้น</p>
+                            <div className="flex items-center space-x-2 mb-3">
+                                <button className="bg-blue-400 text-black px-3 py-1 rounded" onClick={() => handleMinus(val.SparePart_ID)}>-</button>
+                                    <input className="border text-center w-16 p-2 rounded" type="number" min="1" max={val.SparePart_Amount} value={quantities[val.SparePart_ID] || 1} onChange={(e) => {const newQty = parseInt(e.target.value) || 1;const finalQty = newQty > val.SparePart_Amount ? val.SparePart_Amount : newQty;setQuantities((prev) => ({...prev,[val.SparePart_ID]: finalQty,}));}}/>
+                                <button className="bg-blue-400 text-black px-3 py-1 rounded" onClick={() => handlePlus(val.SparePart_ID, val.SparePart_Amount)}>+</button>
                             </div>
                             <button className="mt-2 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onClick={() => AddToCart(val)}>เพิ่มไปยังตะกร้า</button>
                         </div>

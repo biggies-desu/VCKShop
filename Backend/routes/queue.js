@@ -30,41 +30,35 @@ router.post('/addqueue', function (req,res) {
   let time = req.body.time
   let details = req.body.details
   let userID = req.body.userID
+  let cart = req.body.cart
   console.log(req.body)
 
   //insert to booking table
-  const sqlcommand1 = `INSERT INTO booking (Booking_Date,	Booking_Time,	Booking_FirstName, Booking_LastName, User_ID, Booking_Description, Booking_CarRegistration)
-                      VALUES (?,?,?,?,?,?,?)`
-      db.query(sqlcommand1,[date,time,firstName,lastName,userID,details,CarRegistration],(err,data1) => {
+  const sqlcommand1 = `INSERT INTO booking (Booking_Date,	Booking_Time,	Booking_FirstName, Booking_LastName, User_ID, Booking_Description, Booking_CarRegistration, Booking_Status)
+                      VALUES (?,?,?,?,?,?,?,'ยังไม่เสร็จสิ้น')`
+    db.query(sqlcommand1,[date,time,firstName,lastName,userID,details,CarRegistration],(err,data1) => {
+      if(err)
+      {
+        return res.json(err)
+      }
+      const insertid = data1.insertId
+      const sqlcommand2 = `INSERT into booking_sparepart (Booking_ID, SparePart_ID, Booking_SparePart_Quantity) VALUES ?`
+      const cartmap = cart.map(item => [insertid, item.SparePart_ID, item.quantity])
+      db.query(sqlcommand2,[cartmap],(err,data2) => {
         if(err)
         {
           return res.json(err)
         }
-        
-        //detail service type into queue
-        const insertid = data1.insertId
-        const sqlcommand2 = `INSERT INTO queue (Booking_ID, Queue_Status)
-                            VALUES (?, 'ยังไม่เสร็จสิ้น')`
-            db.query(sqlcommand2,[insertid],(err,data2) => {
-              if(err)
-              {
-                return res.json(eer)
-              }
-              else
-              {
-                  res.json(data2)
-              }
-            })
-      }) 
-  //ยังไม่มี login เป็นหลักแหล่ง
+        else
+        {
+          return res.json(data2)
+        }
+    })
+  }) 
 })
 
 router.get('/allqueue', function (req,res){
-  const sqlcommand = `SELECT * 
-      FROM booking b
-      INNER JOIN queue q ON b.Booking_ID = q.Booking_ID
-      WHERE q.Queue_Status = 'ยังไม่เสร็จสิ้น'
-      ORDER BY DATE(b.Booking_Date) ASC`
+  const sqlcommand = `SELECT * FROM booking WHERE booking_status = 'ยังไม่เสร็จสิ้น' ORDER BY DATE(Booking_Date) ASC`
   db.query(sqlcommand,function(err,results)
 {
   if(err)
@@ -102,10 +96,7 @@ router.put('/updatequeue/:id', function (req, res) {
 })
 
 router.get('/queuehistory', function (req,res){
-  const sqlcommand = `SELECT * 
-          FROM booking b
-          INNER JOIN queue q ON b.Booking_ID = q.Booking_ID
-          ORDER BY DATE(b.Booking_Date), b.Booking_Time DESC`
+  const sqlcommand = `SELECT * FROM booking ORDER BY DATE(Booking_Date), Booking_Time DESC`
   db.query(sqlcommand,function(err,results)
 {
   if(err)
@@ -120,16 +111,27 @@ router.get('/queuehistory', function (req,res){
 })
 
 router.post('/deletequeue', function (req,res) {
-  let deletequeueno = req.body.deletequeueno
-  const sqlcommand = `UPDATE queue set Queue_Status = 'เสร็จสิ้นแล้ว' WHERE Queue_ID = ?`
+  let deletequeueno = req.body.deletequeueno //booking_id
+  //set to finished
+  const sqlcommand = `UPDATE Booking set Booking_status = 'เสร็จสิ้นแล้ว' WHERE Booking_id = ?`
   db.query(sqlcommand,[deletequeueno], function(err, results)
 {
   if(err) {
     res.send(err)
   }
-  else {
-    res.json(results)
-  }
+  //reduce sparepart when click finish
+  const sqlcommand2 = `UPDATE Sparepart s JOIN Booking_Sparepart bs on s.Sparepart_ID = bs.Sparepart_ID
+                      set s.Sparepart_Amount = s.Sparepart_Amount - bs.Booking_SparePart_Quantity
+                      where bs.Booking_ID = ?`
+  db.query(sqlcommand2,[deletequeueno], (err,results) => {
+    if(err){
+      res.send(err)
+    }
+    else
+    {
+      res.json(results)
+    }
+  })
   })
 })
 
@@ -139,16 +141,14 @@ router.post('/searchqueuetime', function (req, res) {
   let params = [];
 
   if (!time || time.trim() === "") {
-    sqlcommand = `SELECT * FROM booking b
-                  INNER JOIN queue q ON b.Booking_ID = q.Booking_ID
-                  WHERE q.Queue_Status = 'ยังไม่เสร็จสิ้น'
-                  ORDER BY DATE(b.Booking_Date);`
+    sqlcommand = `SELECT * FROM booking
+                  WHERE Booking_Status = 'ยังไม่เสร็จสิ้น'
+                  ORDER BY DATE(Booking_Date);`
   } else {
-    sqlcommand = `SELECT * FROM booking b
-                  INNER JOIN queue q ON b.Booking_ID = q.Booking_ID
-                  WHERE q.Queue_Status = 'ยังไม่เสร็จสิ้น'
-                  AND b.Booking_Date = ?
-                  ORDER BY DATE(b.Booking_Date);`
+    sqlcommand = `SELECT * FROM booking
+                  WHERE Booking_Status = 'ยังไม่เสร็จสิ้น'
+                  AND Booking_Date = ?
+                  ORDER BY DATE(Booking_Date);`
     params = [time];
   }
 

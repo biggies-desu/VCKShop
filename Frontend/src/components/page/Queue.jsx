@@ -66,6 +66,9 @@ function Queue()
 
     useEffect(() => {
         //fetch userid so i can put it in input
+        console.log(cart)
+        cart.map(item => console.log(`${item.SparePart_Name} - Quantity: ${item.quantity}`));
+
             axios.get(`${import.meta.env.VITE_API_URL}/getcurrentprofile/${userid}`)
             .then((res) => {
                 const data = res.data[0]
@@ -151,7 +154,7 @@ function Queue()
     };
 
     function prevdetail() {
-        let details = [...cart.map(item => item.SparePart_Name),...selectedServices.map(service => service.Service_Name)].join("\n").trim();
+        let details = [...cart.map(item => `${item.SparePart_Name} (จำนวน : ${item.quantity})`),...selectedServices.map(service => `${service.Service_Name}`)].join("\n").trim();
         setDetails(details.replace(/\n\s*\n/g, '\n'));  // แก้ไขช่องว่างระหว่างบรรทัด
     }
 
@@ -176,7 +179,12 @@ function Queue()
                 date: date,
                 time: time,
                 details: details,
-                userID: userid
+                userID: userid,
+                //post a quantity to this api
+                cart: cart.map(item => ({
+                    SparePart_ID: item.SparePart_ID,
+                    quantity: item.quantity
+                }))
             }
         )
         .then((res) =>{
@@ -225,7 +233,6 @@ function Queue()
         </div>
     </div>
 
-
     <div class="mt-4 bg-white p-6 rounded shadow">
         <h2 class="text-[2vw] font-semibold mb-4">รายละเอียดผู้จอง</h2>
             <form class="space-y-8" onSubmit={handleSubmit}>
@@ -266,6 +273,7 @@ function Queue()
             </form>
     </div>
     </div>
+
     {isModalOpen && ( //แสดงผล Modal confirm
     <div className="fixed z-50 inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center px-4">
         <div className="relative mx-auto shadow-xl rounded-md bg-white max-w-md w-full">

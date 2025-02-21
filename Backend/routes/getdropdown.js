@@ -20,9 +20,9 @@ router.get('/getdropdowncategory',(req,res) => {
   router.post('/getdropdownmodel',function (req,res) {
     let brandname = req.body.brandname
     console.log(req.body)
-    const sqlcommand = `SELECT DISTINCT SparePart_Model_Name FROM sparepart_model
-                        JOIN SparePart_Brand ON sparepart_model.SparePart_Brand_ID = SparePart_Brand.SparePart_Brand_ID
-                        WHERE SparePart_Brand.SparePart_Brand_Name = ?`;
+    const sqlcommand = `SELECT DISTINCT sparepart_model.SparePart_Model_Name, sparepart_brand.SparePart_Brand_Name FROM sparepart_model
+                      JOIN sparepart_brand ON sparepart_model.SparePart_Brand_ID = sparepart_brand.SparePart_Brand_ID
+                      WHERE SparePart_Brand.SparePart_Brand_Name in (?)`;
     db.query(sqlcommand,[brandname],function(err,results)
     {
         if (err)
@@ -39,8 +39,8 @@ router.get('/getdropdowncategory',(req,res) => {
   router.post('/getdropdownyear',function (req,res) {
     let modelname = req.body.modelname
     console.log(req.body)
-    const sqlcommand = `SELECT DISTINCT SparePart_Model_Year FROM sparepart_model 
-                        WHERE SparePart_Model_Name = ?;`
+    const sqlcommand = `SELECT DISTINCT SparePart_Model_ID, SparePart_Model_Name, SparePart_Model_Year 
+                    FROM sparepart_model WHERE SparePart_Model_Name IN (?);`
     db.query(sqlcommand,[modelname],function(err,results)
     {
         if (err)
