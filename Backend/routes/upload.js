@@ -116,6 +116,7 @@ router.delete('/deletesparepart/:id', function (req, res) {
       {
         return res.send(err)
       }
+      console.log(result2)
       //put log
       const wltime = new Date().toLocaleString('th-TH')
       const wlaction = 'ลบสินค้า'

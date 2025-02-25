@@ -6,7 +6,7 @@ import '../index.css'
 function Footer()
 {
     return <>
-    <div className="w-full bg-gray-700 text-gray-200 py-4 kanit-regular">
+    <div className="w-full bg-gray-800 text-gray-200 kanit-regular">
     <div id="footer" className="container mx-auto px-4">
         <div
             id="grid"
@@ -63,14 +63,18 @@ function Footer()
                     </div>
                     <div>
                         <i className="fas fa-phone">
-                            <span className="kanit-regular"> : 0830123675 BANK</span>
+                            <span className="kanit-regular"> : 083-012-3675 BANK</span>
+                        </i>
+                    </div>
+                    <div>
+                        <i class="fa fa-envelope">
+                            <span className="kanit-regular"> : viosza@hotmail.com</span>
                         </i>
                     </div>
                     <div>
                         <i className="fas fa-location-arrow">
                             <span className="kanit-regular">
-                                : ที่อยู่ : ถ. บางกรวย - กรุงเทพ ตำบลไทรน้อย อำเภอไทรน้อย
-                                นนทบุรี 11150
+                                : วิชัยการยางVCKShop  ถนน  บางกรวย - กรุงเทพ ตำบลไทรน้อย อำเภอไทรน้อย นนทบุรี 11150
                             </span>
                         </i>
                     </div>
@@ -78,6 +82,9 @@ function Footer()
             </div>
         </div>
     </div>
+    <footer className="bg-gray-800 text-gray-200 py-4 text-center">
+        <p>&copy; 2025 วิชัยการยาง VCKShop. All Rights Reserved.</p>
+    </footer>
     </div>
     </>
 }

@@ -105,7 +105,7 @@ function Ford() {
             <Navbar />
             {selectedModel === null ? (
                 <>
-                    <div className="flex p-4">
+                    <div className="flex p-4 kanit-regular">
                         <div className="flex items-center">
                             <button onClick={() => NavigateEstimate(null)} className="p-2 rounded">
                                 <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
@@ -115,10 +115,10 @@ function Ford() {
                             <h1 className="text-3xl font-semibold text-center mb-6">ค้นหารถยนต์จากยี่ห้อ Ford</h1>
                         </div>
                     </div>
-                    <div className="grid grid-cols-3 gap-4 p-4">
+                    <div className="grid grid-cols-3 gap-4 p-4 kanit-regular">
                         {Ford.map((car, index) => (
                             <div key={index} className="flex flex-col items-center cursor-pointer" onClick={() => setSelectedModel(car.name)}>
-                                <img src={car.models[0].image} className="rounded-lg h-48 mb-2" alt={`${car.name}`}/>
+                                <img src={car.models[0].image} className="rounded-lg h-48 mb-2 kanit-regular" alt={`${car.name}`}/>
                                 <h1 className="text-2xl font-bold">{car.name}</h1>
                             </div>
                         ))}
@@ -126,13 +126,13 @@ function Ford() {
                 </>
             ) : selectedYear === null ? (
                 <>
-                <div className="flex p-4">
+                <div className="flex p-4 kanit-regular">
                     <div className="flex items-center">
                         <button onClick={() => setSelectedModel(null)} className="p-2 rounded">
                             <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
                         </button>
                     </div>
-                    <div className="flex p-4 justify-center items-center w-full">
+                    <div className="flex p-4 justify-center items-center w-full kanit-regular">
                         <h1 className="text-3xl font-semibold text-center mb-6">ค้นหารถยนต์ Ford รุ่น {selectedModel}</h1>
                     </div>
                 </div>
@@ -140,7 +140,7 @@ function Ford() {
                         {Ford.find((car) => car.name === selectedModel)?.models.map((model, index) => (
                             <div key={index} className="flex flex-col items-center cursor-pointer" onClick={() => setSelectedYear(model.year)}>
                                 <img src={model.image} className="rounded-lg h-48 mb-2" alt={`${selectedModel} ${model.year}`} />
-                                <h1 className="text-2xl font-bold">ปี : {model.year}</h1>
+                                <h1 className="text-2xl font-bold kanit-regular">ปี : {model.year}</h1>
                             </div>
                         ))}
                     </div>

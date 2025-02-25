@@ -62,9 +62,10 @@ router.get("/sparepart", (req, res) => {
 router.get("/sparepartcategory", (req, res) => {
   const ModelId = req.query.modelId; // ดึงค่าจาก query parameter
   const Category = req.query.category
+  const keyword = req.query.keyword || ''; // กำหนดค่า default เป็นค่าว่างถ้าไม่มีการส่งคำค้นหา
   console.log(req.query)
-  const query = `SELECT s.* FROM sparepart s JOIN Sparepart_Model_link sml ON s.SparePart_ID = sml.SparePart_ID WHERE sml.SparePart_Model_ID = ? AND s.Category_ID = ?;` // query ที่จะดึงข้อมูลจากฐานข้อมูล 
-  db.query(query, [ModelId, Category], (err, results) => { // ใช้ตัวแปร ModelId แทนค่าใน query
+  const query = `SELECT s.* FROM sparepart s JOIN Sparepart_Model_link sml ON s.SparePart_ID = sml.SparePart_ID WHERE sml.SparePart_Model_ID = ? AND s.Category_ID = ? AND s.SparePart_Name LIKE ?;` // query ที่จะดึงข้อมูลจากฐานข้อมูล 
+  db.query(query, [ModelId, Category, `%${keyword}%`], (err, results) => { // ใช้ตัวแปร ModelId แทนค่าใน query
       if (err) {
           res.status(500).json({ message: "Error fetching data", error: err });
       } else {

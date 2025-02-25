@@ -2,6 +2,249 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .login-container {
+    @apply bg-gray-800 h-screen pt-[10%] relative items-center justify-center;
+  }
+
+  .login-form {
+    @apply w-[350px] sm:w-[350px] m-auto text-center p-8 text-white z-10 bg-black bg-opacity-10;
+    backdrop-filter: blur(20px);
+  }
+
+  .login-input {
+    @apply w-full mx-auto p-2 text-base sm:text-lg rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500;
+  }
+
+  .login-button {
+    @apply p-2 sm:text-lg bg-blue-500 rounded-2xl m-8 w-36 mx-auto sm:w-48 hover:bg-gradient-to-r hover:from-orange-500 hover:via-pink-500 hover:to-pink-700;
+  }
+}
+
+
+.container_login{
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    position: relative;
+    z-index: 10;
+    border-bottom: 5px solid rgba(255, 255, 255, 0.3);
+    border-left: 5px solid rgba(255, 255, 255, 0.3);
+    background-color: #374151;
+}
+
+.container_login:hover{
+    transform-origin: 20px;
+    transition: cubic-bezier(0.215, 0.610, 0.355, 1);
+    transition: ease-in-out;
+    box-shadow: #035711;
+}
+
+
+.your-name, article, h1{
+    background-color: rgba(0, 0, 0, 0);
+}
+.your-name{
+    display: flex;
+    justify-content: space-between;
+}
+
+
+p{
+    background-color: rgba(0, 0, 0, 0);
+}
+.name-u{
+    background-color: rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    font-size: 25px;
+    font-weight: normal;
+    line-height: 40px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+ #passport{
+    width: 120px;
+    border-radius: 50%;
+    border: 5px solid white;
+    margin-bottom: 20px;
+    animation: passport 5s linear 4s infinite alternate none running;
+}
+
+ #buttons{
+  width: 330px;
+  border-radius: 50%;
+  border: 5px solid white;
+  margin-bottom: 20px;
+  animation: passport 5s linear 4s infinite alternate none running;
+}
+
+
+
+.bottom-pink{
+    background: linear-gradient(-45deg, #753a88, #cc2b5e);
+    animation: bottom-pink 4s linear 2s infinite normal none running;       
+   
+}
+.top-orange{
+    background: linear-gradient( rgb(131, 9, 11), tomato);
+    animation: top-orange 4s linear 2s infinite normal none running;
+ }
+
+.top-blue{
+    animation: top-blue 4s linear 2s infinite normal none running;
+ }
+
+ @keyframes passport{
+    0%{
+        border: 5px solid #cc2b5e;
+    }
+    25%{
+        border: 5px solid rebeccapurple;
+    }
+    50%{
+        border: 5px solid tomato;
+    }
+    75%{
+        border: 5px solid yellow;
+    }
+    100%{
+        border: 5px solid green;
+    }
+ }
+
+ @keyframes buttons{
+  0%{
+      border: 5px solid #cc2b5e;
+  }
+  25%{
+      border: 5px solid rebeccapurple;
+  }
+  50%{
+      border: 5px solid tomato;
+  }
+  75%{
+      border: 5px solid yellow;
+  }
+  100%{
+      border: 5px solid green;
+  }
+}
+
+
+@keyframes top-blue{
+    0%{
+        left: 50%;
+        top: 7%;
+        opacity: 1.0;        
+    }
+    20%{
+        left: 50%;
+        top: 30%;
+        opacity: 0.7;        
+    }
+    40%{
+        left: 50%;
+        top: 50%;
+        opacity: 0.4;
+    }
+    
+    50%{
+        left: 50%;
+        top: 70%;
+        opacity: 0.1;
+    }
+
+    60%{
+        left: 50%;
+        top: 50%;
+        opacity: 0.4;
+    }
+    80%{
+        left: 50%;
+        top: 30%;
+        opacity: 0.7;
+    }
+    100%{
+        left: 50%;
+        top: 5%;
+        opacity: 1.0;
+    }    
+}
+
+@keyframes bottom-pink{
+   
+}
+
+@keyframes yellow-pulse {
+
+  0%,
+  100% {
+    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #ffc400, 0 0 35px #ffc400, 0 0 40px #ffc400, 0 0 50px #ffc400, 0 0 75px #ffc400;
+  }
+
+  50% {
+    text-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 7px #fff, 0 0 10px #ffc400, 0 0 17px #ffc400, 0 0 20px #ffc400, 0 0 25px #ffc400, 0 0 37px #ffc400;
+  }
+}
+
+@keyframes bg-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.yellow-text {
+  animation: yellow-pulse 1.5s infinite alternate;
+}
+
+.bg-animate {
+  background: linear-gradient(-45deg, #ee7752, #ffc400, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: bg-shift 15s ease infinite;
+}
+
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.rotate {
+  animation: rotate 10s linear infinite;
+}
+
+.text-stroke-black
+{
+  -webkit-text-stroke: 2px black;
+}
+
 
 .kanit-thin {
     font-family: "Kanit", serif;
@@ -110,4 +353,3 @@
     font-weight: 900;
     font-style: italic;
   }
-  

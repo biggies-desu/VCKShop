@@ -85,13 +85,13 @@ function EstimatePrice() {
                 <div>
                     {cart.map((item, index) => (
                         <div key={index} className='flex flex-row justify-between'>
-                            <p className="text-start text-xl flex flex-row justify-between w-11/12">{index + 1}. {item.SparePart_Name}<span className="ml-auto">จำนวน :&nbsp;</span> <span className="text-red-500">{item.quantity}</span>&nbsp;รายการ</p>
+                            <p className="text-start text-lg flex flex-row justify-between w-11/12">{index + 1}. {item.SparePart_Name}<span className="ml-auto">จำนวน :&nbsp;</span> <span className="text-red-500">{item.quantity}</span>&nbsp;รายการ</p>
                                 <p className="text-end text-xl">{item.SparePart_Price * item.quantity} บาท</p>
                       </div>
                     ))}
                     {selectedServices.map((item, index) => (
                         <div key={index} className="flex flex-row justify-between">
-                            <p className="text-start text-xl">{cart.length + index + 1}. {item.Service_Name}</p>
+                            <p className="text-start text-lg">{cart.length + index + 1}. {item.Service_Name}</p>
                             <p className="text-end text-xl">{item.Service_Price} บาท</p>
                         </div>
                     ))}
@@ -112,27 +112,27 @@ function EstimatePrice() {
         }
     }
 
-    function AddToCart(val) {
-        setCart((prevCart) => {
-            const existingItemIndex = prevCart.findIndex((item) => item.SparePart_ID === val.SparePart_ID);
-            const selectedQty = quantities[val.SparePart_ID] || 1;
+    // function AddToCart(val) {
+    //     setCart((prevCart) => {
+    //         const existingItemIndex = prevCart.findIndex((item) => item.SparePart_ID === val.SparePart_ID);
+    //         const selectedQty = quantities[val.SparePart_ID] || 1;
     
-            if (existingItemIndex !== -1) {
-                return prevCart.map((item, index) =>
-                    index === existingItemIndex
-                        ? { ...item, quantity: item.quantity + selectedQty }
-                        : item
-                );
-            } else {
-                return [...prevCart, { ...val, quantity: selectedQty }];
-            }
-        });
+    //         if (existingItemIndex !== -1) {
+    //             return prevCart.map((item, index) =>
+    //                 index === existingItemIndex
+    //                     ? { ...item, quantity: item.quantity + selectedQty }
+    //                     : item
+    //             );
+    //         } else {
+    //             return [...prevCart, { ...val, quantity: selectedQty }];
+    //         }
+    //     });
     
-        setQuantities((prev) => ({
-            ...prev,
-            [val.SparePart_ID]: 1,
-        }));
-    }
+    //     setQuantities((prev) => ({
+    //         ...prev,
+    //         [val.SparePart_ID]: 1,
+    //     }));
+    // }
 
     const Navigatetoqueue = () => {
         navigate('/queue', { state: { cart, selectedServices } });
@@ -140,20 +140,20 @@ function EstimatePrice() {
 
     return <>
     <Navbar />
-    <div className="bg-white p-6">
+    <div className="bg-orange-100 p-6 pb-60 kanit-regular">
         <h1 className="text-3xl font-semibold mb-6 text-center">เครื่องมือสำหรับการประเมินราคาอะไหล่พร้อมบริการและค่าบริการ</h1>
 
         <div className="mb-4">
             <label className="block text-gray-700 mb-2">ค้นหาอะไหล่ตามยี่ห้อ/รุ่น</label>
             <div className="flex space-x-4">
-                <select id="brand" value={brand} type="text"  onChange={e => {setBrand(e.target.value)}} class="block w-full p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="ยี่ห้อ">
+                <select id="brand" value={brand} type="text"  onChange={e => {setBrand(e.target.value)}} className="block w-full p-3 text-lg text-gray-800 border border-yellow-400 rounded-xl shadow-lg bg-orange-200 bg-opacity-50 focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="ยี่ห้อ">
                 <option selected value='' disabled>เลือกยี่ห้อ</option>
                     {dropdownbrand.map((item, index) => (
                         <option key={index} value={item.SparePart_Brand_Name}>{item.SparePart_Brand_Name}</option>
                     ))}
                 </select>
                 <Link to={getPagePath()}>
-                    <button className="p-2 rounded">
+                    <button className="p-3 bg-orange-300 text-white rounded-xl hover:bg-orange-200 shadow-md">
                         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="black" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
                         </svg>
@@ -165,13 +165,14 @@ function EstimatePrice() {
         <div className="mb-4">
             <label className="block text-gray-700 mb-2">บริการ</label>
             <div className="flex space-x-2">
-                <select id="service" value={service} type="text" onChange={e =>  setService(e.target.value)} class="block w-full p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100" placeholder="รุ่น">
+                <select id="service" value={service} type="text" onChange={e =>  setService(e.target.value)} className="block w-full p-3 text-lg text-gray-800 border border-gray-300 rounded-xl shadow-lg bg-orange-200 bg-opacity-50 focus:ring-2 focus:ring-blue-500 transition-all" placeholder="รุ่น">
+                                                                                                            
                 <option selected value='' disabled>เลือกบริการ</option>
                     {dropdownservice.map((item, index) => (
                         <option key={index} value={item.Service_Name}>{item.Service_Name}</option> //คิดอยู่จะใช้ดีไหม dropdownservice.slice(1)
                     ))}
                 </select>
-                <button className="bg-gray-500 text-white px-4 py-2 rounded" onClick={handleAddService} >เพิ่มเข้ารายการ</button>
+                <button className="bg-orange-300 text-white px-4 py-2 rounded-lg hover:bg-orange-400 shadow-md transition-colors" onClick={handleAddService} >เพิ่มเข้ารายการ</button>
             </div>
         </div>
 
@@ -179,7 +180,7 @@ function EstimatePrice() {
             <h2 className="text-xl font-bold mb-4">ผลการประเมินราคา</h2>{Cart()}
         </div>
         <div class='flex flex-row justify-end'>
-            <button onClick={Navigatetoqueue} class = 'text-center rounded-full bg-green-400 text-[1vw] py-4 px-4 mt-4 '>จองตอนนี้</button>
+            <button onClick={Navigatetoqueue} className='text-center rounded-full bg-green-500 text-lg py-4 px-8 mt-4 mb-20 hover:bg-green-400 transition-colors'>จองตอนนี้</button>
       </div>
     </div>
     <Footer />
