@@ -6,7 +6,6 @@ import { PieChart } from "@mui/x-charts"
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 
-
 function Dashboard()
 {
     const [queuedata, setqueuedata] = useState([])

@@ -16,6 +16,7 @@ const linemessage = require('./routes/linemessage')
 const sparepart = require('./routes/sparepart')
 const upload = require('./routes/upload')
 const warehouse_log = require('./routes/warehouselog')
+const tax = require('./routes/tax')
 
 
 app.use(express.json())
@@ -38,6 +39,7 @@ app.use(linemessage)
 app.use(sparepart)
 app.use(upload)
 app.use(warehouse_log)
+app.use(tax)
 
 
 app.listen(5000, () => 
