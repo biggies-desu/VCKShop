@@ -63,7 +63,7 @@ function Tax()
     }
 
     return <>
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6 bg-gray-100 min-h-screen kanit-regular">
         <div className='flex flex-row justify-center items-center bg-white p-4 shadow-md rounded-lg'>
             <h1 className="text-xl font-semibold text-gray-700">คำนวณภาษี</h1>
         </div>
@@ -115,7 +115,7 @@ function Tax()
             </table>
         </div>
     </div>
-    {isDetailModalOpen && (<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    {isDetailModalOpen && (<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
             <div className="bg-white p-8 rounded shadow-lg w-1/2 max-h-screen">
             <div className="flex flex-row justify-between">
                 <h2></h2>

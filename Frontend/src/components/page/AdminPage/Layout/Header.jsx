@@ -8,7 +8,7 @@ function Logout_Admin()
 
 export default function Header() {
   return (
-    <nav className="main-header navbar navbar-expand navbar-white navbar-light">
+    <nav className="main-header navbar navbar-expand navbar-white navbar-light kanit-regular">
   {/* Left navbar links */}
   <ul className="navbar-nav">
     <li className="nav-item">

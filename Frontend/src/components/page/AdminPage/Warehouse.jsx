@@ -114,8 +114,10 @@ function Warehouse() {
 
     return <>
         {!isaddproductmodal && (
-            <div className="flex flex-col justify-center">
-                <h1 className="text-[1.5vw] mb-4 text-center pt-4">รายการสินค้าคงคลัง</h1>
+            <div className="flex flex-col justify-center kanit-regular">
+                <div className='flex flex-row justify-center items-center bg-white p-4 shadow-md rounded-lg'>
+                    <h1 className="text-xl font-semibold text-gray-700">คำนวณภาษี</h1>
+                </div>
                 <form className="content-start mx-8 my-2">
                     <div className="flex space-x-4 content-center">
                         <input value={search_query} type="search" id="search_query" className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-300" placeholder="ค้นหาชื่อ/รหัสสินค้า" onChange={e => setsearch_query(e.target.value)} />
@@ -167,7 +169,7 @@ function Warehouse() {
         )}
 
         {isEditModalOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
                 <div className="bg-white p-8 rounded shadow-lg w-1/2">
                     <h2 className="text-[1.5vw] mb-4">แก้ไขสินค้า</h2>
                     <form onSubmit={e => { e.preventDefault(); updateProduct(); }}>
@@ -200,7 +202,7 @@ function Warehouse() {
         )}
 
         {isDetailModalOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
                 <div className="bg-white p-8 rounded shadow-lg w-1/3">
                     <h2 className="text-[1.5vw] mb-4">รายละเอียด</h2>
                     <form>
@@ -228,7 +230,7 @@ function Warehouse() {
         )}
 
         {isDeleteModalOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
                 <div className="bg-white p-8 rounded shadow-lg">
                     <h2 className="text-[1.5vw] mb-4">ต้องการลบสินค้าหรือไม่</h2>
                     <div className="flex space-x-20 items-center justify-center">

@@ -148,7 +148,7 @@ function Queue_Management()
 
     return <>
     {!ishistorymodal && (<div>
-        <div className="p-6 bg-gray-100 min-h-screen">
+        <div className="p-6 bg-gray-100 min-h-screen kanit-regular">
             <div className='flex flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg'>
                 <div></div>
                 <h1 className="text-xl font-semibold text-gray-700">รายการคิวเข้าใช้บริการ</h1>
@@ -197,7 +197,7 @@ function Queue_Management()
     )}
 
         {isEditModalOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
                 <div className="bg-white p-8 rounded shadow-lg w-1/2">
                     <h2 className="text-[1.5vw] mb-4">แก้ไขวัน/เวลาที่เข้าใช้บริการ</h2>
                     <form onSubmit={e => { e.preventDefault(); updateQueue(); }}>
@@ -226,7 +226,7 @@ function Queue_Management()
         )}
 
         {isDetailModalOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
                 <div className="bg-white p-8 rounded shadow-lg w-1/3">
                     <h2 className="text-[1.5vw] mb-4">รายละเอียด</h2>
                     <form>

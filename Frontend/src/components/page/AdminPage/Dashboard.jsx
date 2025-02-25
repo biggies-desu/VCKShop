@@ -101,7 +101,7 @@ function Dashboard()
     }
 
     return <>
-    <div class ='flex flex-col Justify-center'>
+    <div class ='flex flex-col Justify-center kanit-regular'>
     <h1 class="text-[1.5vw] mb-4 text-center pt-4">Dashboard</h1>
     <div class="grid grid-cols-4 gap-4 px-2">
         <div class="small-box bg-warning">
@@ -176,7 +176,7 @@ function Dashboard()
     <div class='col-span-2'>
         <div class = 'h-[20vw] w-full flex flex-col'>
             <div class = 'text-center text-[1.5vw] font-bold pb-4'>จำนวนคิวที่มี</div>
-            <div class="h-[25vw] flex items-center justify-center">
+            <div class="h-[15vw] flex items-center justify-center">
                 {queuechart ? <Pie data={queuechart} /> : <div>Loading...</div>}
             </div>
         </div>
@@ -184,7 +184,7 @@ function Dashboard()
     <div class='col-span-2'>
         <div class = 'h-[20vw] w-full flex flex-col'>
             <div class = 'text-center text-[1.5vw] font-bold pb-4'>ประเภทอะไหล่ที่มีในร้าน</div>
-            <div class="h-[25vw] flex items-center justify-center">
+            <div class="h-[15vw] flex items-center justify-center">
                 {itemchart ? <Pie data={itemchart} /> : <div>Loading...</div>}
             </div>
         </div>

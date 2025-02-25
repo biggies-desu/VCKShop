@@ -30,7 +30,7 @@ function Queue_History({setishistorymodal})
     }
 
     return<>    
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6 bg-gray-100 min-h-screen kanit-regular">
         <div className='flex flex-col text-nowrap'>
             <div className='flex flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg'>
                 <button className="text-white bg-blue-500 hover:bg-blue-700 px-6 py-2 rounded-lg text-lg transition" onClick={() => setishistorymodal(false)}>กลับ</button>
@@ -67,7 +67,7 @@ function Queue_History({setishistorymodal})
     </div>
     
     {isDetailModalOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
                 <div className="bg-white p-8 rounded shadow-lg w-1/3">
                     <h2 className="text-[1.5vw] mb-4">รายละเอียด</h2>
                     <form>
