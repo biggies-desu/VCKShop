@@ -39,7 +39,7 @@ router.get('/getdashboard_queuenum', function (req, res) {
     })
   })
   router.get('/getdashboard_notifynum', function (req,res) {
-    const sqlcommand = `SELECT 'จำนวนอะไหล่ที่แจ้งเตือน' as label, COUNT(*) AS value FROM sparepart WHERE SparePart_Notify = 'true' 
+    const sqlcommand = `SELECT 'จำนวนอะไหล่ที่แจ้งเตือน' as label, COUNT(*) AS value FROM sparepart WHERE SparePart_Notify = 1 
                     AND (SparePart_NotifyAmount = 0 OR SparePart_NotifyAmount > SparePart_Amount);`
       db.query(sqlcommand,function(err,results){
         if(err){

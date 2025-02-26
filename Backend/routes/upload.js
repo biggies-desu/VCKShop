@@ -40,7 +40,8 @@ router.post('/addproduct', upload.single('productimage'), (req, res) => {
       productdescription,
       notify,
       notify_amount,
-      productmodelid
+      productmodelid,
+      user_id
     } = req.body;
     console.log(req.body)
     const productimage = req.file ? req.file.filename : null;
@@ -69,17 +70,14 @@ router.post('/addproduct', upload.single('productimage'), (req, res) => {
         return res.status(500).json();
       }
     });
-
-
     //put it do log
-    
-    const wltime = new Date().toLocaleString('th-TH')
+    const wltime = new Date(new Date().getTime()+7*60*60*1000).toISOString().slice(0, 19).replace('T', ' '); //utc -> gmt+7 thingy
     const wlaction = 'เพิ่มสินค้า'
     const wldescription = `เพิ่มสินค้า : "${productname}" จำนวน ${productamount} หน่วย`
-    const puttologtablesql = `INSERT INTO warehouse_log (SparePart_ID, WL_Action, WL_Time, WL_Description)
-                              VALUES (?,?,?,?)`
+    const puttologtablesql = `INSERT INTO warehouse_log (SparePart_ID, WL_Action, WL_Time, WL_Description, User_ID)
+                              VALUES (?,?,?,?,?)`
 
-    db.query(puttologtablesql, [sparepartID,wlaction,wltime,wldescription], (err,results) =>
+    db.query(puttologtablesql, [sparepartID,wlaction,wltime,wldescription,user_id], (err,results) =>
     {
       if(err)
       {
@@ -93,6 +91,7 @@ router.post('/addproduct', upload.single('productimage'), (req, res) => {
 
 router.delete('/deletesparepart/:id', function (req, res) {
   const sparepartId = req.params.id;
+  const user_id = req.headers["user_id"];
   //get productname first
   const getproductnamesql = `SELECT SparePart_Name,SparePart_Image FROM sparepart WHERE SparePart_ID = ?`
   db.query(getproductnamesql, [sparepartId], function (err, result){
@@ -118,12 +117,12 @@ router.delete('/deletesparepart/:id', function (req, res) {
       }
       console.log(result2)
       //put log
-      const wltime = new Date().toLocaleString('th-TH')
+      const wltime = new Date(new Date().getTime()+7*60*60*1000).toISOString().slice(0, 19).replace('T', ' '); //utc -> gmt+7 thingy
       const wlaction = 'ลบสินค้า'
       const wldescription = `ลบสินค้า : "${productname}"`
-      const puttologtablesql = `INSERT INTO warehouse_log (SparePart_ID, WL_Action, WL_Time, WL_Description)
-                                VALUES (?,?,?,?)`
-      db.query(puttologtablesql, [null,wlaction,wltime,wldescription], function (err, result3){
+      const puttologtablesql = `INSERT INTO warehouse_log (SparePart_ID, WL_Action, WL_Time, WL_Description, user_ID)
+                                VALUES (?,?,?,?,?)`
+      db.query(puttologtablesql, [null,wlaction,wltime,wldescription,user_id], function (err, result3){
         if(err)
         {
           return res.send(err)

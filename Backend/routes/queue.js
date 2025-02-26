@@ -31,6 +31,7 @@ router.post('/addqueue', function (req,res) {
   let details = req.body.details
   let userID = req.body.userID
   let cart = req.body.cart
+  let selectedServices = req.body.selectedServices
   console.log(req.body)
 
   //insert to booking table
@@ -49,12 +50,21 @@ router.post('/addqueue', function (req,res) {
         {
           return res.json(err)
         }
-        else
-        {
-          return res.json(data2)
-        }
+        const sqlcommand3 = `insert into booking_service (booking_id, Service_ID) values ?`
+        const servmap = selectedServices.map(item => [insertid, item.Service_ID])
+        console.log(servmap)
+        db.query(sqlcommand3,[servmap],(err,data3) => {
+          if(err){
+            return res.json(err)
+          }
+          else
+          {
+            res.json(data3)
+          }
+        })
     })
-  }) 
+  }
+) 
 })
 
 router.get('/allqueue', function (req,res){

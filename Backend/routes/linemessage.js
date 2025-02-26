@@ -43,7 +43,7 @@ router.get('/getnotifyitem', (req,res) => {
   // if sparepartnotify is true
   // notifyamount = 0 (always notify) or amount is less than notifyamount
   const sqlcommand = `SELECT s.*, c.Category_Name from sparepart s join category c on s.Category_ID = c.Category_ID
-                      where SparePart_Notify = 'true'
+                      where SparePart_Notify = 1
                       and (SparePart_NotifyAmount = 0 or SparePart_Amount < SparePart_NotifyAmount)`
   db.query(sqlcommand,(err,results) =>
 {
@@ -83,7 +83,6 @@ cron.schedule('0 */3 * * *', async () => { // notify every 3 hours
           }
         }
       );
-
   }
   catch(err)
   {

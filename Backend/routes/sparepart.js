@@ -17,6 +17,7 @@ router.put('/updatesparepart/:id', function (req, res) {
   let productprice = req.body.productprice;
   let productnotify = req.body.productnotify
   let productnotify_amount = req.body.productnotify_amount
+  let user_id = req.body.user_id
   const getproductnamesql = `SELECT SparePart_Name FROM sparepart WHERE SparePart_ID = ?`
   //get productname first
   db.query(getproductnamesql, [sparepartId], function (err, result){
@@ -32,12 +33,12 @@ router.put('/updatesparepart/:id', function (req, res) {
       if (err) {
         return res.send(err);
       }
-      const wltime = new Date().toLocaleString('th-TH')
+      const wltime = new Date(new Date().getTime()+7*60*60*1000).toISOString().slice(0, 19).replace('T', ' '); //utc -> gmt+7 thingy
       const wlaction = 'แก้ไขจำนวน/ราคาสินค้า'
       const wldescription = `แก้ไข : "${productname}" เป็นจำนวน ${productamount} หน่วย, ราคา ${productprice} บาท`
-      const puttologtablesql = `INSERT INTO warehouse_log (SparePart_ID, WL_Action, WL_Time, WL_Description)
-                                VALUES (?,?,?,?)`
-      db.query(puttologtablesql, [sparepartId, wlaction, wltime, wldescription], function (err,result2) {
+      const puttologtablesql = `INSERT INTO warehouse_log (SparePart_ID, WL_Action, WL_Time, WL_Description, user_id)
+                                VALUES (?,?,?,?,?)`
+      db.query(puttologtablesql, [sparepartId, wlaction, wltime, wldescription, user_id], function (err,result2) {
         if(err) {
           return res.send(err)
         }

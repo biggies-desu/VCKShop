@@ -3,7 +3,7 @@ const db = require('../db')
 const router = express.Router();
 
 router.get('/warehouselog', (req,res) => {
-    const sqlcommand = 'SELECT * from warehouse_log ORDER BY WL_ID DESC'
+    const sqlcommand = `SELECT wl.*, u.user_username from warehouse_log wl join user u on wl.user_id = u.user_id ORDER BY WL_ID DESC`
     db.query(sqlcommand,(err,result) => 
     {
         if(err)
@@ -21,17 +21,13 @@ router.post('/searchwarehousetime', function (req, res) {
 
     if (!time || time.trim() === "") {
         // ถ้าไม่มีค่าค้นหา ให้แสดงข้อมูลทั้งหมด
-        sqlcommand = `SELECT * FROM warehouse_log ORDER BY WL_ID DESC`;
+        sqlcommand = `SELECT wl.*, u.user_username from warehouse_log wl
+    join user u on wl.user_id = u.user_id
+    ORDER BY WL_ID DESC`;
     } else {
-        // แปลงจาก YYYY-MM-DD เป็น DD/MM/YYYY (ปี พ.ศ.)
-        let dateParts = time.split("-"); // แยกปี เดือน วัน
-        let formattedTime = `${parseInt(dateParts[2])}/${parseInt(dateParts[1])}/${parseInt(dateParts[0]) + 543}`; //แปลงให้เป็น DD/MM/YYYY ตาม WL_Time เป็นปี พศ.
-
-        sqlcommand = `SELECT * FROM warehouse_log WHERE WL_Time LIKE ? ORDER BY WL_ID`;
-        params = [`${formattedTime}%`];
+        sqlcommand = `SELECT wl.*, u.user_username from warehouse_log wl join user u on wl.user_id = u.user_id where DATE(wl_time) = ? ORDER BY WL_ID DESC`
     }
-
-    db.query(sqlcommand, params, function (err, results) {
+    db.query(sqlcommand, time, function (err, results) {
         if(err){
             res.send(err)}
         else{
