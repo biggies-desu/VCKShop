@@ -8,7 +8,7 @@ function Home() {
   return (
     <>
       <Navbar />
-      <div className="flex bg-orange-100 border-2 border-black w-full h-auto md:w-full kanit-bold">
+      <div className="flex bg-orange-100 border-2 border-black w-full h-full md:w-full kanit-bold">
         <div className="flex items-center text-center lg:text-left md:px-12">
           <div>
             <h1 className="mt-14 text-3xl font-semibold text-yellow-400 text-stroke-black lg:text-8xl">วิชัยการยาง <br />

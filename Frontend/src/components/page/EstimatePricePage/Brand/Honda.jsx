@@ -3,9 +3,9 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../../../Navbar.jsx";
 import Footer from "../../../Footer.jsx";
-import {Card,Typography,List,ListItem,ListItemPrefix,ListItemSuffix,Chip,Accordion,AccordionHeader,AccordionBody,Alert,Input,} from "@material-tailwind/react";
-import {PresentationChartBarIcon,ShoppingBagIcon,UserCircleIcon,Cog6ToothIcon,InboxIcon,PowerIcon,} from "@heroicons/react/24/solid";
-import {ChevronRightIcon,ChevronDownIcon,MagnifyingGlassIcon,} from "@heroicons/react/24/outline";
+import {Card,Typography,List,ListItem,ListItemPrefix,ListItemSuffix,IconButton,Chip,Drawer,Accordion,AccordionHeader,AccordionBody,Alert,Input,} from "@material-tailwind/react";
+import {InboxIcon} from "@heroicons/react/24/solid";
+import {ChevronRightIcon,ChevronDownIcon,Bars3Icon,XMarkIcon} from "@heroicons/react/24/outline";
 
 function Honda() {
     const [selectedYear, setSelectedYear] = useState(null); 
@@ -18,10 +18,14 @@ function Honda() {
     const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
     const [open, setOpen] = React.useState(0);
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(12); // จำนวนรายการที่จะแสดงในแต่ละหน้า
+    const [itemsPerPage] = useState(8); // จำนวนรายการที่จะแสดงในแต่ละหน้า
     const [totalPages, setTotalPages] = useState(1);
     const [categoryTotals, setCategoryTotals] = useState([]);
     const [search_query, setSearchQuery] = useState("");
+    const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
+    const closeDrawer = () => setIsDrawerOpen(false);
+    const toggleMenu = () => setIsOpen(!isOpen);
+    const [isOpen, setIsOpen] = useState(false);
        
     const handleOpen = (value) => {
         setOpen(open === value ? 0 : value);
@@ -82,21 +86,7 @@ function Honda() {
             setTotalPages(totalPages); // ตั้งค่า totalPages ตามที่คำนวณ
         }
     }, [sparepart, itemsPerPage]); // เมื่อ sparepart หรือ itemsPerPage เปลี่ยนแปลง
-
-    useEffect(() => {
-        if (sparepart.length > 0 && categoryoption.length > 0) {
-            const categoryTotals = categoryoption.map((category) => {
-                const totalAmount = sparepart
-                    .filter((part) => part.Category_ID === category.Category_ID)  // กรองตาม Category_ID
-                    .reduce((acc, part) => acc + part.SparePart_Amount, 0);  // บวกจำนวน SparePart_Amount
-                return {
-                    categoryId: category.Category_ID,
-                    totalAmount,
-                };
-            });
-            setCategoryTotals(categoryTotals); // เก็บข้อมูลจำนวนสินค้าของแต่ละหมวดหมู่
-        }
-    }, [sparepart, categoryoption]); // ทำการคำนวณใหม่เมื่อ sparepart หรือ categoryoption เปลี่ยนแปลง
+    
 
     function fetchAllData() {
         const modelId = Honda.find((car) => car.name === selectedModel)?.models.find((model) => model.year === selectedYear)?.modelId;
@@ -226,7 +216,7 @@ function Honda() {
                 </div>
                 </>
             ) : (
-                <div className="bg-orange-100 mx-auto px-6 py-10">
+                <div className="bg-orange-100 mx-auto py-10">
                     <div className="flex p-4">
                         <div className="flex items-center">
                             <button onClick={() => setSelectedYear(null)} className="p-2 rounded">
@@ -238,135 +228,287 @@ function Honda() {
                         </div>
                     </div>
                     <div className="flex space-x-8 mt-3">
-                        <Card className="bg-white opacity-80 h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
-                            <div className="mb-2 flex items-center gap-4 p-4">
-                                <img src="https://docs.material-tailwind.com/img/logo-ct-dark.png" alt="brand" className="h-8 w-8" />
-                                    <Typography variant="h5" color="blue-gray">Category</Typography>
-                            </div>
-                            <div className="relative p-2">
-                                <input value={search_query} type="text" id="search" className="peer w-full px-4 py-2 text-base bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder=" " onChange={e => setSearchQuery(e.target.value)} onKeyPress={(e) => {if (e.key === 'Enter') {search(e);}}}></input>
-                                <label className="absolute left-4 -top-4 text-gray-400 opacity-80 text-base transition-all duration-100 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:top-[-15px] peer-focus:text-sm peer-focus:text-blue-500">Search...</label>
-                                <svg id="search" onClick={search} className="absolute right-4 top-1/2 transform -translate-y-1/2 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" >
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                                </svg>
-                            </div>
-                            <List>
-                            <ListItem>
-                                    <div className="hover:text-yellow-800 hover:scale-110" onClick={fetchAllData}>สินค้าทั้งหมด[???]</div>
-                                    <ListItemSuffix>
-                                        <Chip value={`${categoryTotals.find(item => item.categoryId === 3)?.totalAmount || 0} ชิ้น`} size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
-                                    </ListItemSuffix>
-                            </ListItem>
-                            <Accordion open={open === 1} icon={<ChevronDownIcon strokeWidth={2.5} className={`mx-auto h-4 w-4 transition-transform ${open === 1 ? "rotate-180" : ""}`}/>}>
-                                <ListItem className="p-0" selected={open === 1}>
-                                    <AccordionHeader onClick={() => handleOpen(1)} className="border-b-0 p-3">
+                        <div className="z-40 flex items-start mx-4 -my-10 lg:hidden">
+                            <IconButton variant="text" size="lg" onClick={toggleMenu}>
+                                {isOpen ? (
+                                    <div className="h-8 w-8 stroke-2" />
+                                ) : (
+                                    <Bars3Icon className="h-8 w-8 stroke-2" />
+                                )}
+                            </IconButton>
+                        </div>
+
+                        <div className={`${isOpen ? 'block' : 'hidden'} lg:hidden absolute inset-x-0 h-full w-full max-w-[20rem] z-30 px-6 py-4 transition-all duration-300 ease-in-out lg:mt-0 lg:p-0 lg:top-0 lg:relative lg:w-auto lg:translate-x-0 lg:items-center`}>
+                            <div class="fixed z-[9999] pointer-events-auto bg-white box-border w-full shadow-2xl shadow-blue-gray-900/10 top-0 left-0"style={{ maxWidth: "300px", height: "100vh", transform: "none",}} open={isOpen} onClose={closeDrawer}>
+                                <div className="flex justify-end mr-3 mt-3">
+                                    {isOpen && (
+                                        <button onClick={toggleMenu}>
+                                            <XMarkIcon className="h-8 w-8 stroke-2" />
+                                        </button>
+                                    )}
+                                </div>
+                                <Card className="bg-white opacity-80 h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
+                                    <div className="mb-2 flex items-center gap-4 p-4">
+                                        <img src="https://docs.material-tailwind.com/img/logo-ct-dark.png" alt="brand" className="h-8 w-8" />
+                                            <Typography variant="h5" color="blue-gray">Category</Typography>
+                                    </div>
+                                    <div className="relative p-2">
+                                        <input value={search_query} type="text" id="search" className="peer w-full px-4 py-2 text-base bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder=" " onChange={e => setSearchQuery(e.target.value)} onKeyPress={(e) => {if (e.key === 'Enter') {search(e);}}}></input>
+                                        <label className="absolute left-4 -top-4 text-gray-400 opacity-80 text-base transition-all duration-100 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:top-[-15px] peer-focus:text-sm peer-focus:text-blue-500">Search...</label>
+                                        <svg id="search" onClick={search} className="absolute right-4 top-1/2 transform -translate-y-1/2 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" >
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                                        </svg>
+                                    </div>
+                                    <List>
+                                    <ListItem>
+                                            <div className="hover:text-yellow-800 hover:scale-110" onClick={fetchAllData}>สินค้าทั้งหมด[???]</div>
+                                            <ListItemSuffix>
+                                                <Chip value={`${categoryTotals.find(item => item.categoryId === 3)?.totalAmount || 0} ชิ้น`} size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                            </ListItemSuffix>
+                                    </ListItem>
+                                    <Accordion open={open === 1} icon={<ChevronDownIcon strokeWidth={2.5} className={`mx-auto h-4 w-4 transition-transform ${open === 1 ? "rotate-180" : ""}`}/>}>
+                                        <ListItem className="p-0" selected={open === 1}>
+                                            <AccordionHeader onClick={() => handleOpen(1)} className="border-b-0 p-3">
+                                                <ListItemPrefix>
+                                                    <img src="https://cdn-icons-png.flaticon.com/512/638/638410.png" className="h-5 w-5"/>
+                                                </ListItemPrefix>
+                                                <Typography color="blue-gray" className="mr-auto font-normal">
+                                                    ยาง
+                                                </Typography>
+                                            </AccordionHeader>
+                                        </ListItem>
+                                        <AccordionBody className="py-1">
+                                            <List className="p-0">
+                                                <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory("3", "")}>
+                                                    <ListItemPrefix>
+                                                        <ChevronRightIcon className="h-3 w-5 ml-3"/>
+                                                    </ListItemPrefix>
+                                                        ยางรถยนต์ทุกยี่ห้อ
+                                                        <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                                </ListItem>
+                                                <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory("3", "Bridgestone")}>
+                                                    <ListItemPrefix>
+                                                        <ChevronRightIcon className="h-3 w-5 ml-3"/>
+                                                    </ListItemPrefix>
+                                                        ยาง Bridgestone
+                                                        <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                                </ListItem>
+                                                <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory("3", "Michelin")}>
+                                                    <ListItemPrefix>
+                                                        <ChevronRightIcon className="h-3 w-5 ml-3 hover:text-yellow-800 hover:scale-110"/>
+                                                    </ListItemPrefix>
+                                                        ยาง Michelin 
+                                                        <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                                </ListItem>
+                                                <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory("3", "YOKOHAMA ")}>
+                                                    <ListItemPrefix>
+                                                        <ChevronRightIcon className="h-3 w-5 ml-3"/>
+                                                    </ListItemPrefix>
+                                                        ยาง Yokohama
+                                                        <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                                </ListItem>
+                                            </List>
+                                        </AccordionBody>
+                                    </Accordion>
+                                    <Accordion open={open === 2} icon={<ChevronDownIcon strokeWidth={2.5} className={`mx-auto h-4 w-4 transition-transform ${open === 2 ? "rotate-180" : ""}`}/>}>
+                                        <ListItem className="p-0" selected={open === 2}>
+                                            <AccordionHeader onClick={() => handleOpen(2)} className="border-b-0 p-3">
+                                                <ListItemPrefix>
+                                                    <img src="https://cdn-icons-png.flaticon.com/128/841/841118.png" className="h-5 w-5"/>
+                                                </ListItemPrefix>
+                                                <Typography color="blue-gray" className="mr-auto font-normal">
+                                                    จานเบรค
+                                                </Typography>
+                                                </AccordionHeader>
+                                        </ListItem>
+                                        <AccordionBody className="py-1">
+                                            <List className="p-0">
+                                                <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory("1", "")}>
+                                                    <ListItemPrefix>
+                                                        <ChevronRightIcon className="h-3 w-5 ml-3"/>
+                                                    </ListItemPrefix>
+                                                        จานเบรคทุกยี่ห้อ
+                                                        <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                                </ListItem>
+                                                <ListItem>
+                                                    <ListItemPrefix>
+                                                        <ChevronRightIcon className="h-3 w-5 ml-3" />
+                                                    </ListItemPrefix>
+                                                        จานเบรค TRW
+                                                </ListItem>
+                                                <ListItem>
+                                                    <ListItemPrefix>
+                                                        <ChevronRightIcon className="h-3 w-5 ml-3" />
+                                                    </ListItemPrefix>
+                                                        จานเบรค Brembo
+                                                </ListItem>
+                                            </List>
+                                        </AccordionBody>
+                                    </Accordion>
+                                    <hr className="my-2 border-blue-gray-100" />
+                                    <ListItem>
                                         <ListItemPrefix>
-                                            <img src="https://cdn-icons-png.flaticon.com/512/638/638410.png" className="h-5 w-5"/>
+                                            <InboxIcon className="h-5 w-5" />
                                         </ListItemPrefix>
-                                        <Typography color="blue-gray" className="mr-auto font-normal">
-                                            ยาง
-                                        </Typography>
-                                    </AccordionHeader>
-                                </ListItem>
-                                <AccordionBody className="py-1">
-                                    <List className="p-0">
-                                        <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory("3", "")}>
-                                            <ListItemPrefix>
-                                                <ChevronRightIcon className="h-3 w-5 ml-3"/>
-                                            </ListItemPrefix>
-                                                ยางรถยนต์ทุกยี่ห้อ
-                                                <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
-                                        </ListItem>
-                                        <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory("3", "Bridgestone")}>
-                                            <ListItemPrefix>
-                                                <ChevronRightIcon className="h-3 w-5 ml-3"/>
-                                            </ListItemPrefix>
-                                                ยาง Bridgestone
-                                                <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
-                                        </ListItem>
-                                        <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory("3", "Michelin")}>
-                                            <ListItemPrefix>
-                                                <ChevronRightIcon className="h-3 w-5 ml-3 hover:text-yellow-800 hover:scale-110"/>
-                                            </ListItemPrefix>
-                                                ยาง Michelin 
-                                                <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
-                                        </ListItem>
-                                        <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory("3", "YOKOHAMA ")}>
-                                            <ListItemPrefix>
-                                                <ChevronRightIcon className="h-3 w-5 ml-3"/>
-                                            </ListItemPrefix>
-                                                ยาง Yokohama
-                                                <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
-                                        </ListItem>
-                                    </List>
-                                </AccordionBody>
-                            </Accordion>
-                            <Accordion open={open === 2} icon={<ChevronDownIcon strokeWidth={2.5} className={`mx-auto h-4 w-4 transition-transform ${open === 2 ? "rotate-180" : ""}`}/>}>
-                                <ListItem className="p-0" selected={open === 2}>
-                                    <AccordionHeader onClick={() => handleOpen(2)} className="border-b-0 p-3">
+                                            นํ้ามันเบรค
+                                        <ListItemSuffix>
+                                            <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                        </ListItemSuffix>
+                                    </ListItem>
+                                    <ListItem>
                                         <ListItemPrefix>
-                                            <ShoppingBagIcon className="h-5 w-5" />
+                                            <img src="https://cdn-icons-png.flaticon.com/128/798/798867.png" className="h-5 w-5"/>
                                         </ListItemPrefix>
-                                        <Typography color="blue-gray" className="mr-auto font-normal">
-                                            จานเบรค
-                                        </Typography>
-                                        </AccordionHeader>
-                                </ListItem>
-                                <AccordionBody className="py-1">
-                                    <List className="p-0">
-                                        <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory("1", "")}>
-                                            <ListItemPrefix>
-                                                <ChevronRightIcon className="h-3 w-5 ml-3"/>
-                                            </ListItemPrefix>
-                                                จานเบรคทุกยี่ห้อ
-                                                <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
-                                        </ListItem>
-                                        <ListItem>
-                                            <ListItemPrefix>
-                                                <ChevronRightIcon className="h-3 w-5 ml-3" />
-                                            </ListItemPrefix>
-                                                จานเบรค TRW
-                                        </ListItem>
-                                        <ListItem>
-                                            <ListItemPrefix>
-                                                <ChevronRightIcon className="h-3 w-5 ml-3" />
-                                            </ListItemPrefix>
-                                                จานเบรค Brembo
-                                        </ListItem>
+                                            นํ้ามันเครื่อง
+                                        <ListItemSuffix>
+                                            <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                        </ListItemSuffix>
+                                    </ListItem>
+                                    <ListItem>
+                                        <ListItemPrefix>
+                                        <img src="https://cdn-icons-png.flaticon.com/128/3902/3902999.png" className="h-5 w-5"/>
+                                        </ListItemPrefix> 
+                                            โช๊คอัพ
+                                        <ListItemSuffix>
+                                            <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                        </ListItemSuffix>
+                                    </ListItem>
                                     </List>
-                                </AccordionBody>
-                            </Accordion>
-                            <hr className="my-2 border-blue-gray-100" />
-                            <ListItem>
-                                <ListItemPrefix>
-                                    <InboxIcon className="h-5 w-5" />
-                                </ListItemPrefix>
-                                    นํ้ามันเบรค
-                                <ListItemSuffix>
-                                    <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
-                                </ListItemSuffix>
-                            </ListItem>
-                            <ListItem>
-                                <ListItemPrefix>
-                                    <UserCircleIcon className="h-5 w-5" />
-                                </ListItemPrefix>
-                                    นํ้ามันเครื่อง
-                                <ListItemSuffix>
-                                    <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
-                                </ListItemSuffix>
-                            </ListItem>
-                            <ListItem>
-                                <ListItemPrefix>
-                                    <Cog6ToothIcon className="h-5 w-5" />
-                                </ListItemPrefix>
-                                    โช๊คอัพ
-                                <ListItemSuffix>
-                                    <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
-                                </ListItemSuffix>
-                            </ListItem>
-                            </List>
-                        </Card>
-                        <div className="container px-6 py-10">
+                                </Card>
+                            </div>
+                        </div>
+                        <div className="lg:flex hidden">
+                            <Card className="bg-white opacity-80 h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
+                                <div className="mb-2 flex items-center gap-4 p-4">
+                                    <img src="https://docs.material-tailwind.com/img/logo-ct-dark.png" alt="brand" className="h-8 w-8" />
+                                        <Typography variant="h5" color="blue-gray">Category</Typography>
+                                </div>
+                                    <div className="relative p-2">
+                                        <input value={search_query} type="text" id="search" className="peer w-full px-4 py-2 text-base bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder=" " onChange={e => setSearchQuery(e.target.value)} onKeyPress={(e) => {if (e.key === 'Enter') {search(e);}}}></input>
+                                        <label className="absolute left-4 -top-4 text-gray-400 opacity-80 text-base transition-all duration-100 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:top-[-15px] peer-focus:text-sm peer-focus:text-blue-500">Search...</label>
+                                        <svg id="search" onClick={search} className="absolute right-4 top-1/2 transform -translate-y-1/2 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" >
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                                        </svg>
+                                    </div>
+                                    <List>
+                                    <ListItem>
+                                            <div className="hover:text-yellow-800 hover:scale-110" onClick={fetchAllData}>สินค้าทั้งหมด[???]</div>
+                                            <ListItemSuffix>
+                                                <Chip value={`ชิ้น`} size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                            </ListItemSuffix>
+                                    </ListItem>
+                                    <Accordion open={open === 1} icon={<ChevronDownIcon strokeWidth={2.5} className={`mx-auto h-4 w-4 transition-transform ${open === 1 ? "rotate-180" : ""}`}/>}>
+                                        <ListItem className="p-0" selected={open === 1}>
+                                            <AccordionHeader onClick={() => handleOpen(1)} className="border-b-0 p-3">
+                                                <ListItemPrefix>
+                                                    <img src="https://cdn-icons-png.flaticon.com/512/638/638410.png" className="h-5 w-5"/>
+                                                </ListItemPrefix>
+                                                <Typography color="blue-gray" className="mr-auto font-normal">
+                                                    ยาง
+                                                </Typography>
+                                            </AccordionHeader>
+                                        </ListItem>
+                                        <AccordionBody className="py-1">
+                                            <List className="p-0">
+                                                <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory("3", "")}>
+                                                    <ListItemPrefix>
+                                                        <ChevronRightIcon className="h-3 w-5 ml-3"/>
+                                                    </ListItemPrefix>
+                                                        ยางรถยนต์ทุกยี่ห้อ
+                                                        <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                                </ListItem>
+                                                <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory("3", "Bridgestone")}>
+                                                    <ListItemPrefix>
+                                                        <ChevronRightIcon className="h-3 w-5 ml-3"/>
+                                                    </ListItemPrefix>
+                                                        ยาง Bridgestone
+                                                        <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                                </ListItem>
+                                                <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory("3", "Michelin")}>
+                                                    <ListItemPrefix>
+                                                        <ChevronRightIcon className="h-3 w-5 ml-3 hover:text-yellow-800 hover:scale-110"/>
+                                                    </ListItemPrefix>
+                                                        ยาง Michelin 
+                                                        <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                                </ListItem>
+                                                <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory("3", "YOKOHAMA ")}>
+                                                    <ListItemPrefix>
+                                                        <ChevronRightIcon className="h-3 w-5 ml-3"/>
+                                                    </ListItemPrefix>
+                                                        ยาง Yokohama
+                                                        <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                                </ListItem>
+                                            </List>
+                                        </AccordionBody>
+                                    </Accordion>
+                                    <Accordion open={open === 2} icon={<ChevronDownIcon strokeWidth={2.5} className={`mx-auto h-4 w-4 transition-transform ${open === 2 ? "rotate-180" : ""}`}/>}>
+                                        <ListItem className="p-0" selected={open === 2}>
+                                            <AccordionHeader onClick={() => handleOpen(2)} className="border-b-0 p-3">
+                                                <ListItemPrefix>
+                                                    <img src="https://cdn-icons-png.flaticon.com/128/841/841118.png" className="h-5 w-5"/>
+                                                </ListItemPrefix>
+                                                <Typography color="blue-gray" className="mr-auto font-normal">
+                                                    จานเบรค
+                                                </Typography>
+                                                </AccordionHeader>
+                                        </ListItem>
+                                        <AccordionBody className="py-1">
+                                            <List className="p-0">
+                                                <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory("1", "")}>
+                                                    <ListItemPrefix>
+                                                        <ChevronRightIcon className="h-3 w-5 ml-3"/>
+                                                    </ListItemPrefix>
+                                                        จานเบรคทุกยี่ห้อ
+                                                        <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                                </ListItem>
+                                                <ListItem>
+                                                    <ListItemPrefix>
+                                                        <ChevronRightIcon className="h-3 w-5 ml-3" />
+                                                    </ListItemPrefix>
+                                                        จานเบรค TRW
+                                                </ListItem>
+                                                <ListItem>
+                                                    <ListItemPrefix>
+                                                        <ChevronRightIcon className="h-3 w-5 ml-3" />
+                                                    </ListItemPrefix>
+                                                        จานเบรค Brembo
+                                                </ListItem>
+                                            </List>
+                                        </AccordionBody>
+                                    </Accordion>
+                                    <hr className="my-2 border-blue-gray-100" />
+                                    <ListItem>
+                                        <ListItemPrefix>
+                                            <InboxIcon className="h-5 w-5" />
+                                        </ListItemPrefix>
+                                            นํ้ามันเบรค
+                                        <ListItemSuffix>
+                                            <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                        </ListItemSuffix>
+                                    </ListItem>
+                                    <ListItem>
+                                        <ListItemPrefix>
+                                            <img src="https://cdn-icons-png.flaticon.com/128/798/798867.png" className="h-5 w-5"/>
+                                        </ListItemPrefix>
+                                            นํ้ามันเครื่อง
+                                        <ListItemSuffix>
+                                            <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                        </ListItemSuffix>
+                                    </ListItem>
+                                    <ListItem>
+                                        <ListItemPrefix>
+                                        <img src="https://cdn-icons-png.flaticon.com/128/3902/3902999.png" className="h-5 w-5"/>
+                                        </ListItemPrefix> 
+                                            โช๊คอัพ
+                                        <ListItemSuffix>
+                                            <Chip value="[14]" size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                        </ListItemSuffix>
+                                    </ListItem>
+                                    </List>
+                                </Card>
+                            </div>
+
+                        <div className="flex justify-content: flex-start; flex-wrap: wrap; container px-6 py-10">
                             <div class="absolute z-10 -mt-20 flex flex-wrap gap-6 w-fit ">
                                 <a class="relative">
                                     <span className="absolute top-0 left-0 mt-1 ml-1 h-full w-full rounded bg-black"></span>
@@ -378,7 +520,7 @@ function Honda() {
                                     </button>
                                 </a>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-8">
                                 {currentSpareParts.map((val) => (
                                     <div className="bg-white rounded-xl shadow-lg overflow-hidden transition-transform transform hover:scale-105 duration-300 flex flex-col">
                                         <span>
@@ -412,7 +554,7 @@ function Honda() {
                                 <path d="M12.745 23.915c.283-.282.59-.52.913-.727L35.266 1.581a5.4 5.4 0 0 1 7.637 7.638L24.294 27.828l18.705 18.706a5.4 5.4 0 0 1-7.636 7.637L13.658 32.464a5.367 5.367 0 0 1-.913-.727 5.367 5.367 0 0 1-1.572-3.911 5.369 5.369 0 0 1 1.572-3.911z" data-original="#000000" />
                             </svg>
                         </button>
-                        
+                            
                         {[...Array(totalPages)].map((_, index) => (
                             <li key={index} className={`flex items-center justify-center shrink-0 border cursor-pointer text-base font-bold text-gray-800 px-[13px] h-9 rounded-md ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'hover:border-blue-500'}`} onClick={() => changePage(index + 1)}>
                                 {index + 1}

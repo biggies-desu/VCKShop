@@ -81,6 +81,7 @@ function EstimatePrice() {
         if (cart.length > 0 || selectedServices.length > 0) {
             const sparePartIds = cart.map((item) => item.SparePart_ID);
             console.log(sparePartIds);
+            console.log(selectedServices)
             return (
                 <div>
                     {cart.map((item, index) => (

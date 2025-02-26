@@ -18,7 +18,6 @@ function Login()
 
     const modalRef = useRef(null);
 
-    
     function openRegisterModal(){
         setisRegisterModalOpen(true) // open modal
     }

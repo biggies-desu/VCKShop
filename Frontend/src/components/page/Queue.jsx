@@ -67,6 +67,7 @@ function Queue()
     useEffect(() => {
         //fetch userid so i can put it in input
         console.log(cart)
+        console.log(selectedServices)
         cart.map(item => console.log(`${item.SparePart_Name} - Quantity: ${item.quantity}`));
 
             axios.get(`${import.meta.env.VITE_API_URL}/getcurrentprofile/${userid}`)
@@ -184,6 +185,11 @@ function Queue()
                 cart: cart.map(item => ({
                     SparePart_ID: item.SparePart_ID,
                     quantity: item.quantity
+                })),
+                selectedServices: selectedServices.map(item => ({
+                    Service_ID: item.Service_ID,
+                    Service_Name: item.Service_Name,
+                    Service_Price: item.Service_Price,
                 }))
             }
         )

@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 
 function Modal_Addproduct({ setisaddproductmodal }) {
     const [productname, setproductname] = useState()
@@ -31,6 +32,8 @@ function Modal_Addproduct({ setisaddproductmodal }) {
     const [selectedbrand, setselectedbrand] = useState([]);
     const [selectedmodel, setselectedmodel] = useState([]);
     const [selectedyear, setselectedyear] = useState([]);
+    
+    const token = jwtDecode(localStorage.getItem('token'));
 
     //getting data suchas dropdown for category
     useEffect(() => {
@@ -143,8 +146,10 @@ function Modal_Addproduct({ setisaddproductmodal }) {
         formData.append('productmodel', selectedmodel);
         formData.append('productmodelid', selectedyear); //this is get from year
         formData.append('productdescription', productdescription);
-        formData.append('notify', notify)
+        formData.append('notify', notify ? 1 : 0)
         formData.append('notify_amount', notify_amount)
+
+        formData.append('user_id', token.user_id)
 
         if (productimage) {
             formData.append('productimage', productimage);
@@ -275,12 +280,12 @@ function Modal_Addproduct({ setisaddproductmodal }) {
             </div>
                 <div class='flex flex-row mx-4 space-x-2'>
                     <div class='flex text-[1.2vw] px-2 '>
-                        <input checked={notify} type="checkbox" id="notify" onChange={e => { setnotify(e.target.checked) }} placeholder="แจ้งเตือนผ่านไลน์" />
+                        <input checked={Boolean(notify)} type="checkbox" id="notify" onChange={e => { setnotify(e.target.checked) ? 1 : 0}} placeholder="แจ้งเตือนผ่านไลน์" />
                         <div class='px-2'>แจ้งเตือนผ่านไลน์</div>
                         {notify && (<>
                             <div className='flex text-[1.2vw] px-2'>
                                 <div className='px-2'>จำนวนอะไหล่ที่ต้องการแจ้งเตือน</div>
-                                <input value={notify_amount} className='class="block p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100"' type="number" id="notify_amount" min="0" defaultValue={0} onChange={e => setnotify_amount(e.target.value)} placeholder="จำนวน" />
+                                <input value={notify_amount} className='class="block p-2 text-[1vw] text-gray-900 border border-gray-300 rounded-lg bg-gray-100"' type="number" id="notify_amount" min="0" defaultValue={0} onChange={e => setnotify_amount(parseInt(e.target.value) || 0)} placeholder="จำนวน" />
                                 <p className="text-red-500 text-sm mx-2 mt-2">หากตั้งไว้เป็น 0 = แจ้งเตือนตลอด, หากเป็นค่าอื่นจะแจ้งเตือนหากน้อยกว่าจำนวนที่ตั้งไว้</p>
                             </div>
                         </>

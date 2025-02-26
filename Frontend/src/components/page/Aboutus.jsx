@@ -1,9 +1,32 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import Navbar from "../Navbar.jsx";
 import Footer from "../Footer.jsx";
+import axios from "axios";
 
 function AboutUs() {
-  return (
+    const [name, setname] = useState()
+    const [email, setemail] = useState()
+    const [message, setmessage] = useState()
+
+    function sentemail()
+    {
+        console.log(name,email,message)
+        axios.post(`${import.meta.env.VITE_API_URL}/sentemail`,
+        {
+            name: name,
+            email: email,
+            message: message
+        })
+        .then((res) => {
+            console.log(res)
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+
+
+    return (
     <>
     <Navbar />
     <section className="text-gray-600 body-font relative kanit-regular bg-orange-100">
@@ -30,17 +53,17 @@ function AboutUs() {
                 <form>
                     <div className="relative mb-4">
                         <label htmlFor="name" className="leading-7 text-sm text-gray-600">ชื่อ</label>
-                        <input type="text" id="name" name="name" className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"/>
+                        <input type="text" id="name" name="name" onChange={(e) => setname(e.target.value)} className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"/>
                     </div>
                     <div className="relative mb-4">
                         <label htmlFor="email" className="leading-7 text-sm text-gray-600">อีเมลตอบกลับ</label>
-                        <input type="email"id="email" name="email" className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"/>
+                        <input type="email"id="email" name="email" onChange={(e) => setemail(e.target.value)} className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"/>
                     </div>
                     <div className="relative mb-4">
                         <label htmlFor="message" className="leading-7 text-sm text-gray-600">ข้อความ</label>
-                        <textarea id="message" name="message" className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 h-32 text-base outline-none text-gray-700 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"></textarea>
+                        <textarea id="message" name="message" onChange={(e)=> setmessage(e.target.value)} className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 h-32 text-base outline-none text-gray-700 py-1 px-3 resize-none leading-6 transition-colors duration-200 ease-in-out"></textarea>
                     </div>
-                    <button className="text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg">
+                    <button type='button' className="text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg" onClick={() => sentemail()}>
                         ส่งอีเมลเลย!
                     </button>
                 </form>

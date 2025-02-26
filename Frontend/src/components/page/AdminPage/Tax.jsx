@@ -8,6 +8,10 @@ function Tax()
     const [search_time, setsearch_time] = useState('')
     const [isDetailModalOpen, setisDetailModalOpen] = useState(false)
     const [totaltax, settotaltax] = useState([])
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(12); // จำนวนรายการที่จะแสดงในแต่ละหน้า
+    const [totalPages, setTotalPages] = useState(1);
+
     useEffect(() => {
         axios.all([
             axios.get(`${import.meta.env.VITE_API_URL}/getalltax`),
@@ -20,6 +24,13 @@ function Tax()
         })
         .catch((err) => console.log(err))
     }, [])
+
+    useEffect(() => {
+        if (taxdata.length > 0) {
+            const totalPages = Math.ceil(taxdata.length / itemsPerPage);
+            setTotalPages(totalPages); 
+        }
+    }, [taxdata, itemsPerPage]); 
 
     function searchtime(search_time)
     {
@@ -62,6 +73,14 @@ function Tax()
         setisDetailModalOpen(false);  
     }
 
+    const currentTaxdata = taxdata.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+    const changePage = (pageNumber) => {
+        if (pageNumber > 0 && pageNumber <= totalPages) {
+            setCurrentPage(pageNumber);
+        }
+    };
+
     return <>
     <div className="p-6 bg-gray-100 min-h-screen kanit-regular">
         <div className='flex flex-row justify-center items-center bg-white p-4 shadow-md rounded-lg'>
@@ -102,7 +121,7 @@ function Tax()
                     </tr>
                 </thead>
                 <tbody>
-                {taxdata.map((item, index) => (
+                {currentTaxdata.map((item, index) => (
                     <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100">
                         <td className='px-4 py-3'>#{item.booking_id}</td>
                         <td className='px-4 py-3'>{new Date(item.booking_date).toLocaleDateString('th-TH')}</td>
@@ -114,6 +133,24 @@ function Tax()
                 </tbody>
             </table>
         </div>
+        <ul class="flex space-x-5 justify-center font-[sans-serif] p-10">
+            <button className="flex items-center justify-center shrink-0 bg-gray-100 w-9 h-9 rounded-md cursor-pointer hover:bg-blue-400" onClick={() => changePage(currentPage > 1 ? currentPage - 1 : 1)}>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 fill-gray-400" viewBox="0 0 55.753 55.753">
+                    <path d="M12.745 23.915c.283-.282.59-.52.913-.727L35.266 1.581a5.4 5.4 0 0 1 7.637 7.638L24.294 27.828l18.705 18.706a5.4 5.4 0 0 1-7.636 7.637L13.658 32.464a5.367 5.367 0 0 1-.913-.727 5.367 5.367 0 0 1-1.572-3.911 5.369 5.369 0 0 1 1.572-3.911z" data-original="#000000" />
+                </svg>
+            </button>
+                            
+            {[...Array(totalPages)].map((_, index) => (
+                <li key={index} className={`flex items-center justify-center shrink-0 border cursor-pointer text-base font-bold text-gray-800 px-[13px] h-9 rounded-md ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'hover:border-blue-500'}`} onClick={() => changePage(index + 1)}>
+                    {index + 1}
+                </li>
+            ))}
+            <button className="flex items-center justify-center shrink-0 bg-gray-100 w-9 h-9 rounded-md cursor-pointer hover:bg-blue-400" onClick={() => changePage(currentPage < totalPages ? currentPage + 1 : totalPages)}>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 fill-gray-400 rotate-180" viewBox="0 0 55.753 55.753">
+                    <path d="M12.745 23.915c.283-.282.59-.52.913-.727L35.266 1.581a5.4 5.4 0 0 1 7.637 7.638L24.294 27.828l18.705 18.706a5.4 5.4 0 0 1-7.636 7.637L13.658 32.464a5.367 5.367 0 0 1-.913-.727 5.367 5.367 0 0 1-1.572-3.911 5.369 5.369 0 0 1 1.572-3.911z"data-original="#000000" />
+                </svg>
+            </button>
+        </ul>
     </div>
     {isDetailModalOpen && (<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-3xl mx-4 max-h-[90vh] overflow-auto">
@@ -154,7 +191,8 @@ function Tax()
                 </table>
                 </div>
             </div>
-        </div>)}
+        </div>
+    )}
     </>
 }
 
