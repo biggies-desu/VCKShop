@@ -17,7 +17,7 @@ export default function Header() {
   </ul>
   {/* Right navbar links */}
   <ul className="navbar-nav ml-auto">
-  <button onClick={() => Logout_Admin()} id="logout">ออกจากระบบ</button>
+  <button onClick={() => Logout_Admin()} className="px-4 py-2 border-2 border-black rounded-md hover:bg-yellow-400 hover:text-black" id="logout">ออกจากระบบ</button>
   </ul>
 </nav>
 

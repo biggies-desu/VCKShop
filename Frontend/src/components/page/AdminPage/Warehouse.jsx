@@ -116,11 +116,11 @@ function Warehouse() {
         {!isaddproductmodal && (
             <div className="flex flex-col justify-center kanit-regular">
                 <div className='flex flex-row justify-center items-center bg-white p-4 shadow-md rounded-lg'>
-                    <h1 className="text-xl font-semibold text-gray-700">คำนวณภาษี</h1>
+                    <h1 className="text-xl font-semibold text-gray-700">คลังอะไหล่</h1>
                 </div>
-                <form className="content-start mx-8 my-2">
-                    <div className="flex space-x-4 content-center">
-                        <input value={search_query} type="search" id="search_query" className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-300" placeholder="ค้นหาชื่อ/รหัสสินค้า" onChange={e => setsearch_query(e.target.value)} />
+                <form className="mx-8 my-2">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:gap-4 content-center">
+                        <input value={search_query} type="search" id="search_query" className="w-full sm:flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-300" placeholder="ค้นหาชื่อ/รหัสสินค้า" onChange={e => setsearch_query(e.target.value)} />
                         <button type="button" id="search" onClick={search} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">ค้นหา</button>
                         <button type="button" id="add" onClick={addproduct} className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">เพิ่มสินค้า</button>
                     </div>
@@ -170,8 +170,8 @@ function Warehouse() {
 
         {isEditModalOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
-                <div className="bg-white p-8 rounded shadow-lg w-1/2">
-                    <h2 className="text-[1.5vw] mb-4">แก้ไขสินค้า</h2>
+                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl mx-4">
+                    <h2 className="text-xl font-bold mb-4">แก้ไขสินค้า</h2>
                     <form onSubmit={e => { e.preventDefault(); updateProduct(); }}>
                         <div className="mb-4">
                             <label className="block text-gray-700">จำนวนสินค้า</label>
@@ -192,7 +192,7 @@ function Warehouse() {
                                 <p className="text-red-500 text-sm mx-2 mt-2">หากตั้งไว้เป็น 0 = แจ้งเตือนตลอด, หากเป็นค่าอื่นจะแจ้งเตือนหากน้อยกว่าจำนวนที่ตั้งไว้</p>
                             </div> 
                         </>)}
-                        <div className="flex space-x-4">
+                        <div className="flex justify-center space-x-4">
                             <button className="px-4 py-2 text-gray-700 bg-red-400 hover:bg-red-600 rounded" onClick={closeEditModal}>ยกเลิก</button>
                             <button className="px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 rounded">บันทึก</button>
                         </div>
@@ -203,8 +203,8 @@ function Warehouse() {
 
         {isDetailModalOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
-                <div className="bg-white p-8 rounded shadow-lg w-1/3">
-                    <h2 className="text-[1.5vw] mb-4">รายละเอียด</h2>
+                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl mx-4">
+                    <h2 className="text-xl font-bold mb-4">รายละเอียด</h2>
                     <form>
                         <div className="mb-4">
                             <p><strong>รหัสสินค้า:</strong> {Detail.SparePart_ProductID}</p>
@@ -213,11 +213,8 @@ function Warehouse() {
                             <p><strong>จำนวนคงเหลือ:</strong> {Detail.SparePart_Amount}</p>
                             <p><strong>ราคาต่อหน่วย:</strong> {Detail.SparePart_Price}</p>
                             <p><strong>ประเภท:</strong> {Detail.Category_Name}</p>
-                            <p><strong>ยี่ห้อ:</strong> {Detail.SparePart_Brand_Name}</p>
-                            <p><strong>รถรุ่น:</strong> {Detail.SparePart_Model_Name}</p>
-                            <p><strong>ปี:</strong> {Detail.SparePart_Model_Year}</p>
                         </div>
-                        <div className="flex space-x-4">
+                        <div className="flex justify-center space-x-4">
                             <button onClick={closeDetailModal} className="px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 rounded">ตกลง</button>
                         </div>
                     </form>
@@ -231,9 +228,9 @@ function Warehouse() {
 
         {isDeleteModalOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
-                <div className="bg-white p-8 rounded shadow-lg">
-                    <h2 className="text-[1.5vw] mb-4">ต้องการลบสินค้าหรือไม่</h2>
-                    <div className="flex space-x-20 items-center justify-center">
+                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl mx-4">
+                    <h2 className="text-xl font-bold mb-4">ต้องการลบสินค้าหรือไม่</h2>
+                    <div className="flex space-x-4 items-center justify-center">
                         <button onClick={cancelDelete} className="block rounded px-4 py-2 text-gray-700 bg-red-400 hover:bg-red-600 active:bg-red-700">ยกเลิก</button>
                         <button onClick={confirmDelete} className="block rounded px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 active:bg-green-700">ยืนยัน</button>
                     </div>

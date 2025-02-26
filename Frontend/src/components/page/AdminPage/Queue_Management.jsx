@@ -149,10 +149,10 @@ function Queue_Management()
     return <>
     {!ishistorymodal && (<div>
         <div className="p-6 bg-gray-100 min-h-screen kanit-regular">
-            <div className='flex flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg'>
-                <div></div>
+            <div className='flex flex-col md:flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg space-y-4 md:space-y-0'>
+                <div className="hidden md:block"></div>
                 <h1 className="text-xl font-semibold text-gray-700">รายการคิวเข้าใช้บริการ</h1>
-                <button className="text-white bg-blue-500 hover:bg-blue-700 px-6 py-2 rounded-lg text-lg transition" onClick={() => history()}>ประวัติ</button>
+                <button className="w-full md:w-auto text-white bg-blue-500 hover:bg-blue-700 px-6 py-2 rounded-lg text-lg transition" onClick={() => history()}>ประวัติ</button>
             </div>
             <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex space-x-4 items-center">      
                 <input className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time(e.target.value)}/>
@@ -198,8 +198,8 @@ function Queue_Management()
 
         {isEditModalOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
-                <div className="bg-white p-8 rounded shadow-lg w-1/2">
-                    <h2 className="text-[1.5vw] mb-4">แก้ไขวัน/เวลาที่เข้าใช้บริการ</h2>
+                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl mx-4">
+                    <h2 className="text-xl font-bold mb-4">แก้ไขวัน/เวลาที่เข้าใช้บริการ</h2>
                     <form onSubmit={e => { e.preventDefault(); updateQueue(); }}>
                         <div className="mb-4">
                             <label className="block text-gray-700">วันที่เข้าใช้บริการ</label>
@@ -216,7 +216,7 @@ function Queue_Management()
                                 ))}
                             </select>
                         </div>
-                        <div className="flex space-x-4">
+                        <div className="flex justify-center space-x-4">
                             <button className="px-4 py-2 text-gray-700 bg-red-400 hover:bg-red-600 rounded" onClick={closeEditModal}>ยกเลิก</button>
                             <button className="px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 rounded">บันทึก</button>
                         </div>
@@ -227,10 +227,10 @@ function Queue_Management()
 
         {isDetailModalOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
-                <div className="bg-white p-8 rounded shadow-lg w-1/3">
-                    <h2 className="text-[1.5vw] mb-4">รายละเอียด</h2>
+                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl mx-4">
+                    <h2 className="text-xl font-bold mb-4">รายละเอียด</h2>
                     <form>
-                        <div className="mb-4">
+                        <div className="mb-4 space-y-2">
                             <p><strong>วันที่จอง:</strong> {new Date(Detail.Booking_Date).toLocaleDateString('th-TH')}</p>
                             <p><strong>เวลาที่จอง:</strong> {Detail.Booking_Time}</p>
                             <p><strong>ชื่อจริง:</strong> {Detail.Booking_FirstName}</p>
@@ -239,8 +239,8 @@ function Queue_Management()
                             <p><strong>รายละเอียดการจอง:</strong> {Detail.Booking_Description ? Detail.Booking_Description : "-"}</p>
                             <p><strong>เลขทะเบียนรถ:</strong> {Detail.Booking_CarRegistration ? Detail.Booking_CarRegistration : "-"}</p>
                         </div>
-                        <div className="flex space-x-4">
-                            <button type='button' onClick={CloseDetailModal} className="px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 rounded">ตกลง</button>
+                        <div className="flex justify-center">
+                            <button type='button' onClick={CloseDetailModal} className="px-6 py-2 text-white bg-green-500 hover:bg-green-700 rounded-lg transition">ตกลง</button>
                         </div>
                     </form>
                 </div>

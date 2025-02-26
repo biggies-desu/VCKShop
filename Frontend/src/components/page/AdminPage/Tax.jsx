@@ -116,10 +116,10 @@ function Tax()
         </div>
     </div>
     {isDetailModalOpen && (<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
-            <div className="bg-white p-8 rounded shadow-lg w-1/2 max-h-screen">
-            <div className="flex flex-row justify-between">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-3xl mx-4 max-h-[90vh] overflow-auto">
+            <div className="flex justify-between items-center mb-4">
                 <h2></h2>
-                <h2 className="text-[1.5vw] text-center">รายการสินค้าที่เหลือน้อย</h2>
+                <h2 className="text-xl text-center">รายการสินค้าที่เหลือน้อย</h2>
                 <div onClick={() => CloseDetailModal()}><button type ='button'>
                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                 <path stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
@@ -127,7 +127,7 @@ function Tax()
                 </button></div>
                 </div>
                 <div className="relative overflow-x-auto">
-                <table className="w-full text-left text-[1vw] table-auto">
+                <table className="w-full text-sm md:text-base table-auto border-collapse">
                     <thead>
                         <tr>
                             <th className="text-start px-3 py-2">รหัสสินค้า</th>

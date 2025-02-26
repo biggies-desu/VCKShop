@@ -32,10 +32,10 @@ function Queue_History({setishistorymodal})
     return<>    
     <div className="p-6 bg-gray-100 min-h-screen kanit-regular">
         <div className='flex flex-col text-nowrap'>
-            <div className='flex flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg'>
-                <button className="text-white bg-blue-500 hover:bg-blue-700 px-6 py-2 rounded-lg text-lg transition" onClick={() => setishistorymodal(false)}>กลับ</button>
+            <div className='flex flex-col md:flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg space-y-4 md:space-y-0'>
+                <div className="hidden md:block"></div>
                 <h1 className="text-xl font-semibold text-gray-700">ประวัติคิวเข้าใช้บริการ</h1>
-                <h1 className="text-xl font-semibold text-gray-700"></h1>
+                <button className="w-full md:w-auto text-white bg-blue-500 hover:bg-blue-700 px-6 py-2 rounded-lg text-lg transition" onClick={() => setishistorymodal(false)}>กลับ</button>
             </div>
             <div className="relative overflow-x-auto shadow-md rounded-2xl mt-6">
                 <table className="w-full text-sm text-left text-gray-600 bg-white shadow-md rounded-xl">
@@ -68,8 +68,8 @@ function Queue_History({setishistorymodal})
     
     {isDetailModalOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
-                <div className="bg-white p-8 rounded shadow-lg w-1/3">
-                    <h2 className="text-[1.5vw] mb-4">รายละเอียด</h2>
+                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl mx-4">
+                    <h2 className="text-xl font-bold mb-4">รายละเอียด</h2>
                     <form>
                         <div className="mb-4">
                             <p><strong>วันที่จอง:</strong> {new Date(Detail.Booking_Date).toLocaleDateString('th-TH')}</p>
@@ -80,7 +80,7 @@ function Queue_History({setishistorymodal})
                             <p><strong>รายละเอียดการจอง:</strong> {Detail.Booking_Description ? Detail.Booking_Description : "-"}</p>
                             <p><strong>เลขทะเบียนรถ:</strong> {Detail.Booking_CarRegistration ? Detail.Booking_CarRegistration : "-"}</p>
                         </div>
-                        <div className="flex space-x-4">
+                        <div className="flex justify-center">
                             <button type='button' className="px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 rounded" onClick={CloseDetailModal}>ตกลง</button>
                         </div>
                     </form>
