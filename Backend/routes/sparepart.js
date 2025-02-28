@@ -11,16 +11,17 @@ router.get('/allsparepart',(req,res) => {
     return res.json(data)
   })
 })
-router.put('/updatesparepart/:id', function (req, res) {
+router.put('/updatesparepart/:id',(req, res) => {
   const sparepartId = req.params.id;
   let productamount = req.body.productamount;
   let productprice = req.body.productprice;
   let productnotify = req.body.productnotify
   let productnotify_amount = req.body.productnotify_amount
   let user_id = req.body.user_id
+  console.log(req.body)
   const getproductnamesql = `SELECT SparePart_Name FROM sparepart WHERE SparePart_ID = ?`
   //get productname first
-  db.query(getproductnamesql, [sparepartId], function (err, result){
+  db.query(getproductnamesql, [sparepartId], (err, result) => {
     if(err)
     {
       return res.send(err)
@@ -93,5 +94,27 @@ router.post('/searchquery',function (req,res) {
     }
   })
 })
+
+ router.get('/categorytotal', function (req, res) {
+  const modelId = req.query.modelId;
+  const sparePartName = req.query.sparePartName
+  const sqlcommand = ` SELECT sparepart.Category_ID,COUNT(SparePart_Amount) AS TotalAmount FROM sparepart
+                       JOIN category ON sparepart.Category_ID = category.Category_ID 
+                       JOIN sparepart_model_link ON sparepart.SparePart_ID = sparepart_model_link.SparePart_ID 
+                       JOIN sparepart_model ON sparepart_model_link.SparePart_Model_ID = sparepart_model.SparePart_Model_ID 
+                       JOIN sparepart_brand ON sparepart_model.SparePart_Brand_ID = sparepart_brand.SparePart_Brand_ID 
+                       WHERE sparepart_model_link.SparePart_Model_ID = ?
+                       AND SparePart_Name LIKE CONCAT('%', ?, '%')
+                       GROUP BY sparepart.Category_ID;
+                      `;
+
+  db.query(sqlcommand, [modelId, sparePartName], function (err, results) {
+    if (err) {
+      return res.send(err);
+    } else {
+      res.json(results);  // ส่งค่าผลรวมกลับ
+    }
+  });
+});
 
 module.exports = router;

@@ -1,10 +1,9 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { PieChart } from "@mui/x-charts"
 
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
+import { Chart } from "react-google-charts";
+
 
 function Dashboard()
 {
@@ -14,11 +13,20 @@ function Dashboard()
     const [itemtypedata, setitemtypedata] = useState([])
     const [notifydata, setnotifydata] = useState([])
     const [isListoflowsupplyModalOpen, setisListoflowsupplyModalOpen] = useState(false)
-    const [queuechart, setqueuechart] = useState()
-    const [itemchart, setitemchart] = useState()
     const [notifyitem, setnotifyitem] = useState([])
 
-    ChartJS.register(ArcElement, Tooltip, Legend);
+    const [chart1, setchart1] = useState([])
+    const [chart2, setchart2] = useState([])
+    const colormapping = {
+        "เสร็จสิ้นแล้ว":"#4CAF50",
+        "ยังไม่เสร็จสิ้น":"#FF5722",
+        "ยาง":"#4CAF50",
+        "เครื่องยนต์":"#FF9800",
+        "อื่นๆ":"#2196F3",
+        "น้ำมันเครื่อง":"#FFC107",
+        "ล้อ":"#9C27B0",
+        "ลูกปืน":"#E91E63"
+    }
 
     useEffect(() => {
         axios.all([
@@ -31,60 +39,24 @@ function Dashboard()
         ])
             .then((res) => {
                 setqueuedata(res[0].data)
-                setqueuestatusdata(res[1].data)
+                setqueuestatusdata(res[1].data) //*use for queue chart
                 setitemdata(res[2].data)
-                setitemtypedata(res[3].data)
+                setitemtypedata(res[3].data) //* use for itemtype in warehouse
                 setnotifydata(res[4].data)
                 setnotifyitem(res[5].data)
 
-                //set data to queuechart to display in chartjs
-                const formattedqueuechart = {
-                    labels: res[1].data.map((item) => item.label),
-                    datasets: [
-                        {
-                            data: res[1].data.map((item) => item.value),
-                            backgroundColor: [
-                                'rgba(45, 255, 185, 0.2)',
-                                'rgba(255, 99, 132, 0.2)',
-                              ],
-                              borderColor: [
-                                'rgba(45, 255, 185, 1)',
-                                'rgba(255, 99, 132, 1)',
-                                
-                              ],
-                              borderWidth: 1,
-                        }
-                    ]
-                }
-                setqueuechart(formattedqueuechart)
-                //set data to itemchart to display in chartjs
-                const formatteditemchart = {
-                    labels: res[3].data.map((item) => item.label),
-                    datasets: [
-                        {
-                            data: res[3].data.map((item) => item.value),
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.2)',
-                                'rgba(54, 162, 235, 0.2)',
-                                'rgba(255, 206, 86, 0.2)',
-                                'rgba(75, 192, 192, 0.2)',
-                                'rgba(153, 102, 255, 0.2)',
-                                'rgba(255, 159, 64, 0.2)',
-                            ],
-                            borderColor: [
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)',
-                                'rgba(255, 159, 64, 1)',
-                            ],
-                            borderWidth: 1,
-                        }
-                    ]
-                }
-                setitemchart(formatteditemchart)
-
+               //set chart1 -- จำนวนสถานะคิว
+               let chartdata1 = [
+                ["สถานะ", "จำนวน", { role: "style" }],
+                ...res[1].data.map(item => [item.label, Number(item.value), colormapping[item.label]])
+               ]
+               setchart1(chartdata1)
+               //set chart2 -- จำนวนอะไหล่ตามประเภทในร้านที่มี
+               let chartdata2 = [
+                ["ประเภทอะไหล่", "จำนวน", { role: "style" }],
+                ...res[3].data.map(item => [item.label, Number(item.value), colormapping[item.label]])
+               ]
+               setchart2(chartdata2)
                 console.log(res)
             })
             .catch((err) => {
@@ -172,37 +144,9 @@ function Dashboard()
             </div>
         </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8 px-4">
-                <div className="flex flex-col items-center">
-                    <h2 className="text-xl font-bold mb-4">คิวทั้งหมด</h2>
-                    <div className="w-full max-w-[600px] h-[400px]">
-                        {queuechart ? (<Pie data={queuechart}
-                                            options={{
-                                                responsive: true,
-                                                maintainAspectRatio: false,
-                                                plugins: { legend: { position: "bottom" } },
-                        }}/>
-                    ) : (
-                        <div>Loading chart...</div>
-                    )}
-                    </div>
-                </div>
-                <div className="flex flex-col items-center">
-                    <h2 className="text-xl font-bold mb-4">อะไหล่ในร้าน</h2>
-                    <div className="w-full max-w-[600px] h-[400px]">
-                        {itemchart ? (<Pie data={itemchart}
-                                            options={{
-                                                responsive: true,
-                                                maintainAspectRatio: false,
-                                                plugins: { legend: { position: "bottom" } },
-                        }}/>
-                    ) : (
-                        <div>Loading chart...</div>
-                    )}
-                    </div>
-                </div>
-            </div>
     </div>
+    {chart1 && <Chart chartType="ColumnChart" width="100%" height="100%" data={chart1} />}
+    {chart2 && <Chart chartType="ColumnChart" width="100%" height="100%" data={chart2} />}
     {isListoflowsupplyModalOpen && (<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-3xl mx-4 max-h-[90vh] overflow-auto">
             <div className="flex justify-between items-center mb-4">

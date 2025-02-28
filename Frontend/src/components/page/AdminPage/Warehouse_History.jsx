@@ -1,19 +1,28 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { act, useState } from "react";
 import { useEffect } from "react";
 
 function Warehouse_History()
 {
     const [logdata, setlogdata] = useState([])
     const [search_time, setsearch_time] = useState('')
+    const [search_time2, setsearch_time2] = useState('')
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(24); // จำนวนรายการที่จะแสดงในแต่ละหน้า
+    const [itemsPerPage] = useState(18); // จำนวนรายการที่จะแสดงในแต่ละหน้า
     const [totalPages, setTotalPages] = useState(1);
+    const [action, setaction] = useState('')
+    const [user,setuser] = useState('')
+    const [userdropdown, setuserdropdown] = useState([])
 
     useEffect(() => {
-        axios.get(`${import.meta.env.VITE_API_URL}/warehouselog`)
+        axios.all([
+            axios.get(`${import.meta.env.VITE_API_URL}/warehouselog`),
+            axios.get(`${import.meta.env.VITE_API_URL}/getadminuser`)
+        ])
+        
         .then((res) => {
-            setlogdata(res.data)
+            setlogdata(res[0].data)
+            setuserdropdown(res[1].data)
         })
         .catch((err) => {
             console.log(err)
@@ -27,12 +36,14 @@ function Warehouse_History()
         }
     }, [logdata, itemsPerPage]); 
 
-    function searchtime(even) {
+    function searchtime(event) {
         event.preventDefault();
-        console.log("search : ", search_time);
         axios.post(`${import.meta.env.VITE_API_URL}/searchwarehousetime`, 
             {
-                search_time: search_time
+                search_time: search_time || "",
+                search_time2: search_time2 || "",
+                action: action || "",
+                user_username: user || ""
             }
         )
         .then((res) => {
@@ -57,8 +68,25 @@ function Warehouse_History()
                 <h1 className="text-xl font-semibold text-gray-700">ประวัติการนำเข้า</h1>
                 <div></div>
             </div>
-    <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex space-x-4 items-center">      
-        <input className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time(e.target.value)}/>
+    <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex space-x-4 items-center">
+        <select id="action" className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"
+             type="text" value={action} placeholder='กิจกรรม' onChange={(e) => setaction(e.target.value)}>
+                <option selected value=''>ทั้งหมด</option>
+                <option value='เพิ่มสินค้า'>เพิ่มสินค้า</option>
+                <option value='แก้ไขจำนวน/ราคาสินค้า'>แก้ไขจำนวน/ราคาสินค้</option>
+                <option value='ลบสินค้า'>ลบสินค้า</option>
+             </select>
+        <select id="ีuser" className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"
+             type="text" value={user} placeholder='กิจกรรม' onChange={(e) => setuser(e.target.value)}>
+                <option selected value=''>ทั้งหมด</option>
+                {userdropdown.map((user, index) => (
+                    <option key={index} value={user.user_username}>
+                        {user.user_username}
+                    </option>
+                ))}
+             </select>
+        <input className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date1" type="date" required onChange={(e) => setsearch_time(e.target.value)}/>
+        <input className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date2" type="date" required onChange={(e) => setsearch_time2(e.target.value)}/>
         <button type='button' id="search" className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition" onClick={searchtime}>
             <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>

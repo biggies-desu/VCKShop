@@ -29,7 +29,7 @@ router.post('/sentemail', async (req, res) => {
         from: process.env.MAILUSER,
         to: "biggies7993@gmail.com", // Change to the owner's email later
         subject: `ข้อความจากคุณ ${name}`,
-        text: `${message} ตอบกลับที่ ${email}`
+        text: `เนี้อหาข้อความ\n${message}\nอีเมลติดต่อกลับ : ${email}`
     };
 
     // Send email and handle response

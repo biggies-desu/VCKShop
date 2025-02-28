@@ -146,23 +146,22 @@ router.post('/deletequeue', function (req,res) {
 })
 
 router.post('/searchqueuetime', function (req, res) {
-  let time = req.body.search_time;
+  let time1 = req.body.search_time;
+  let time2 = req.body.search_time2;
   let sqlcommand;
-  let params = [];
 
-  if (!time || time.trim() === "") {
-    sqlcommand = `SELECT * FROM booking
-                  WHERE Booking_Status = 'ยังไม่เสร็จสิ้น'
-                  ORDER BY DATE(Booking_Date);`
+  if (!time1 || time1.trim() === "" || !time2 || time2.trim() === "") {
+    sqlcommand = `select * from booking
+                  where Booking_Status = 'ยังไม่เสร็จสิ้น'
+                  order by date(Booking_Date);`
   } else {
-    sqlcommand = `SELECT * FROM booking
-                  WHERE Booking_Status = 'ยังไม่เสร็จสิ้น'
-                  AND Booking_Date = ?
-                  ORDER BY DATE(Booking_Date);`
-    params = [time];
+    sqlcommand = `select * from booking
+                  where Booking_Status = 'ยังไม่เสร็จสิ้น'
+                  and Booking_Date between ? and ?
+                  order by date(Booking_Date);`
   }
 
-  db.query(sqlcommand, params, function (err, results) {
+  db.query(sqlcommand, [time1,time2], function (err, results) {
     if(err){
       res.send(err)}
     else{

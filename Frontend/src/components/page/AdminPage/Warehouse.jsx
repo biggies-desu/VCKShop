@@ -14,7 +14,7 @@ function Warehouse() {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState('')
     const [Detail, setDetail] = useState(null)
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(12); // จำนวนรายการที่จะแสดงในแต่ละหน้า
+    const [itemsPerPage] = useState(6); // จำนวนรายการที่จะแสดงในแต่ละหน้า
     const [totalPages, setTotalPages] = useState(1);
 
     const token = jwtDecode(localStorage.getItem('token'));

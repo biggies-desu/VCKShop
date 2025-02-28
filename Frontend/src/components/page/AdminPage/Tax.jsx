@@ -6,11 +6,13 @@ function Tax()
     const [taxdata, settaxdata] = useState([])
     const [detail, setdetail] = useState([])
     const [search_time, setsearch_time] = useState('')
+    const [search_time2, setsearch_time2] = useState('')
     const [isDetailModalOpen, setisDetailModalOpen] = useState(false)
     const [totaltax, settotaltax] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(12); // จำนวนรายการที่จะแสดงในแต่ละหน้า
     const [totalPages, setTotalPages] = useState(1);
+    const [issearch, setissearch] = useState(false)
 
     useEffect(() => {
         axios.all([
@@ -32,19 +34,20 @@ function Tax()
         }
     }, [taxdata, itemsPerPage]); 
 
-    function searchtime(search_time)
+    function searchtime()
     {
-        if(search_time)
+        if(search_time,search_time2)
         {
             axios.all([
-                axios.post(`${import.meta.env.VITE_API_URL}/getmonthtax`,{search_time: search_time}),
-                axios.post(`${import.meta.env.VITE_API_URL}/getselectmonthtotaltax`,{search_time: search_time})
+                axios.post(`${import.meta.env.VITE_API_URL}/getsearchtax`,{search_time: search_time, search_time2: search_time2,}),
+                axios.post(`${import.meta.env.VITE_API_URL}/getselecttotaltax`,{search_time: search_time, search_time2: search_time2,})
             ])
             .then((res) => {
                 console.log(res[0].data)
                 console.log(res[1].data)
             settaxdata(res[0].data)
             settotaltax(res[1].data)
+            setissearch(true)
         })
             .catch((err)=>{
             console.log(err)
@@ -86,12 +89,25 @@ function Tax()
         <div className='flex flex-row justify-center items-center bg-white p-4 shadow-md rounded-lg'>
             <h1 className="text-xl font-semibold text-gray-700">คำนวณภาษี</h1>
         </div>
-        {totaltax && (
+        {totaltax && !issearch && (
             <div className="bg-yellow-400 p-4 rounded-lg shadow-md mt-4">
             <div className="flex justify-between items-center">
             <div>
                 <h3 className="text-3xl font-bold text-gray-800">{totaltax?.[0]?.totaltax ?? '0.00'} บาท</h3>
-                <p className="text-gray-700">จำนวนภาษีเดือนนี้</p>
+                <p className="text-gray-700">จำนวนภาษีในเดือนที่ {(new Date()).getMonth()+1}</p>
+            </div>
+            <div className="text-gray-600">
+                <i className="ion ion-stats-bars text-4xl"></i>
+            </div>
+            </div>
+        </div>
+        )}
+        {totaltax && issearch && (
+            <div className="bg-yellow-400 p-4 rounded-lg shadow-md mt-4">
+            <div className="flex justify-between items-center">
+            <div>
+                <h3 className="text-3xl font-bold text-gray-800">{totaltax?.[0]?.totaltax ?? '0.00'} บาท</h3>
+                <p className="text-gray-700">จำนวนภาษีในช่วงเวลาที่เลือก</p>
             </div>
             <div className="text-gray-600">
                 <i className="ion ion-stats-bars text-4xl"></i>
@@ -102,8 +118,9 @@ function Tax()
         
         
         <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex space-x-4 items-center">      
-            <input className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="month" type="month" required onChange={(e) => setsearch_time(e.target.value)}/>
-            <button type='button' id="search" className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition" required onClick={() => searchtime(search_time)}>
+            <input className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="month" type="date" required onChange={(e) => setsearch_time(e.target.value)}/>
+            <input className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="month" type="date" required onChange={(e) => setsearch_time2(e.target.value)}/>
+            <button type='button' id="search" className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition" required onClick={() => searchtime()}>
                 <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
                 </svg>
