@@ -7,7 +7,7 @@ router.get('/getalltax', (req,res) =>
     //get all booking id then cal the tax
     //ต้องสภานะ = เสร็จสิ้น -> หักของในสต๊อก -> คำนวณภาษีคิด vat 
     const sqLcommand = `SELECT b.booking_id, b.booking_date, b.booking_time,
-    round(sum(s.sparepart_price*bs.booking_sparepart_quantity)*7/107, 2) as totaltax,
+    round(sum(s.sparepart_price*bs.booking_sparepart_quantity),2) as totalprice,
     group_concat(s.sparepart_name SEPARATOR ', ') as sparepart_name
     from sparepart s JOIN booking_sparepart bs JOIN booking b 
     ON s.sparepart_ID = bs.sparepart_ID and b.booking_id = bs.booking_id Where b.booking_status = 'เสร็จสิ้นแล้ว'
@@ -20,8 +20,8 @@ router.get('/getalltax', (req,res) =>
     })
 })
 
-router.get('/getcurrentmonthtotaltax', (req,res) => {
-    const sqlcommand = `select round(sum(s.sparepart_price*bs.booking_sparepart_quantity)*7/107, 2) as totaltax
+router.get('/getcurrentmonthtotalprice', (req,res) => {
+    const sqlcommand = `select round(sum(s.sparepart_price*bs.booking_sparepart_quantity),2) as totalprice
     from booking b join booking_sparepart bs on b.booking_id = bs.booking_id join sparepart s on s.sparepart_id = bs.sparepart_id
     where b.booking_status = 'เสร็จสิ้นแล้ว' and date_format(b.booking_date, '%Y-%m') = date_format(curdate(), '%Y-%m')`
     db.query(sqlcommand,(err,results) => {
@@ -37,7 +37,7 @@ router.post('/getsearchtax', (req,res) =>
     const {search_time, search_time2} = req.body
     console.log(search_time,search_time2)
     const sqLcommand = `select b.booking_id, b.booking_date, b.booking_time,
-    round(sum(s.sparepart_price*bs.booking_sparepart_quantity)*7/107, 2) as totaltax,
+    round(sum(s.sparepart_price*bs.booking_sparepart_quantity),2) as totalprice,
     group_concat(s.sparepart_name separator ', ') as sparepart_name
     from sparepart s join booking_sparepart bs join booking b on s.sparepart_ID = bs.sparepart_ID and b.booking_id = bs.booking_id
     where b.booking_status = 'เสร็จสิ้นแล้ว' and date_format(b.booking_date, '%Y-%m-%d') between ? and ?
@@ -51,10 +51,10 @@ router.post('/getsearchtax', (req,res) =>
     })
 })
 
-router.post('/getselecttotaltax', (req,res) => {
+router.post('/getselecttotalprice', (req,res) => {
     const {search_time, search_time2} = req.body
     console.log(search_time,search_time2)
-    const sqlcommand = `select round(sum(s.sparepart_price*bs.booking_sparepart_quantity)*7/107, 2) as totaltax
+    const sqlcommand = `select round(sum(s.sparepart_price*bs.booking_sparepart_quantity),2) as totalprice
     from booking b join booking_sparepart bs on b.booking_id = bs.booking_id join sparepart s on s.sparepart_id = bs.sparepart_id
     where b.booking_status = 'เสร็จสิ้นแล้ว' and date_format(b.booking_date, '%Y-%m-%d') between ? and ?`
     db.query(sqlcommand,[search_time,search_time2],(err,results) => {
@@ -65,10 +65,19 @@ router.post('/getselecttotaltax', (req,res) => {
     })
 })
 
+router.get('/default_vat', (req,res) => {
+    const sqlcommand = 'select * from default_vat'
+    db.query(sqlcommand,(err,results) => {
+        if(err){
+            return res.json(err)
+        }
+            return res.json(results)
+    })
+})
 
 router.get('/gettaxdetail/:id', (req,res) => {
     const searchbookingid = req.params.id
-    const sqlcommand = `select bs.booking_sparepart_quantity, round((s.sparepart_price*bs.booking_sparepart_quantity)*7/107, 2) as taxprice, s.sparepart_productid, s.sparepart_name from sparepart
+    const sqlcommand = `select bs.booking_sparepart_quantity, round((s.sparepart_price*bs.booking_sparepart_quantity)) as totalprice, s.sparepart_productid, s.sparepart_name from sparepart
     join booking b join booking_sparepart bs on b.booking_id = bs.booking_id join sparepart s on s.sparepart_id = bs.sparepart_id
     where b.booking_status = 'เสร็จสิ้นแล้ว' and b.booking_id = ? group by bs.booking_id, bs.sparepart_id`
     db.query(sqlcommand,[searchbookingid],(err,results) => {

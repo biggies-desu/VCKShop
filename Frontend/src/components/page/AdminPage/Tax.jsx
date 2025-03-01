@@ -8,21 +8,26 @@ function Tax()
     const [search_time, setsearch_time] = useState('')
     const [search_time2, setsearch_time2] = useState('')
     const [isDetailModalOpen, setisDetailModalOpen] = useState(false)
-    const [totaltax, settotaltax] = useState([])
+    const [totalprice, settotalprice] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(12); // จำนวนรายการที่จะแสดงในแต่ละหน้า
     const [totalPages, setTotalPages] = useState(1);
     const [issearch, setissearch] = useState(false)
+    const [vatdropdown, setvatdropdown] = useState([])
+    const [vat, setvat] = useState('')
 
     useEffect(() => {
         axios.all([
             axios.get(`${import.meta.env.VITE_API_URL}/getalltax`),
-            axios.get(`${import.meta.env.VITE_API_URL}/getcurrentmonthtotaltax`)
+            axios.get(`${import.meta.env.VITE_API_URL}/getcurrentmonthtotalprice`),
+            axios.get(`${import.meta.env.VITE_API_URL}/default_vat`)
         ])
         .then((res) => {
             settaxdata(res[0].data)
-            settotaltax(res[1].data)
-            
+            settotalprice(res[1].data)
+            setvatdropdown(res[2].data)
+            setvat(7) // default vat
+            console.log(vatdropdown)
         })
         .catch((err) => console.log(err))
     }, [])
@@ -40,13 +45,13 @@ function Tax()
         {
             axios.all([
                 axios.post(`${import.meta.env.VITE_API_URL}/getsearchtax`,{search_time: search_time, search_time2: search_time2,}),
-                axios.post(`${import.meta.env.VITE_API_URL}/getselecttotaltax`,{search_time: search_time, search_time2: search_time2,})
+                axios.post(`${import.meta.env.VITE_API_URL}/getselecttotalprice`,{search_time: search_time, search_time2: search_time2,})
             ])
             .then((res) => {
                 console.log(res[0].data)
                 console.log(res[1].data)
             settaxdata(res[0].data)
-            settotaltax(res[1].data)
+            settotalprice(res[1].data)
             setissearch(true)
         })
             .catch((err)=>{
@@ -89,11 +94,11 @@ function Tax()
         <div className='flex flex-row justify-center items-center bg-white p-4 shadow-md rounded-lg'>
             <h1 className="text-xl font-semibold text-gray-700">คำนวณภาษี</h1>
         </div>
-        {totaltax && !issearch && (
+        {totalprice && !issearch && (
             <div className="bg-yellow-400 p-4 rounded-lg shadow-md mt-4">
             <div className="flex justify-between items-center">
             <div>
-                <h3 className="text-3xl font-bold text-gray-800">{totaltax?.[0]?.totaltax ?? '0.00'} บาท</h3>
+                <h3 className="text-3xl font-bold text-gray-800">{ (totalprice?.[0]?.totalprice * (vat / (vat + 100))).toFixed(2) || "0.00" } บาท</h3>
                 <p className="text-gray-700">จำนวนภาษีในเดือนที่ {(new Date()).getMonth()+1}</p>
             </div>
             <div className="text-gray-600">
@@ -102,11 +107,11 @@ function Tax()
             </div>
         </div>
         )}
-        {totaltax && issearch && (
+        {totalprice && issearch && (
             <div className="bg-yellow-400 p-4 rounded-lg shadow-md mt-4">
             <div className="flex justify-between items-center">
             <div>
-                <h3 className="text-3xl font-bold text-gray-800">{totaltax?.[0]?.totaltax ?? '0.00'} บาท</h3>
+                <h3 className="text-3xl font-bold text-gray-800">{ (totalprice?.[0]?.totalprice * (vat / (vat + 100))).toFixed(2) || "0.00"} บาท</h3>
                 <p className="text-gray-700">จำนวนภาษีในช่วงเวลาที่เลือก</p>
             </div>
             <div className="text-gray-600">
@@ -120,6 +125,14 @@ function Tax()
         <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex space-x-4 items-center">      
             <input className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="month" type="date" required onChange={(e) => setsearch_time(e.target.value)}/>
             <input className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="month" type="date" required onChange={(e) => setsearch_time2(e.target.value)}/>
+            <select id="ีtax" className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"
+             type="text" value={vat} placeholder='ภาษี' onChange={(e) => setvat(parseFloat(e.target.value))}>
+                {vatdropdown.map((vat, index) => (
+                    <option key={index} value={vat.VAT_Value}>
+                        {vat.VAT_Name}
+                    </option>
+                ))}
+             </select>
             <button type='button' id="search" className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition" required onClick={() => searchtime()}>
                 <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
@@ -134,7 +147,7 @@ function Tax()
                         <th className='px-6 py-3'>วันที่จอง</th>
                         <th className='px-6 py-3'>เวลา</th>
                         <th className='text-center px-6 py-3'>ดูรายละเอียด</th>
-                        <th className='text-center px-6 py-3'>จำนวนภาษี 7%</th>
+                        <th className='text-center px-6 py-3'>จำนวนภาษี {vat}%</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -144,7 +157,7 @@ function Tax()
                         <td className='px-4 py-3'>{new Date(item.booking_date).toLocaleDateString('th-TH')}</td>
                         <td className='px-4 py-3'>{item.booking_time}</td>
                         <button type='button' onClick={() => openDetailModal(item)} className="text-blue-500 hover:text-blue-700 px-4 py-3">📄รายละเอียด</button>
-                        <td className='px-4 py-3'>{item.totaltax} บาท</td>
+                        <td className='px-4 py-3'>{(item.totalprice * (vat / (vat + 100))).toFixed(2)} บาท</td>
                     </tr>
                 ))}
                 </tbody>
@@ -187,7 +200,7 @@ function Tax()
                             <th className="text-start px-3 py-2">รหัสสินค้า</th>
                             <th className="text-start px-3 py-2">ชื่อสินค้า</th>
                             <th className="text-center px-2 py-2">จำนวนที่ขาย</th>
-                            <th className="text-end px-2 py-2">ภาษี 7%(VAT)</th>
+                            <th className="text-end px-2 py-2">ภาษี {vat}% (VAT)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -197,7 +210,7 @@ function Tax()
                             <td className="text-start py-4">{item.sparepart_productid}</td>
                             <td className="text-start py-4">{item.sparepart_name}</td>
                             <td className="text-center py-4">{item.booking_sparepart_quantity}</td>
-                            <td className="text-end py-4">{item.taxprice} บาท</td>
+                            <td className="text-end py-4">{(item.totalprice * (vat / (vat + 100))).toFixed(2)} บาท</td>
                             </tr>
                         ))
                     ) : (<tr>

@@ -139,9 +139,9 @@ function Warehouse() {
 
     return <>
         {!isaddproductmodal && (
-            <div className="flex flex-col justify-center kanit-regular">
+            <div className="p-6 bg-gray-100 min-h-screen kanit-regular">
                 <div className='flex flex-row justify-center items-center bg-white p-4 shadow-md rounded-lg'>
-                    <h1 className="text-xl font-semibold text-gray-700">คลังอะไหล่</h1>
+                    <h1 className="text-xl font-semibold text-gray-700">คลังสินค้า</h1>
                 </div>
                 <form className="mx-8 my-2">
                     <div className="flex flex-col gap-2 sm:flex-row sm:gap-4 content-center">

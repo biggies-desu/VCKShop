@@ -18,6 +18,7 @@ const upload = require('./routes/upload')
 const warehouse_log = require('./routes/warehouselog')
 const tax = require('./routes/tax')
 const email = require('./routes/email')
+const account = require('./routes/account')
 
 app.use(express.json())
 app.use(bodyParser())
@@ -41,6 +42,7 @@ app.use(upload)
 app.use(warehouse_log)
 app.use(tax)
 app.use(email)
+app.use(account)
 
 
 app.listen(5000, () => 
