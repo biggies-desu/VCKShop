@@ -19,7 +19,20 @@ const storage = multer.diskStorage({
   }
 })
 
-const upload = multer({ storage: storage });
+const upload = multer({ 
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    const fileTypes = /jpeg|jpg|png|gif/;
+    const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimeType = fileTypes.test(file.mimetype);
+
+    if (extName && mimeType) {
+      return cb(null, true);
+    } else {
+      return cb(new Error('Only images are allowed!'), false);
+    }
+  }
+});
 
 const fs = require('fs');
 if (!fs.existsSync('uploads')) {
@@ -63,7 +76,7 @@ router.post('/addproduct', upload.single('productimage'), (req, res) => {
     const modelid = productmodelid.split(',');
     const insertmap = modelid.map(modelid => [sparepartID, modelid
     ]);
-    const insertsql = `INSERT INTO sparepart_model_link (sparepart_id, sparepart_model_id) VALUES ?`;
+    const insertsql = `INSERT INTO Model_link (sparepart_id, Model_id) VALUES ?`;
     db.query(insertsql, [insertmap], (err, result) => {
       if (err) {
         console.error(err);
@@ -104,9 +117,13 @@ router.delete('/deletesparepart/:id', function (req, res) {
     const filename = result[0].SparePart_Image;
     const filePath = filename ? path.join(__dirname, 'uploads', filename) : null; //if have image get filepath of img
     //delete image from upload folder
-    if(filename && fs.existsSync(filePath))
-    {
-      fs.unlinkSync(filePath)
+    if (filename && fs.existsSync(filePath)) {
+      try {
+          fs.unlinkSync(filePath);
+          console.log(`Deleted image: ${filePath}`);
+      } catch (err) {
+          console.error(`Failed to delete image: ${filePath}`, err);
+      }
     }
     //delete from sparepart db
     const sqlcommand = 'DELETE FROM sparepart WHERE SparePart_ID = ?';

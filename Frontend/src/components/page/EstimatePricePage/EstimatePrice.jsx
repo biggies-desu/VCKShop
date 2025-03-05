@@ -13,7 +13,6 @@ function EstimatePrice() {
     const [selectedServices, setSelectedServices] = useState([]);
     const [dropdownservice, setdropdownservice] = useState([])
     const [dropdownbrand, setdropdownbrand] = useState([])
-    const [quantities, setQuantities] = useState({});
 
     const location = useLocation();
     const { state } = location || {};
@@ -31,7 +30,6 @@ function EstimatePrice() {
             }
         }
     };
-
       useEffect(() => {
         axios.all([
             axios.get(`${import.meta.env.VITE_API_URL}/getdropdownbrand`),
@@ -81,19 +79,18 @@ function EstimatePrice() {
         if (cart.length > 0 || selectedServices.length > 0) {
             const sparePartIds = cart.map((item) => item.SparePart_ID);
             console.log(sparePartIds);
-            console.log(selectedServices)
             return (
                 <div>
                     {cart.map((item, index) => (
-                        <div key={index} className='flex flex-row justify-between'>
-                            <p className="text-start text-lg flex flex-row justify-between w-11/12">{index + 1}. {item.SparePart_Name}<span className="ml-auto">จำนวน :&nbsp;</span> <span className="text-red-500">{item.quantity}</span>&nbsp;รายการ</p>
-                                <p className="text-end text-xl">{item.SparePart_Price * item.quantity} บาท</p>
+                        <div key={index} className='flex flex-col md:flex-row justify-between'>
+                            <p className="text-start text-lg flex flex-row justify-between w-12/12 sm:w-9/12 lg:w-10/12 2xl:w-11/12">{index + 1}. {item.SparePart_Name}<span className="ml-auto hidden md:flex flex-col md:flex-row">จำนวน :&nbsp;</span><span className="text-red-500 flex flex-col md:flex-row">{item.quantity}</span>&nbsp;รายการ</p>
+                            <p className="sm:text-end text-lg">{item.SparePart_Price.toFixed(2) * item.quantity} บาท</p>
                       </div>
                     ))}
                     {selectedServices.map((item, index) => (
-                        <div key={index} className="flex flex-row justify-between">
-                            <p className="text-start text-lg">{cart.length + index + 1}. {item.Service_Name}</p>
-                            <p className="text-end text-xl">{item.Service_Price} บาท</p>
+                        <div key={index} className="flex flex-col md:flex-row justify-between">
+                            <p className="sm:text-end text-start text-lg">{cart.length + index + 1}. {item.Service_Name}</p>
+                            <p className="sm:text-end text-lg">{item.Service_Price.toFixed(2)} บาท</p>
                         </div>
                     ))}
                     <div className="flex flex-col py-4 px-4">
@@ -103,7 +100,7 @@ function EstimatePrice() {
                         </div>
                         <div className="flex justify-end items-center gap-6">
                             <p className="text-end text-2xl font-bold text-blue-600">รวม <span className="text-red-600">{cart.reduce((total, item) => total + item.quantity, 0) + selectedServices.length}</span> รายการ</p>
-                            <p className="text-end text-2xl font-bold text-blue-600">{totalPrice} บาท</p>
+                            <p className="text-end text-2xl font-bold text-blue-600">{totalPrice.toFixed(2)} บาท</p>
                         </div>
                     </div>
                 </div>
@@ -112,29 +109,6 @@ function EstimatePrice() {
             return <p>ไม่มีข้อมูลอะไหล่</p>;
         }
     }
-
-    // function AddToCart(val) {
-    //     setCart((prevCart) => {
-    //         const existingItemIndex = prevCart.findIndex((item) => item.SparePart_ID === val.SparePart_ID);
-    //         const selectedQty = quantities[val.SparePart_ID] || 1;
-    
-    //         if (existingItemIndex !== -1) {
-    //             return prevCart.map((item, index) =>
-    //                 index === existingItemIndex
-    //                     ? { ...item, quantity: item.quantity + selectedQty }
-    //                     : item
-    //             );
-    //         } else {
-    //             return [...prevCart, { ...val, quantity: selectedQty }];
-    //         }
-    //     });
-    
-    //     setQuantities((prev) => ({
-    //         ...prev,
-    //         [val.SparePart_ID]: 1,
-    //     }));
-    // }
-
     const Navigatetoqueue = () => {
         navigate('/queue', { state: { cart, selectedServices } });
     };    
@@ -150,7 +124,7 @@ function EstimatePrice() {
                 <select id="brand" value={brand} type="text"  onChange={e => {setBrand(e.target.value)}} className="block w-full p-3 text-lg text-gray-800 border border-yellow-400 rounded-xl shadow-lg bg-orange-200 bg-opacity-50 focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="ยี่ห้อ">
                 <option selected value='' disabled>เลือกยี่ห้อ</option>
                     {dropdownbrand.map((item, index) => (
-                        <option key={index} value={item.SparePart_Brand_Name}>{item.SparePart_Brand_Name}</option>
+                        <option key={index} value={item.Brand_Name}>{item.Brand_Name}</option>
                     ))}
                 </select>
                 <Link to={getPagePath()}>
@@ -187,5 +161,4 @@ function EstimatePrice() {
     <Footer />
     </>
 }
-
 export default EstimatePrice

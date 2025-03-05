@@ -80,22 +80,22 @@ function Account()
     }
 
     return <>
-    <div className="p-6 bg-gray-100 min-h-screen kanit-regular">
-        <div className='flex flex-row justify-center items-center bg-white p-4 shadow-md rounded-lg'>
-            <h1 className="text-xl font-semibold text-gray-700">จัดการ Account</h1>
+    <div className="p-6 bg-gray-100 min-h-screen">
+        <div className='kanit-bold flex flex-row justify-center items-center bg-white p-4 shadow-md rounded-lg'>
+            <h1 className="max-md:text-lg md:text-4xl text-gray-700">จัดการ Account</h1>
         </div>
 
-        <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex space-x-4 items-center">      
+        <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex-row md:flex md:space-x-4 items-center">      
         <input className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="name" type="text" placeholder="Username" required onChange={(e) => setsearchname(e.target.value)}/>
-            <button type='button' id="search" className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition" required onClick={() => search_func()}>
+            <button type='button' id="search" className="max-md:mt-2 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition" required onClick={() => search_func()}>
                 <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
                 </svg>
             </button>
         </form>
-    <div>
+    <div className="relative overflow-x-auto shadow-md rounded-2xl mt-6">
     <table className="w-full text-sm text-left text-gray-600 bg-white shadow-md rounded-lg">
-            <thead className="text-base text-white bg-blue-500">
+            <thead className="text-sm md:text-base text-white bg-blue-500">
                 <tr>
                     <th class='text-start px-3 py-2'>Username</th>
                     <th class='text-start px-3 py-2'>Role</th>
@@ -104,7 +104,7 @@ function Account()
             </thead>
         <tbody>
             {accountdata.map((item) => (
-                <tr key = {item.user_id} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100">
+                <tr key = {item.user_id} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100 md:text-lg">
                     <td className ='text-start px-3 py-2'>{item.user_username}</td>
                     <td className="text-start px-3 py-2">
                         <select className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" value={item.role_id} onChange={(e) => rolechange(item.user_id, e.target.value)}>

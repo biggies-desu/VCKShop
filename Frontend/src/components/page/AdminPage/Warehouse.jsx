@@ -14,7 +14,7 @@ function Warehouse() {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState('')
     const [Detail, setDetail] = useState(null)
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(6); // จำนวนรายการที่จะแสดงในแต่ละหน้า
+    const [itemsPerPage] = useState(12); // จำนวนรายการที่จะแสดงในแต่ละหน้า
     const [totalPages, setTotalPages] = useState(1);
 
     const token = jwtDecode(localStorage.getItem('token'));
@@ -139,20 +139,18 @@ function Warehouse() {
 
     return <>
         {!isaddproductmodal && (
-            <div className="p-6 bg-gray-100 min-h-screen kanit-regular">
-                <div className='flex flex-row justify-center items-center bg-white p-4 shadow-md rounded-lg'>
-                    <h1 className="text-xl font-semibold text-gray-700">คลังสินค้า</h1>
+            <div className="p-6 bg-gray-100 min-h-screen">
+                <div className='kanit-bold flex flex-row justify-center bg-white p-4 shadow-md rounded-lg'>
+                    <h1 className="max-md:text-lg md:text-4xl text-gray-700">คลังสินค้า</h1>
                 </div>
-                <form className="mx-8 my-2">
-                    <div className="flex flex-col gap-2 sm:flex-row sm:gap-4 content-center">
-                        <input value={search_query} type="search" id="search_query" className="w-full sm:flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-300" placeholder="ค้นหาชื่อ/รหัสสินค้า" onChange={e => setsearch_query(e.target.value)} />
-                        <button type="button" id="search" onClick={search} className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">ค้นหา</button>
-                        <button type="button" id="add" onClick={addproduct} className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">เพิ่มสินค้า</button>
-                    </div>
+                <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex-row md:flex md:space-x-4 items-center">
+                    <input value={search_query} type="search" id="search_query" className="w-full sm:flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-300" placeholder="ค้นหาชื่อ/รหัสสินค้า" onChange={e => setsearch_query(e.target.value)} />
+                    <button type="button" id="search" onClick={search} className="px-4 py-2 max-md:mt-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">ค้นหา</button>
+                    <button type="button" id="add" onClick={addproduct} className="px-4 py-2 max-md:mt-2 max-md:mx-5 bg-green-500 text-white rounded-lg hover:bg-green-600">เพิ่มสินค้า</button>
                 </form>
-                <div className="relative overflow-auto shadow-md rounded-2xl">
+                <div className="relative overflow-auto shadow-md rounded-2xl mt-6">
                     <table className="w-full text-gray-700">
-                        <thead className="text-base text-white bg-blue-500">
+                        <thead className="text-sm md:text-base text-white bg-blue-500">
                             <tr>
                                 <th className="px-4 py-2">รูปภาพ</th>
                                 <th className="px-4 py-2">รหัสสินค้า</th>
@@ -167,7 +165,7 @@ function Warehouse() {
                         </thead>
                         <tbody>
                             {currentApidata.map((item, index) => (
-                                <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100">
+                                <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100 md:text-lg">
                                     <td className="px-6 py-4">{item.SparePart_Image ? (
                                         <img src={`${import.meta.env.VITE_API_URL}/uploads/${item.SparePart_Image}`} alt={item.SparePart_Image}  className="h-[50px] w-[50px] object-cover rounded"/>) : ('ไม่มีรูป')}
                                     </td>
@@ -245,11 +243,11 @@ function Warehouse() {
         )}
 
         {isDetailModalOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl mx-4">
-                    <h2 className="text-xl font-bold mb-4">รายละเอียด</h2>
+                    <h2 className="text-xl mb-4 kanit-bold">รายละเอียด</h2>
                     <form>
-                        <div className="mb-4">
+                        <div className="mb-4 space-y-2">
                             <p><strong>รหัสสินค้า:</strong> {Detail.SparePart_ProductID}</p>
                             <p><strong>ชื่อสินค้า:</strong> {Detail.SparePart_Name}</p>
                             <p><strong>รายละเอียดสินค้า:</strong> {Detail.SparePart_Description}</p>

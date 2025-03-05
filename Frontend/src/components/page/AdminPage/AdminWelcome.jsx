@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
+import { jwtDecode } from "jwt-decode";
 function AdminWelcome()
 {
+    const token = jwtDecode(localStorage.getItem('token'))
     return <>
-    <h1>Welcome to Admin Interface</h1>
+    <div classname ='kanit-regular'>ยินดีต้อนรับคุณ {token?.username}</div>
     </>
 }
 

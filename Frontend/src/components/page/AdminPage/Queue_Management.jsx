@@ -78,14 +78,28 @@ function Queue_Management()
             const totalPages = Math.ceil(queuedata.length / itemsPerPage);
             setTotalPages(totalPages); 
         }
-    }, [queuedata, itemsPerPage]); 
+    }, [queuedata, itemsPerPage]);
 
     function deleteitem(index)
     {
         event.preventDefault()
-        axios.post(`${import.meta.env.VITE_API_URL}/deletequeue`,
+        console.log(index)
+        axios.delete(`${import.meta.env.VITE_API_URL}/deletequeue/${index}`)
+        .then((res) => {
+            console.log(res)
+        })
+        .catch(err => {
+            console.log(eer)
+        })
+        location.reload()
+    }
+
+    function finishitem(index)
+    {
+        event.preventDefault()
+        axios.post(`${import.meta.env.VITE_API_URL}/finishqueue`,
             {
-                deletequeueno: index
+                finishqueueno: index
             }
         )
         .then((res) => {
@@ -168,35 +182,36 @@ function Queue_Management()
     return <>
     {!ishistorymodal && (
      
-        <div className="p-6 bg-gray-100 min-h-screen kanit-regular">
-            <div className='flex flex-col md:flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg space-y-4 md:space-y-0'>
-                <div className="hidden md:block"></div>
-                <h1 className="text-xl font-semibold text-gray-700">รายการคิวเข้าใช้บริการ</h1>
+        <div className="p-6 bg-gray-100 min-h-screen">
+            <div className='kanit-bold flex flex-col md:flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg space-y-4 md:space-y-0'>
+                <div></div>
+                <h1 className="max-md:text-lg md:text-4xl text-gray-700">รายการคิวเข้าใช้บริการ</h1>
                 <button className="w-full md:w-auto text-white bg-blue-500 hover:bg-blue-700 px-6 py-2 rounded-lg text-lg transition" onClick={() => history()}>ประวัติ</button>
             </div>
-            <form className="mt-4 p-4 bg-white shadow-md rounded-lg md:flex-row flex space-x-4 items-center">      
-                <input className="shadow border rounded-lg w-full md:w-auto py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time(e.target.value)}/>
-                <input className="shadow border rounded-lg w-full md:w-auto py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time2(e.target.value)}/>
-                <button type='button' id="search" className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition"onClick={() => searchtime(search_time,search_time2)}>
+            <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex-row md:flex md:space-x-4 items-center">      
+                <input className="shadow border rounded-lg w-full md:w-1/3 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time(e.target.value)}/>
+                <input className="shadow border rounded-lg w-full md:w-1/3 py-2 px-4 max-md:mt-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time2(e.target.value)}/>
+                <button type='button' id="search" className="max-md:mt-2 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition"onClick={() => searchtime(search_time,search_time2)}>
                     <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
                     </svg>
                 </button>
             </form>
             <div className='relative overflow-x-auto shadow-md rounded-2xl mt-6'>
-                <table className="w-full text-sm text-left text-gray-600 bg-white shadow-md rounded-lg">
-                    <thead className="text-base text-white bg-blue-500">
+                <table className="w-full text-left text-gray-600 bg-white shadow-md rounded-lg">
+                    <thead className="text-sm md:text-base text-white bg-blue-500">
                         <tr>
                             <th className='px-4 py-3'>วันที่เข้าใช้บริการ</th>
                             <th className='px-6 py-3'>เวลาที่จอง</th>
                             <th className='text-center px-6 py-3'>ดูรายละเอียด</th>
                             <th className='text-center px-6 py-3'>แก้ไข</th>
                             <th className='text-center px-6 py-3'>เสร็จแล้ว</th>
+                            <th className='text-center px-6 py-3'>ลบคิว</th>
                         </tr>
                     </thead>
                     <tbody>
                         {currentQueuedata.map((item, index) => (
-                            <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100">
+                            <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100 md:text-lg">
                                 <td className='px-4 py-3'>{new Date(item.Booking_Date).toLocaleDateString('th-TH')}</td>
                                 <td className='px-4 py-3'>{item.Booking_Time}</td>
                                 <td className='text-center py-3'>
@@ -206,7 +221,10 @@ function Queue_Management()
                                     <button type='button' onClick={() => openEditModal(item)} className="text-yellow-500 hover:text-yellow-700">✏️แก้ไข</button>
                                 </td>
                                 <td className='text-center py-3'>
-                                    <button type='button' onClick={() => deleteitem(item.Booking_ID)} className="text-green-500 hover:text-green-700">✅เสร็จสิ้น</button>  
+                                    <button type='button' onClick={() => finishitem(item.Booking_ID)} className="text-green-500 hover:text-green-700">✅เสร็จสิ้น</button>  
+                                </td>
+                                <td className='text-center py-3'>
+                                    <button type='button' onClick={() => deleteitem(item.Booking_ID)} className="text-red-500 hover:text-red-700">❌ลบคิว</button>  
                                 </td>
                             </tr>
                         ))}
@@ -235,7 +253,7 @@ function Queue_Management()
     )}
 
         {isEditModalOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl mx-4">
                     <h2 className="text-xl font-bold mb-4">แก้ไขวัน/เวลาที่เข้าใช้บริการ</h2>
                     <form onSubmit={e => { e.preventDefault(); updateQueue(); }}>
@@ -264,16 +282,16 @@ function Queue_Management()
         )}
 
         {isDetailModalOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl mx-4">
-                    <h2 className="text-xl font-bold mb-4">รายละเอียด</h2>
+                    <h2 className="text-xl mb-4 kanit-bold">รายละเอียด</h2>
                     <form>
                         <div className="mb-4 space-y-2">
                             <p><strong>วันที่จอง:</strong> {new Date(Detail.Booking_Date).toLocaleDateString('th-TH')}</p>
                             <p><strong>เวลาที่จอง:</strong> {Detail.Booking_Time}</p>
                             <p><strong>ชื่อจริง:</strong> {Detail.Booking_FirstName}</p>
                             <p><strong>นามสกุล:</strong> {Detail.Booking_LastName}</p>
-                            <p><strong>ประเภทการบริการ:</strong> {Detail.Service_Name}</p>
+                            {/* <p><strong>ประเภทการบริการ:</strong> {Detail.Service_Name}</p> */}
                             <p><strong>รายละเอียดการจอง:</strong> {Detail.Booking_Description ? Detail.Booking_Description : "-"}</p>
                             <p><strong>เลขทะเบียนรถ:</strong> {Detail.Booking_CarRegistration ? Detail.Booking_CarRegistration : "-"}</p>
                         </div>

@@ -73,9 +73,11 @@ function Dashboard()
     }
 
     return <>
-    <div class ='flex flex-col Justify-center kanit-regular'>
-    <h1 class="text-[1.5vw] mb-4 text-center pt-4">Dashboard</h1>
-    <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-2">
+    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className='kanit-bold flex flex-row justify-center items-center bg-white p-4 shadow-md rounded-lg'>
+        <h1 className="max-md:text-lg md:text-4xl text-gray-700">Dashboard</h1>
+    </div>
+    <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-2 mt-4">
         <div class="small-box bg-warning">
             <div class="inner">
                 <h3>{queuedata[0]?.value}</h3>
@@ -144,7 +146,6 @@ function Dashboard()
             </div>
         </div>
         </div>
-    </div>
     {chart1 && <Chart chartType="ColumnChart" width="100%" height="100%" data={chart1} />}
     {chart2 && <Chart chartType="ColumnChart" width="100%" height="100%" data={chart2} />}
     {isListoflowsupplyModalOpen && (<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
@@ -182,7 +183,9 @@ function Dashboard()
                 </table>
                 </div>
             </div>
-        </div>)}
+        </div>
+        )}
+    </div>
     </>
 }
 

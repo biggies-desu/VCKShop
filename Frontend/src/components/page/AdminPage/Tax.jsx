@@ -90,12 +90,12 @@ function Tax()
     };
 
     return <>
-    <div className="p-6 bg-gray-100 min-h-screen kanit-regular">
-        <div className='flex flex-row justify-center items-center bg-white p-4 shadow-md rounded-lg'>
-            <h1 className="text-xl font-semibold text-gray-700">คำนวณภาษี</h1>
+    <div className="p-6 bg-gray-100 min-h-screen">
+        <div className='kanit-bold flex flex-row justify-center items-center bg-white p-4 shadow-md rounded-lg'>
+            <h1 className="max-md:text-lg md:text-4xl text-gray-700">คำนวณภาษี</h1>
         </div>
         {totalprice && !issearch && (
-            <div className="bg-yellow-400 p-4 rounded-lg shadow-md mt-4">
+        <div className="bg-yellow-400 p-4 rounded-lg shadow-md mt-4">
             <div className="flex justify-between items-center">
             <div>
                 <h3 className="text-3xl font-bold text-gray-800">{ (totalprice?.[0]?.totalprice * (vat / (vat + 100))).toFixed(2) || "0.00" } บาท</h3>
@@ -122,10 +122,10 @@ function Tax()
         )}
         
         
-        <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex space-x-4 items-center">      
+        <form className="mt-4 p-4 bg-white shadow-md rounded-lg md:flex md:space-x-4 items-center">      
             <input className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="month" type="date" required onChange={(e) => setsearch_time(e.target.value)}/>
-            <input className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="month" type="date" required onChange={(e) => setsearch_time2(e.target.value)}/>
-            <select id="ีtax" className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"
+            <input className="shadow border rounded-lg w-full max-md:mt-2 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="month" type="date" required onChange={(e) => setsearch_time2(e.target.value)}/>
+            <select id="ีtax" className="shadow border rounded-lg w-full py-2 px-4 max-md:mt-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"
              type="text" value={vat} placeholder='ภาษี' onChange={(e) => setvat(parseFloat(e.target.value))}>
                 {vatdropdown.map((vat, index) => (
                     <option key={index} value={vat.VAT_Value}>
@@ -133,7 +133,7 @@ function Tax()
                     </option>
                 ))}
              </select>
-            <button type='button' id="search" className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition" required onClick={() => searchtime()}>
+            <button type='button' id="search" className="p-2 max-md:mt-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition" required onClick={() => searchtime()}>
                 <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
                 </svg>
@@ -141,7 +141,7 @@ function Tax()
         </form>
         <div className='relative overflow-x-auto shadow-md rounded-2xl mt-6'>
             <table className="w-full text-sm text-left text-gray-600 bg-white shadow-md rounded-lg">
-                <thead className="text-base text-white bg-blue-500">
+                <thead className="text-sm md:text-base text-white bg-blue-500">
                     <tr>
                         <th className='px-4 py-3'>เลขคิว</th>
                         <th className='px-6 py-3'>วันที่จอง</th>
@@ -152,7 +152,7 @@ function Tax()
                 </thead>
                 <tbody>
                 {currentTaxdata.map((item, index) => (
-                    <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100">
+                    <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100 md:text-lg">
                         <td className='px-4 py-3'>#{item.booking_id}</td>
                         <td className='px-4 py-3'>{new Date(item.booking_date).toLocaleDateString('th-TH')}</td>
                         <td className='px-4 py-3'>{item.booking_time}</td>
@@ -182,9 +182,9 @@ function Tax()
             </button>
         </ul>
     </div>
-    {isDetailModalOpen && (<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
+    {isDetailModalOpen && (<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-3xl mx-4 max-h-[90vh] overflow-auto">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-4 kanit-bold">
                 <h2></h2>
                 <h2 className="text-xl text-center">รายการสินค้าที่เหลือน้อย</h2>
                 <div onClick={() => CloseDetailModal()}><button type ='button'>
@@ -206,7 +206,7 @@ function Tax()
                     <tbody>
                     {detail?.length > 0 ? (
                          detail.map((item, index) => (
-                            <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100">
+                            <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100 md:text-lg">
                             <td className="text-start py-4">{item.sparepart_productid}</td>
                             <td className="text-start py-4">{item.sparepart_name}</td>
                             <td className="text-center py-4">{item.booking_sparepart_quantity}</td>

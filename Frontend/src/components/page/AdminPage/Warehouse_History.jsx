@@ -63,12 +63,13 @@ function Warehouse_History()
     };
     
     return <>
-    <div className='flex flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg kanit-regular '>
+    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className='kanit-bold flex flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg'>
                 <div></div>
-                <h1 className="text-xl font-semibold text-gray-700">ประวัติการนำเข้า</h1>
+                <h1 className="max-md:text-lg md:text-4xl text-gray-700">ประวัติการนำเข้า</h1>
                 <div></div>
             </div>
-    <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex space-x-4 items-center">
+    <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex-row md:flex md:space-x-4 items-center">
         <select id="action" className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"
              type="text" value={action} placeholder='กิจกรรม' onChange={(e) => setaction(e.target.value)}>
                 <option selected value=''>ทั้งหมด</option>
@@ -76,7 +77,7 @@ function Warehouse_History()
                 <option value='แก้ไขจำนวน/ราคาสินค้า'>แก้ไขจำนวน/ราคาสินค้</option>
                 <option value='ลบสินค้า'>ลบสินค้า</option>
              </select>
-        <select id="ีuser" className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"
+        <select id="ีuser" className="shadow border rounded-lg w-full py-2 px-4 max-md:mt-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"
              type="text" value={user} placeholder='กิจกรรม' onChange={(e) => setuser(e.target.value)}>
                 <option selected value=''>ทั้งหมด</option>
                 {userdropdown.map((user, index) => (
@@ -85,17 +86,17 @@ function Warehouse_History()
                     </option>
                 ))}
              </select>
-        <input className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date1" type="date" required onChange={(e) => setsearch_time(e.target.value)}/>
-        <input className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date2" type="date" required onChange={(e) => setsearch_time2(e.target.value)}/>
-        <button type='button' id="search" className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition" onClick={searchtime}>
+        <input className="shadow border rounded-lg w-full py-2 px-4 max-md:mt-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date1" type="date" required onChange={(e) => setsearch_time(e.target.value)}/>
+        <input className="shadow border rounded-lg w-full py-2 px-4 max-md:mt-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date2" type="date" required onChange={(e) => setsearch_time2(e.target.value)}/>
+        <button type='button' id="search" className="p-2 max-md:mt-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition" onClick={searchtime}>
             <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
             </svg>
         </button>
     </form>
-    <div className='relative overflow-x-auto shadow-md rounded-2xl mt-6 kanit-regular'>
+    <div className='relative overflow-x-auto shadow-md rounded-2xl mt-6'>
         <table className="w-full text-sm text-left text-gray-600 bg-white shadow-md rounded-lg">
-            <thead className="text-base text-white bg-blue-500">
+            <thead className="text-sm md:text-base text-white bg-blue-500">
                 <tr>
                     <th class='text-start px-3 py-2'>วันที่ดำเนินการ</th>
                     <th class='text-start px-3 py-2'>โดย</th>
@@ -106,11 +107,11 @@ function Warehouse_History()
         <tbody>
             {
             currentLogdata.map((item, index) => (
-                <tr key = {index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100">
+                <tr key = {index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100 md:text-lg">
                     <td className="text-start px-3 py-2">{new Date(item.WL_Time).toLocaleString('th-TH', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', timeZone:"Asia/Bangkok"})}</td>
                     <td class ='text-start px-3 py-2'>{item.user_username}</td>
                     <td class ='text-start px-3 py-2'>{item.WL_Action}</td>
-                    <td class ='text-end px-6 py-2'>{item.WL_Description}</td>
+                    <td class ='md:text-end md:px-6 py-2'>{item.WL_Description}</td>
                 </tr>
             ))
             }
@@ -134,6 +135,7 @@ function Warehouse_History()
                 </svg>
             </button>
         </ul>
+    </div>
     </div>
     
     </>

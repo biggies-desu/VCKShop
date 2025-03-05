@@ -48,16 +48,16 @@ function Queue_History({setishistorymodal})
     };
 
     return<>    
-    <div className="p-6 bg-gray-100 min-h-screen kanit-regular">
+    <div className="p-6 bg-gray-100 min-h-screen">
         <div className='flex flex-col text-nowrap'>
-            <div className='flex flex-col md:flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg space-y-4 md:space-y-0'>
-                <div className="hidden md:block"></div>
-                <h1 className="text-xl font-semibold text-gray-700">ประวัติคิวเข้าใช้บริการ</h1>
+            <div className='kanit-bold flex flex-col md:flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg space-y-4 md:space-y-0'>
+                <div></div>
+                <h1 className="max-md:text-lg md:text-4xl text-gray-700">ประวัติคิวเข้าใช้บริการ</h1>
                 <button className="w-full md:w-auto text-white bg-blue-500 hover:bg-blue-700 px-6 py-2 rounded-lg text-lg transition" onClick={() => setishistorymodal(false)}>กลับ</button>
             </div>
             <div className="relative overflow-x-auto shadow-md rounded-2xl mt-6">
                 <table className="w-full text-sm text-left text-gray-600 bg-white shadow-md rounded-xl">
-                    <thead className="text-base text-white bg-blue-500">
+                    <thead className="text-sm md:text-base text-white bg-blue-500">
                         <tr>
                             <th className='text-start px-4 py-3'>วันที่จอง</th>
                             <th className='text-start px-6 py-3'>เวลาที่จอง</th>
@@ -67,7 +67,7 @@ function Queue_History({setishistorymodal})
                     </thead>
                     <tbody>
                         {currentQueuedata.map((item, index) => (
-                            <tr key={index} className="border-b hover:bg-blue-100">
+                            <tr key={index} className="border-b hover:bg-blue-100 md:text-lg">
                                 <td className='text-start px-4 py-3'>{new Date(item.Booking_Date).toLocaleDateString('th-TH')}</td>
                                 <td className='text-start px-4 py-3'>{item.Booking_Time}</td>
                                 <td className='text-end py-3'>
@@ -103,11 +103,11 @@ function Queue_History({setishistorymodal})
     </div>
     
     {isDetailModalOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl mx-4">
-                    <h2 className="text-xl font-bold mb-4">รายละเอียด</h2>
+                    <h2 className="text-xl mb-4 kanit-bold">รายละเอียด</h2>
                     <form>
-                        <div className="mb-4">
+                        <div className="mb-4 space-y-2">
                             <p><strong>วันที่จอง:</strong> {new Date(Detail.Booking_Date).toLocaleDateString('th-TH')}</p>
                             <p><strong>เวลาที่จอง:</strong> {Detail.Booking_Time}</p>
                             <p><strong>ชื่อจริง:</strong> {Detail.Booking_FirstName}</p>

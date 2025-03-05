@@ -67,10 +67,26 @@ router.post('/addqueue', function (req,res) {
 ) 
 })
 
+router.delete('/deletequeue/:id', (req, res) => {
+  let deletequeueno = req.params.id;
+  const sql = 'DELETE FROM booking WHERE booking_id = ?';
+  db.query(sql, [deletequeueno], (err, results) => {
+    if(err)
+      {
+        res.send(err)
+      }
+      else
+      {
+        res.json(results)
+      }
+  });
+});
+
+
 router.get('/allqueue', function (req,res){
   const sqlcommand = `SELECT * FROM booking WHERE booking_status = 'ยังไม่เสร็จสิ้น' ORDER BY DATE(Booking_Date) ASC`
   db.query(sqlcommand,function(err,results)
-{
+  {
   if(err)
   {
     res.send(err)
@@ -120,11 +136,11 @@ router.get('/queuehistory', function (req,res){
 })
 })
 
-router.post('/deletequeue', function (req,res) {
-  let deletequeueno = req.body.deletequeueno //booking_id
+router.post('/finishqueue', function (req,res) {
+  let finishqueueno = req.body.finishqueueno //booking_id
   //set to finished
   const sqlcommand = `UPDATE Booking set Booking_status = 'เสร็จสิ้นแล้ว' WHERE Booking_id = ?`
-  db.query(sqlcommand,[deletequeueno], function(err, results)
+  db.query(sqlcommand,[finishqueueno], function(err, results)
 {
   if(err) {
     res.send(err)
@@ -133,7 +149,7 @@ router.post('/deletequeue', function (req,res) {
   const sqlcommand2 = `UPDATE Sparepart s JOIN Booking_Sparepart bs on s.Sparepart_ID = bs.Sparepart_ID
                       set s.Sparepart_Amount = s.Sparepart_Amount - bs.Booking_SparePart_Quantity
                       where bs.Booking_ID = ?`
-  db.query(sqlcommand2,[deletequeueno], (err,results) => {
+  db.query(sqlcommand2,[finishqueueno], (err,results) => {
     if(err){
       res.send(err)
     }
