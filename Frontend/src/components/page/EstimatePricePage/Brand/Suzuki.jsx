@@ -46,9 +46,9 @@ function Suzuki() {
 
     const Suzuki = [
         {   name: "SWIFT", models: [
-                { year: "2024", modelId: 85, image: "https://www.suzuki.co.th/upload/content/20210121_s_I1Mpk5tqoS.jpg" },
-                { year: "2019", modelId: 86, image: "src/components/image/SWIFT-2019.jpg" },
-                { year: "2014", modelId: 87, image: "src/components/image/SWIFT-2014.jpg" },],},
+                { year: "2024", modelId: 85, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_85.png` },
+                { year: "2019", modelId: 86, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_86.png` },
+                { year: "2014", modelId: 87, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_87.png` },],},
     ];
 
     useEffect(() => {
@@ -202,7 +202,7 @@ function Suzuki() {
                     <div className="flex p-4 ">
                         <div className="flex items-center">
                             <button onClick={() => NavigateEstimate(null)} className="p-2 rounded">
-                                <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                                <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">
@@ -225,7 +225,7 @@ function Suzuki() {
                 <div className="flex p-4">
                     <div className="flex items-center">
                         <button onClick={() => setSelectedModel(null)} className="p-2 rounded">
-                            <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                            <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                         </button>
                     </div>
                     <div className="flex p-4 justify-center items-center w-full">
@@ -247,7 +247,7 @@ function Suzuki() {
                     <div className="flex p-4">
                         <div className="flex items-center">
                             <button onClick={() => setSelectedYear(null)} className="p-2 rounded">
-                                <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                                <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">

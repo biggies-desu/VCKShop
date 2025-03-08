@@ -8,7 +8,7 @@ function Home() {
   return (
     <>
       <Navbar />
-        <div className="bg-cover bg-center text-white py-80 md:py-96 kanit-bold border-4 border-black" style={{ backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("src/components/image/vckimg.jpg")' }}>
+        <div className="bg-cover bg-center text-white py-80 md:py-96 kanit-bold border-4 border-black" style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("${import.meta.env.VITE_IMAGE_BASE_URL}/vckimg.jpg")` }}>
           <div className="container mx-auto text-center">
             <h1 className="max-md:text-xl md:text-8xl font-bold mb-10">วิชัยการยาง VCKRacingShop</h1>
             <p className="max-md:text-sm md:text-2xl mb-8 bg-animate w-1/2 text-center justify-center container">"สินค้าทุกชิ้นเป็นของใหม่ และรับประกันคุณภาพ ของแท้ 100%"</p>
@@ -93,15 +93,15 @@ function Home() {
             <p className="md:text-lg mb-8">คำแนะนำจากทีมงานมืออาชีพในการเพิ่มประสิทธิภาพการขับขี่ของคุณ</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="border-2 border-gray-800 p-1 bg-white rounded-lg shadow-lg overflow-hidden">
-                <img className="w-full h-full object-cover" src="https://vckracing.shop/images/Card_1.jpg" alt="Blog 1"/>
+                <img className="w-full h-full object-cover" src={`${import.meta.env.VITE_IMAGE_BASE_URL}/Card_1.jpg`} alt="Blog 1"/>
                 <div className="p-6"></div>
               </div>
               <div className="border-2 border-gray-800 p-1 bg-white rounded-lg shadow-lg overflow-hidden">
-                <img className="w-full h-full object-cover" src="https://vckracing.shop/images/Card_2.jpg" alt="Blog 2"/>
+                <img className="w-full h-full object-cover" src={`${import.meta.env.VITE_IMAGE_BASE_URL}/Card_2.jpg`} alt="Blog 2"/>
                 <div className="p-6"></div>
               </div>
               <div className="border-2 border-gray-800 p-1  bg-white rounded-lg shadow-lg overflow-hidden">
-                <img className="w-full h-full object-cover" src="https://vckracing.shop/images/Card_3.jpg" alt="Blog 3"/>
+                <img className="w-full h-full object-cover" src={`${import.meta.env.VITE_IMAGE_BASE_URL}/Card_3.jpg`} alt="Blog 3"/>
                 <div className="p-6"></div>
               </div>
             </div>
@@ -111,7 +111,7 @@ function Home() {
             <p className="md:text-lg mb-8">เคล็ดลับการซ่อมแซมและปรับแต่งรถยนต์อย่างมืออาชีพ เพื่อเพิ่มประสิทธิภาพในการขับขี่และยืดอายุการใช้งานของรถยนต์ของคุณ</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="relative bg-white rounded-lg shadow-lg overflow-hidden">
-                <img className="w-full h-48 object-cover" src="https://vckracing.shop/images/Card_4.jpg" alt="Blog 1"/>
+                <img className="w-full h-48 object-cover" src={`${import.meta.env.VITE_IMAGE_BASE_URL}/Card_4.jpg`} alt="Blog 1"/>
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                   <p className="text-white font-bold text-xl">อะไหล่เต็มคลัง</p>
                 </div>
@@ -120,7 +120,7 @@ function Home() {
                 </div>
               </div>
               <div className="relative bg-white rounded-lg shadow-lg overflow-hidden">
-                <img className="w-full h-48 object-cover" src="https://vckracing.shop/images/Card_5.jpg" alt="Blog 2"/>
+                <img className="w-full h-48 object-cover" src={`${import.meta.env.VITE_IMAGE_BASE_URL}/Card_5.jpg`} alt="Blog 2"/>
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                   <p className="text-white font-bold text-xl">ของแต่งเพรียบพร้อม</p>
                 </div>
@@ -129,7 +129,7 @@ function Home() {
                 </div>
               </div>
               <div className="relative bg-white rounded-lg shadow-lg overflow-hidden">
-                <img className="w-full h-48 object-cover" src="https://vckracing.shop/images/Card_6.jpg" alt="Blog 3"/>
+                <img className="w-full h-48 object-cover" src={`${import.meta.env.VITE_IMAGE_BASE_URL}/Card_6.jpg`} alt="Blog 3"/>
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                   <p className="text-white font-bold text-xl">มีล้อหลากหลาย</p>
                 </div>

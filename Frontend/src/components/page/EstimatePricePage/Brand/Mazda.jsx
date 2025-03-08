@@ -46,17 +46,17 @@ function Mazda() {
 
     const Mazda = [
         {   name: "NEW MAZDA2 HATCHBACK", models: [
-                { year: "2024", modelId: 49, image: "https://www.checkraka.com/uploaded/logo/1c/1cf72568d30b75245b34ce72e131ed96.webp" },
-                { year: "2019", modelId: 50, image: "src/components/image/NEW MAZDA2 HATCHBACK-2019.jpg" },
-                { year: "2014", modelId: 51, image: "src/components/image/NEW MAZDA2 HATCHBACK-2014.jpg" },],},
+                { year: "2024", modelId: 73, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_73.png` },
+                { year: "2019", modelId: 74, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_74.png` },
+                { year: "2014", modelId: 75, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_75.png` },],},
         {   name: "NEW MAZDA2 SEDAN",models: [
-                { year: "2024", modelId: 52, image: "https://mazdakaset-nawamin.com/album/product/large/2eb7373ffe0fe77199da74b46bc52155.jpg" },
-                { year: "2019", modelId: 53, image: "src/components/image/NEW MAZDA2 SEDAN-2019.jpg" },
-                { year: "2014", modelId: 54, image: "src/components/image/NEW MAZDA2 SEDAN-2014.jpg" },],},
+                { year: "2024", modelId: 76, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_76.png` },
+                { year: "2019", modelId: 77, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_77.png` },
+                { year: "2014", modelId: 78, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_78.png` },],},
         {   name: "NEW MAZDA2 ROOKIE DRIVE",models: [
-                { year: "2022", modelId: 55, image: "https://www.mazda.co.th/globalassets/cars/_1_m2_svp/m2_svp_choose_rookie_1.jpg" },
-                { year: "2016", modelId: 56, image: "src/components/image/NEW MAZDA2 ROOKIE DRIVE-2016.jpg" },
-                { year: "2012", modelId: 57, image: "src/components/image/NEW MAZDA2 ROOKIE DRIVE-2012.jpg" },],},
+                { year: "2024", modelId: 79, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_79.png` },
+                { year: "2019", modelId: 80, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_80.png` },
+                { year: "2014", modelId: 81, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_81.png` },],},
     ];
 
     useEffect(() => {
@@ -210,7 +210,7 @@ function Mazda() {
                     <div className="flex p-4 ">
                         <div className="flex items-center">
                             <button onClick={() => NavigateEstimate(null)} className="p-2 rounded">
-                                <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                                <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">
@@ -233,7 +233,7 @@ function Mazda() {
                 <div className="flex p-4">
                     <div className="flex items-center">
                         <button onClick={() => setSelectedModel(null)} className="p-2 rounded">
-                            <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                            <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                         </button>
                     </div>
                     <div className="flex p-4 justify-center items-center w-full">
@@ -255,7 +255,7 @@ function Mazda() {
                     <div className="flex p-4">
                         <div className="flex items-center">
                             <button onClick={() => setSelectedYear(null)} className="p-2 rounded">
-                                <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                                <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">

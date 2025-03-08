@@ -46,31 +46,34 @@ function Queue_Management()
         }
     };
 
-    useEffect(() => {
+    const fetchdata = () => {
         axios.get(`${import.meta.env.VITE_API_URL}/allqueue`)
         .then((res) => {
-            console.log(res.data)
-            setqueuedata(res.data)
+            console.log("Updated queue:", res.data);
+            setqueuedata(res.data);
         })
-        .catch((err) => {
-            console.log(err)})
+        .catch((err) => console.error(err));
 
-        if (date) {
-            axios.post(`${import.meta.env.VITE_API_URL}/checkQueue`, { date })
-                .then((res) => {
-                    const bookedTimes = res.data; 
-                    const disabled = [];
-                    // ตรวจสอบว่าเวลาที่เต็มมีหรือไม่
-                    for (const time in bookedTimes) {
-                        if (bookedTimes[time] >= 3) {
-                            disabled.push(time);
-                        }
+    if (date) {
+        axios.post(`${import.meta.env.VITE_API_URL}/checkQueue`, { date })
+            .then((res) => {
+                const bookedTimes = res.data; 
+                const disabled = [];
+                
+                for (const time in bookedTimes) {
+                    if (bookedTimes[time] >= 3) {
+                        disabled.push(time);
                     }
-                    setDisabledTimes(disabled);
-                    console.log(disabledTimes)
-                })
-                .catch((err) => console.log(err));
-            }
+                }
+                setDisabledTimes(disabled);
+                console.log(disabled);
+            })
+            .catch((err) => console.error(err));
+        }
+    };
+
+    useEffect(() => {
+        fetchdata()
         }, [date]);
 
     useEffect(() => {
@@ -87,11 +90,11 @@ function Queue_Management()
         axios.delete(`${import.meta.env.VITE_API_URL}/deletequeue/${index}`)
         .then((res) => {
             console.log(res)
+            fetchdata()
         })
         .catch(err => {
-            console.log(eer)
+            console.log(err)
         })
-        location.reload()
     }
 
     function finishitem(index)
@@ -104,11 +107,11 @@ function Queue_Management()
         )
         .then((res) => {
             console.log(res)
+            fetchdata()
         })
         .catch(err => {
-            console.log(eer)
+            console.log(err)
         })
-        location.reload()
     }
 
     function history()

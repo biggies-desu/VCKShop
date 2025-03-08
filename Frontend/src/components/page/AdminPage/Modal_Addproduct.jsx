@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 
 function Modal_Addproduct({ setisaddproductmodal }) {
     const [productname, setproductname] = useState()
@@ -35,6 +36,8 @@ function Modal_Addproduct({ setisaddproductmodal }) {
     const toggleActiveBrand = () => setIsActiveBrand(!isActiveBrand);
     const toggleActiveModel = () => setIsActiveModel(!isActiveModel);
     const toggleActiveYear = () => setIsActiveYear(!isActiveYear);
+
+    const token = jwtDecode(localStorage.getItem('token'));
 
     //getting data suchas dropdown for category
     useEffect(() => {
@@ -137,7 +140,10 @@ function Modal_Addproduct({ setisaddproductmodal }) {
     function confirmtoadd(event) {
         event.preventDefault();
 
-        const formData = new FormData();
+        console.log(notify_amount)
+        if(productname && productamount && productcatagory && productprice && productamount && selectedbrand && selectedmodel && selectedyear)
+        {
+            const formData = new FormData();
         formData.append('productname', productname);
         formData.append('productID', productID);
         formData.append('productcatagory', productcatagory);
@@ -145,11 +151,11 @@ function Modal_Addproduct({ setisaddproductmodal }) {
         formData.append('productprice', productprice);
         formData.append('productbrand', selectedbrand);
         formData.append('productmodel', selectedmodel);
-        formData.append('productmodelid', selectedyear); //this is get from year
-        formData.append('productdescription', productdescription);
+        formData.append('productmodelid', selectedyear);
+        formData.append('productdescription', productdescription ? productdescription : "-");
         formData.append('notify', notify)
-        formData.append('notify_amount', notify_amount)
-
+        formData.append('notify_amount', notify_amount ? notify_amount : 0);
+        formData.append('user_id', token.user_id)
         if (productimage) {
             formData.append('productimage', productimage);
         }
@@ -166,6 +172,7 @@ function Modal_Addproduct({ setisaddproductmodal }) {
             .catch((error) => {
                 console.error('Upload failed:', error);
             });
+        } 
     }
 
     function closeSuccessPopup() {

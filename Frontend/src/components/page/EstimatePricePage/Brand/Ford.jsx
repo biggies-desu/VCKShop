@@ -46,17 +46,17 @@ function Ford() {
 
     const Ford = [
         {   name: "Everest", models: [
-                { year: "2024", modelId: 40, image: "https://fordjorcharoen.com/wp-content/uploads/2022/06/EV%E0%B9%80%E0%B8%97%E0%B8%B2.png" },
-                { year: "2019", modelId: 41, image: "src/components/image/Everest-2019.jpg" },
-                { year: "2014", modelId: 42, image: "src/components/image/Everest-2014.jpg" },],},
+                { year: "2024", modelId: 40, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_40.png` },
+                { year: "2019", modelId: 41, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_41.png` },
+                { year: "2014", modelId: 42, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_42.png` },],},
         {   name: "Ranger",models: [
-                { year: "2024", modelId: 43, image: "src/components/image/Ranger-2024.jpg" },
-                { year: "2019", modelId: 44, image: "src/components/image/Ranger-2019.jpg" },
-                { year: "2014", modelId: 45, image: "src/components/image/Ranger-2014.jpg" },],},
+                { year: "2024", modelId: 43, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_43.png` },
+                { year: "2019", modelId: 44, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_44.png` },
+                { year: "2014", modelId: 45, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_45.png` },],},
         {   name: "Mustang",models: [
-                { year: "2022", modelId: 46, image: "src/components/image/Mustang-2022.jpg" },
-                { year: "2016", modelId: 47, image: "src/components/image/Mustang-2016.jpg" },
-                { year: "2012", modelId: 48, image: "src/components/image/Mustang-2012.jpg" },],},
+                { year: "2022", modelId: 46, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_46.png` },
+                { year: "2019", modelId: 47, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_47.png` },
+                { year: "2014", modelId: 48, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_48.png` },],},
     ];
 
     useEffect(() => {
@@ -210,7 +210,7 @@ function Ford() {
                     <div className="flex p-4 ">
                         <div className="flex items-center">
                             <button onClick={() => NavigateEstimate(null)} className="p-2 rounded">
-                                <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                                <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">
@@ -233,7 +233,7 @@ function Ford() {
                 <div className="flex p-4">
                     <div className="flex items-center">
                         <button onClick={() => setSelectedModel(null)} className="p-2 rounded">
-                            <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                            <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                         </button>
                     </div>
                     <div className="flex p-4 justify-center items-center w-full">
@@ -255,7 +255,7 @@ function Ford() {
                     <div className="flex p-4">
                         <div className="flex items-center">
                             <button onClick={() => setSelectedYear(null)} className="p-2 rounded">
-                                <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                                <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">

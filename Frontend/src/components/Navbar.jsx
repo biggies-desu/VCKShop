@@ -62,7 +62,7 @@ function Navbar() {
             <div className={`${isOpen ? 'block' : 'hidden'} absolute inset-x-0 z-30 w-full pt-12 px-6 py-4 transition-all duration-300 ease-in-out bg-gray-800 dark:bg-gray-900 md:bg-transparent md:dark:bg-transparent md:mt-0 md:p-0 md:top-0 md:relative md:w-auto md:opacity-100 md:translate-x-0 md:flex md:items-center`}>
                 <div id="logo" className="flex justify-end md:px-16">
                     <NavLink to="/" className="flex items-end">
-                        <img src="images/LogoNavbar.png" className="h-8 mr-2" alt="Logo" />
+                        <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/LogoNavbar.png`} className="h-8 mr-2" alt="Logo" />
                     </NavLink>
                 </div>
                 <div className="flex space-x-12 flex-col md:flex-row md:mx-6 md:ml-auto md:items-center items-end font-bold kanit-regular">

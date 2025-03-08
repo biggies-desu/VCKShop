@@ -72,7 +72,7 @@ function Account()
         axios.delete(`${import.meta.env.VITE_API_URL}/deleteaccount/${user_id}`)
         .then((res)=>{
             console.log(res)
-            window.location.reload()
+            fetchdata()
         })
         .catch((err) => {
             console.log(err)

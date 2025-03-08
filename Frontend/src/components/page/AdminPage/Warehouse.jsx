@@ -29,7 +29,7 @@ function Warehouse() {
         setisDeleteModalOpen(false);
     };
 
-    useEffect(() => {
+    function fetchdata(){
         console.log(token.user_id)
         axios.get(`${import.meta.env.VITE_API_URL}/allsparepart`)
             .then((res) => {
@@ -39,6 +39,10 @@ function Warehouse() {
             .catch((err) => {
                 console.error("API Error:", err);
             });
+    }
+
+    useEffect(() => {
+        fetchdata()
     }, []);
 
     useEffect(() => {
@@ -121,12 +125,12 @@ function Warehouse() {
     }
 
     function confirmDelete() {
-        axios.delete(`${import.meta.env.VITE_API_URL}/deletesparepart/${deleteId}`,{
-            headers: { "user_id": token.user_id }
-            })
+        console.log(token.user_id)
+        axios.delete(`${import.meta.env.VITE_API_URL}/deletesparepart/${deleteId}?user_id=${token.user_id}`)
             .then((res) => {
+                console.log(res)
                 closeModal();
-                window.location.reload();
+                fetchdata()
             })
             .catch(error => {
                 console.log(error);
@@ -135,6 +139,7 @@ function Warehouse() {
 
     function cancelDelete() {
         closeModal();
+        fetchdata()
     }
 
     return <>

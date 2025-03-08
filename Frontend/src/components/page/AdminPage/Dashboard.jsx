@@ -19,14 +19,12 @@ function Dashboard()
     const [chart2, setchart2] = useState([])
     const colormapping = {
         "เสร็จสิ้นแล้ว":"#4CAF50",
-        "ยังไม่เสร็จสิ้น":"#FF5722",
-        "ยาง":"#4CAF50",
-        "เครื่องยนต์":"#FF9800",
-        "อื่นๆ":"#2196F3",
-        "น้ำมันเครื่อง":"#FFC107",
-        "ล้อ":"#9C27B0",
-        "ลูกปืน":"#E91E63"
+        "ยังไม่เสร็จสิ้น":"#FF5722"
     }
+
+    const getRandomColor = () => {
+        return `#${Math.floor(Math.random()*16777215).toString(16)}`; // Random HEX color
+    };
 
     useEffect(() => {
         axios.all([
@@ -54,7 +52,7 @@ function Dashboard()
                //set chart2 -- จำนวนอะไหล่ตามประเภทในร้านที่มี
                let chartdata2 = [
                 ["ประเภทอะไหล่", "จำนวน", { role: "style" }],
-                ...res[3].data.map(item => [item.label, Number(item.value), colormapping[item.label]])
+                ...res[3].data.map(item => [item.label, Number(item.value), getRandomColor()])
                ]
                setchart2(chartdata2)
                 console.log(res)
@@ -147,7 +145,7 @@ function Dashboard()
         </div>
         </div>
     {chart1 && <Chart chartType="ColumnChart" width="100%" height="100%" data={chart1} />}
-    {chart2 && <Chart chartType="ColumnChart" width="100%" height="100%" data={chart2} />}
+    {chart2.length > 1 && <Chart chartType="ColumnChart" width="100%" height="100%" data={chart2} />}
     {isListoflowsupplyModalOpen && (<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-3xl mx-4 max-h-[90vh] overflow-auto">
             <div className="flex justify-between items-center mb-4">

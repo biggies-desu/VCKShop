@@ -9,11 +9,11 @@ router.post('/checkQueue', function (req, res) {
   let date = req.body.date;
   let time = req.body.time;
 
-  const sqlcommand = `SELECT COUNT(*) AS queueCount FROM booking WHERE Booking_Date = ? AND Booking_Time = ?`;
+  const sqlcommand = `SELECT COUNT(*) AS queueCount FROM Booking WHERE Booking_Date = ? AND Booking_Time = ?`;
   db.query(sqlcommand, [date, time], (err, results) => {
     if (err) {
       console.error("Database error:", err);
-      return res.status(500).json({ error: "เกิดข้อผิดพลาดภายในระบบ" });
+      return res.status(500).json({ error: "err" });
     }
     const queueCount = results[0].queueCount;
     res.json({ queueCount, isFull: queueCount >= 3 });
@@ -35,7 +35,7 @@ router.post('/addqueue', function (req,res) {
   console.log(req.body)
 
   //insert to booking table
-  const sqlcommand1 = `INSERT INTO booking (Booking_Date,	Booking_Time,	Booking_FirstName, Booking_LastName, User_ID, Booking_Description, Booking_CarRegistration, Booking_Status)
+  const sqlcommand1 = `INSERT INTO Booking (Booking_Date,	Booking_Time,	Booking_FirstName, Booking_LastName, User_ID, Booking_Description, Booking_CarRegistration, Booking_Status)
                       VALUES (?,?,?,?,?,?,?,'ยังไม่เสร็จสิ้น')`
     db.query(sqlcommand1,[date,time,firstName,lastName,userID,details,CarRegistration],(err,data1) => {
       if(err)
@@ -43,14 +43,14 @@ router.post('/addqueue', function (req,res) {
         return res.json(err)
       }
       const insertid = data1.insertId
-      const sqlcommand2 = `INSERT into booking_sparepart (Booking_ID, SparePart_ID, Booking_SparePart_Quantity) VALUES ?`
+      const sqlcommand2 = `INSERT into Booking_Sparepart (Booking_ID, SparePart_ID, Booking_SparePart_Quantity) VALUES ?`
       const cartmap = cart.map(item => [insertid, item.SparePart_ID, item.quantity])
       db.query(sqlcommand2,[cartmap],(err,data2) => {
         if(err)
         {
           return res.json(err)
         }
-        const sqlcommand3 = `insert into booking_service (booking_id, Service_ID) values ?`
+        const sqlcommand3 = `insert into Booking_Service (booking_id, Service_ID) values ?`
         const servmap = selectedServices.map(item => [insertid, item.Service_ID])
         console.log(servmap)
         db.query(sqlcommand3,[servmap],(err,data3) => {
@@ -69,7 +69,7 @@ router.post('/addqueue', function (req,res) {
 
 router.delete('/deletequeue/:id', (req, res) => {
   let deletequeueno = req.params.id;
-  const sql = 'DELETE FROM booking WHERE booking_id = ?';
+  const sql = 'DELETE FROM Booking WHERE Booking_id = ?';
   db.query(sql, [deletequeueno], (err, results) => {
     if(err)
       {
@@ -84,7 +84,7 @@ router.delete('/deletequeue/:id', (req, res) => {
 
 
 router.get('/allqueue', function (req,res){
-  const sqlcommand = `SELECT * FROM booking WHERE booking_status = 'ยังไม่เสร็จสิ้น' ORDER BY DATE(Booking_Date) ASC`
+  const sqlcommand = `SELECT * FROM Booking WHERE Booking_Status = 'ยังไม่เสร็จสิ้น' ORDER BY DATE(Booking_Date) ASC`
   db.query(sqlcommand,function(err,results)
   {
   if(err)
@@ -102,7 +102,7 @@ router.put('/updatequeue/:id', function (req, res) {
   const bookingId  = req.params.id;
   let bookingdate = req.body.bookingdate;
   let bookingtime = req.body.bookingtime;
-  const getproductnamesql = `SELECT * FROM booking WHERE Booking_ID = ?`;
+  const getproductnamesql = `SELECT * FROM Booking WHERE Booking_ID = ?`;
   db.query(getproductnamesql, [bookingId], function (err, result){
     if(err)
     {
@@ -122,7 +122,7 @@ router.put('/updatequeue/:id', function (req, res) {
 })
 
 router.get('/queuehistory', function (req,res){
-  const sqlcommand = `SELECT * FROM booking ORDER BY DATE(Booking_Date) desc, Booking_time asc`
+  const sqlcommand = `SELECT * FROM Booking ORDER BY DATE(Booking_Date) desc, Booking_time asc`
   db.query(sqlcommand,function(err,results)
 {
   if(err)
@@ -142,9 +142,9 @@ router.post('/queuehistorytime', function (req,res){
   let sqlcommand;
 
   if (!time1 || time1.trim() === "" || !time2 || time2.trim() === "") {
-    sqlcommand = `SELECT * FROM booking ORDER BY DATE(Booking_Date) desc, Booking_time asc`
+    sqlcommand = `SELECT * FROM Booking ORDER BY DATE(Booking_Date) desc, Booking_time asc`
   } else {
-    sqlcommand = `SELECT * FROM booking where booking_date between ? and ? ORDER BY DATE(Booking_Date) desc, Booking_time asc`
+    sqlcommand = `SELECT * FROM Booking where booking_date between ? and ? ORDER BY DATE(Booking_Date) desc, Booking_time asc`
   }
 
   db.query(sqlcommand, [time1,time2], function (err, results) {
@@ -188,11 +188,11 @@ router.post('/searchqueuetime', function (req, res) {
   let sqlcommand;
 
   if (!time1 || time1.trim() === "" || !time2 || time2.trim() === "") {
-    sqlcommand = `select * from booking
+    sqlcommand = `select * from Booking
                   where Booking_Status = 'ยังไม่เสร็จสิ้น'
                   order by date(Booking_Date);`
   } else {
-    sqlcommand = `select * from booking
+    sqlcommand = `select * from Booking
                   where Booking_Status = 'ยังไม่เสร็จสิ้น'
                   and Booking_Date between ? and ?
                   order by date(Booking_Date);`

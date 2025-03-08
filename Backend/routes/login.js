@@ -27,7 +27,7 @@ router.post('/register', async (req, res) =>
         return res.status(400).json({ message: 'Username and password are required' });
       }
       // check that is this username alreadu register?
-      const sqlcommand1 = 'SELECT * FROM user where User_Username = ?'
+      const sqlcommand1 = 'SELECT * FROM User where User_Username = ?'
       const results = await queryAsync(sqlcommand1, [username]);
       if (results.length > 0) {
         return res.status(400).json({ message: 'Username already exists' });
@@ -39,7 +39,7 @@ router.post('/register', async (req, res) =>
         User_Password: passwordhash,
       }
       console.log(userdata)
-      const sqlcommand2 = 'INSERT into user SET ?'
+      const sqlcommand2 = 'INSERT into User SET ?'
       await db.query(sqlcommand2,[userdata])
       res.json({message: 'Inserted'})
     }
@@ -55,7 +55,7 @@ router.post('/login', async (req, res) => {
       let {username, password} = req.body
       console.log(req.body)
       if (username && password) { //if in form has password, compare to database
-        const sqlcommand1 = 'SELECT * FROM user where User_Username = ?'
+        const sqlcommand1 = 'SELECT * FROM User where User_Username = ?'
         const results = await queryAsync(sqlcommand1, [username]);
         console.log(results)
         if (results.length > 0) { // Check if username exists in the database
@@ -95,7 +95,7 @@ router.post('/login', async (req, res) => {
 router.get('/getcurrentprofile/:userid', (req, res) => {
   const userid = req.params.userid
   try{
-    const sqlcommand = 'SELECT * FROM user where User_ID = ?'
+    const sqlcommand = 'SELECT * FROM User where User_ID = ?'
     db.query(sqlcommand,[userid], function(err,results){
       if(err) {res.send(err)}
       else {res.json(results)}
@@ -118,7 +118,7 @@ router.put('/updateprofile/:userid',(req,res) =>
   console.log(req.body)
   
   try{
-    const sqlcommand = 'UPDATE user SET User_Firstname = ?, User_Lastname = ?, User_Email = ?, User_Telephone = ? WHERE User_ID = ?'
+    const sqlcommand = 'UPDATE User SET User_Firstname = ?, User_Lastname = ?, User_Email = ?, User_Telephone = ? WHERE User_ID = ?'
     db.query(sqlcommand,[firstname,lastname,email,telephone,userid], function(err, results)
     {
       if (err){

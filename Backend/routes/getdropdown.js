@@ -3,7 +3,7 @@ const db = require('../db')
 const router = express.Router();
 
 router.get('/getdropdowncategory',(req,res) => {
-    const sqlcommand = "SELECT Category_Name FROM category"
+    const sqlcommand = "SELECT Category_Name FROM Category"
     db.query(sqlcommand,(err,data) => {
       if(err)     return res.json(err);
       return res.json(data)
@@ -55,7 +55,7 @@ router.get('/getdropdowncategory',(req,res) => {
   })
   
   router.get('/getdropdownservice', function(req,res)
-  { const sqlcommand = `SELECT * from service`
+  { const sqlcommand = `SELECT * from Service`
     db.query(sqlcommand,(err,data) => {
       if(err)
       {

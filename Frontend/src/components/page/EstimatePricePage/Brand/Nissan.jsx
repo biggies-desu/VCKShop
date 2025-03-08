@@ -46,37 +46,37 @@ function Nissan() {
 
     const Nissan = [
         {   name: "ALMERA", models: [
-                { year: "2024", modelId: 49, image: "https://www-asia.nissan-cdn.net/content/dam/Nissan/th/vehicles/VLP/almera-my23/new/spec/vl-spec.jpg" },
-                { year: "2019", modelId: 50, image: "src/components/image/ALMERA-2019.jpg" },
-                { year: "2014", modelId: 51, image: "src/components/image/ALMERA-2014.jpg" },],},
+                { year: "2024", modelId: 49, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_49.png` },
+                { year: "2019", modelId: 50, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_50.png` },
+                { year: "2014", modelId: 51, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_51.png` },],},
         {   name: "KICKS e-POWER",models: [
-                { year: "2024", modelId: 52, image: "https://www-asia.nissan-cdn.net/content/dam/Nissan/th/vehicles/KicksVLP/kicks-my23/spec/Spec-autech-600x400.jpg" },
-                { year: "2019", modelId: 53, image: "src/components/image/KICKS e-POWER-2019.jpg" },
-                { year: "2014", modelId: 54, image: "src/components/image/KICKS e-POWER-2014.jpg" },],},
+                { year: "2024", modelId: 52, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_52.png` },
+                { year: "2019", modelId: 53, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_53.png` },
+                { year: "2014", modelId: 54, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_54.png` },],},
         {   name: "TERRA SPORT",models: [
-                { year: "2022", modelId: 55, image: "src/components/image/TERRA SPORT-2022.jpg" },
-                { year: "2016", modelId: 56, image: "src/components/image/TERRA SPORT-2016.jpg" },
-                { year: "2012", modelId: 57, image: "src/components/image/TERRA SPORT-2012.jpg" },],},
+                { year: "2022", modelId: 55, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_55.png` },
+                { year: "2016", modelId: 56, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_56.png` },
+                { year: "2012", modelId: 57, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_57.png` },],},
         {   name: "NAVARA PRO-4X / PRO-2X", models: [
-                { year: "2024", modelId: 58, image: "src/components/image/NAVARA PRO-4X / PRO-2X-2024.jpg" },
-                { year: "2019", modelId: 59, image: "src/components/image/NAVARA PRO-4X / PRO-2X-2019.jpg" },
-                { year: "2014", modelId: 60, image: "src/components/image/NAVARA PRO-4X / PRO-2X-2014.jpg" },],},
+                { year: "2024", modelId: 58, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_58.png` },
+                { year: "2019", modelId: 59, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_59.png` },
+                { year: "2014", modelId: 60, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_60.png` },],},
         {   name: "CALIBRE",models: [
-                { year: "2024", modelId: 61, image: "src/components/image/CALIBRE-2024.jpg" },
-                { year: "2019", modelId: 62, image: "src/components/image/CALIBRE-2019.jpg" },
-                { year: "2014", modelId: 63, image: "src/components/image/CALIBRE-2014.jpg" },],},
+                { year: "2024", modelId: 61, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_61.png` },
+                { year: "2019", modelId: 62, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_62.png` },
+                { year: "2014", modelId: 63, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_63.png` },],},
         {   name: "NAVARA KING CAB",models: [
-                { year: "2024", modelId: 64, image: "src/components/image/NAVARA KING CAB-2024.jpg" },
-                { year: "2019", modelId: 65, image: "src/components/image/NAVARA KING CAB-2019.jpg" },
-                { year: "2014", modelId: 66, image: "src/components/image/NAVARA KING CAB-2014.jpg" },],},    
+                { year: "2024", modelId: 64, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_64.png` },
+                { year: "2019", modelId: 65, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_65.png` },
+                { year: "2014", modelId: 66, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_66.png` },],},    
         {   name: "NAVARA SINGLE CAB",models: [
-                { year: "2024", modelId: 67, image: "src/components/image/NAVARA SINGLE CAB-2024.jpg" },
-                { year: "2019", modelId: 68, image: "src/components/image/NAVARA SINGLE CAB-2019.jpg" },
-                { year: "2014", modelId: 69, image: "src/components/image/NAVARA SINGLE CAB-2014.jpg" },],},
+                { year: "2024", modelId: 67, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_67.png` },
+                { year: "2019", modelId: 68, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_68.png` },
+                { year: "2014", modelId: 69, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_69.png` },],},
         {   name: "LEAF",models: [
-                { year: "2024", modelId: 70, image: "src/components/image/LEAF-2024.jpg" },
-                { year: "2019", modelId: 71, image: "src/components/image/LEAF-2019.jpg" },
-                { year: "2014", modelId: 72, image: "src/components/image/LEAF-2014.jpg" },],},
+                { year: "2024", modelId: 70, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_70.png` },
+                { year: "2019", modelId: 71, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_71.png` },
+                { year: "2014", modelId: 72, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_72.png` },],},
     ];
 
     useEffect(() => {
@@ -230,7 +230,7 @@ function Nissan() {
                     <div className="flex p-4 ">
                         <div className="flex items-center">
                             <button onClick={() => NavigateEstimate(null)} className="p-2 rounded">
-                                <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                                <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">
@@ -253,7 +253,7 @@ function Nissan() {
                 <div className="flex p-4">
                     <div className="flex items-center">
                         <button onClick={() => setSelectedModel(null)} className="p-2 rounded">
-                            <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                            <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                         </button>
                     </div>
                     <div className="flex p-4 justify-center items-center w-full">
@@ -275,7 +275,7 @@ function Nissan() {
                     <div className="flex p-4">
                         <div className="flex items-center">
                             <button onClick={() => setSelectedYear(null)} className="p-2 rounded">
-                                <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                                <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">

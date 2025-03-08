@@ -108,7 +108,7 @@ function Warehouse_History()
             {
             currentLogdata.map((item, index) => (
                 <tr key = {index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100 md:text-lg">
-                    <td className="text-start px-3 py-2">{new Date(item.WL_Time).toLocaleString('th-TH', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', timeZone:"Asia/Bangkok"})}</td>
+                    <td className="text-start px-3 py-2">{new Date(item.WL_Time).toISOString().replace("T", " ").slice(0, 16)}</td>
                     <td class ='text-start px-3 py-2'>{item.user_username}</td>
                     <td class ='text-start px-3 py-2'>{item.WL_Action}</td>
                     <td class ='md:text-end md:px-6 py-2'>{item.WL_Description}</td>

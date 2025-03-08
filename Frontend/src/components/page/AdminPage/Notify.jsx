@@ -7,7 +7,7 @@ function Notify()
             <h1 className="max-md:text-lg md:text-4xl text-gray-700">แจ้งเตือนผ่านไลน์</h1>
         </div>
         <div className="mt-6 flex justify-center">
-        <img src="/images/lineqr.png" className="w-64 mx-auto"></img>
+        <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/lineqr.png`}  className="w-64 mx-auto"></img>
         </div>
     </div>
     </>

@@ -9,6 +9,7 @@ require('dotenv').config();
 
 const LINE_USERID = process.env.LINE_USERID
 const LINE_ACCESSTOKEN = process.env.LINE_ACCESSTOKEN
+const API_URL = process.env.API_URL
 
 
 router.post('/linemessage',(req,res) =>
@@ -42,7 +43,7 @@ router.post('/linemessage',(req,res) =>
 router.get('/getnotifyitem', (req,res) => {
   // if sparepartnotify is true
   // notifyamount = 0 (always notify) or amount is less than notifyamount
-  const sqlcommand = `SELECT s.*, c.Category_Name from sparepart s join category c on s.Category_ID = c.Category_ID
+  const sqlcommand = `SELECT s.*, c.Category_Name from Sparepart s join Category c on s.Category_ID = c.Category_ID
                       where SparePart_Notify = 1
                       and (SparePart_NotifyAmount = 0 or SparePart_Amount < SparePart_NotifyAmount)`
   db.query(sqlcommand,(err,results) =>
@@ -58,10 +59,10 @@ router.get('/getnotifyitem', (req,res) => {
 })
     //using cron to schedule call line api
     //[min] [hour] [day of month] [month] [day of week]
-cron.schedule('0 */3 * * *', async () => { // notify every 3 hours
+cron.schedule('0 */8 * * *', async () => { // notify every 3 hours
   try{
     const timestamp = new Date().toLocaleString('th-TH') //create timestamp
-    const getnotifyitemapi = await axios.get('http://localhost:5000/getnotifyitem');
+    const getnotifyitemapi = await axios.get(`${API_URL}/getnotifyitem`);
     const data = getnotifyitemapi.data
     
     //loop over data -> formatdata
@@ -72,7 +73,7 @@ cron.schedule('0 */3 * * *', async () => { // notify every 3 hours
     const message = `แจ้งเตือนอะไหล่คงเหลือ\nเวลา : ${timestamp}\n${formatdata}`
       request.post(
         {
-          url: 'http://localhost:5000/linemessage',
+          url: `${API_URL}/linemessage`,
           json: { message: message }, //sent message to api/linemessage
         },
         (err, response, body) => {

@@ -21,6 +21,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
   storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const fileTypes = /jpeg|jpg|png|gif/;
     const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
@@ -38,116 +39,108 @@ const fs = require('fs');
 if (!fs.existsSync('uploads')) {
   fs.mkdirSync('uploads');
 }
-
 router.post("/upload", upload.single('productimage'), (req, res) => {
-  res.json({message : 'Hello Ok'})
-  })
-
-router.post('/addproduct', upload.single('productimage'), (req, res) => {
-    const {
-      productname,
-      productID,
-      productcatagory,
-      productamount,
-      productprice,
-      productdescription,
-      notify,
-      notify_amount,
-      productmodelid,
-      user_id
-    } = req.body;
-    console.log(req.body)
-    const productimage = req.file ? req.file.filename : null;
-    const sqlcommand = `INSERT INTO sparepart (SparePart_Name, SparePart_ProductID, SparePart_Amount, SparePart_Price, SparePart_Description, SparePart_Image, SparePart_Notify, SparePart_NotifyAmount, Category_ID)
-      VALUES (
-          ?, ?, ?, ?, ?, ?, ?, ?,
-          (SELECT Category_ID FROM category WHERE Category_Name = ?)
-      )`;
-    db.query(sqlcommand, [
-      productname, productID, productamount, productprice, productdescription, productimage, notify, notify_amount,
-       productcatagory
-    ], (err, results) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "No file uploaded" });
+  }
+  const filePath = path.join(__dirname, 'uploads', req.file.filename);
+  setTimeout(() => { //for some reason if i dont set time out, its just not work
+    fs.chown(filePath, 33, 33, (err) => {
       if (err) {
         console.error(err);
-        return res.status(500).json({ error: 'Database error' });
-      }
-    const sparepartID = results.insertId;
-
-    const modelid = productmodelid.split(',');
-    const insertmap = modelid.map(modelid => [sparepartID, modelid
-    ]);
-    const insertsql = `INSERT INTO Model_link (sparepart_id, Model_id) VALUES ?`;
-    db.query(insertsql, [insertmap], (err, result) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json();
+      } else {
+        console.log("Ownership changed to www-data.");
       }
     });
-    //put it do log
-    const wltime = new Date(new Date().getTime()+7*60*60*1000).toISOString().slice(0, 19).replace('T', ' '); //utc -> gmt+7 thingy
-    const wlaction = 'เพิ่มสินค้า'
-    const wldescription = `เพิ่มสินค้า : "${productname}" จำนวน ${productamount} หน่วย`
-    const puttologtablesql = `INSERT INTO warehouse_log (SparePart_ID, WL_Action, WL_Time, WL_Description, User_ID)
-                              VALUES (?,?,?,?,?)`
-
-    db.query(puttologtablesql, [sparepartID,wlaction,wltime,wldescription,user_id], (err,results) =>
-    {
-      if(err)
-      {
-        console.error(err)
-        return res.status(500).json({ error: 'Database error' });
+    fs.chmod(filePath, 0o644, (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log("Permissions set to 644.");
       }
-    })
-    res.json({ success: true, results });
+    });
+  }, 500);
+  res.json({ message: 'Upload successful', filename: req.file.filename });
+});
+
+router.post('/addproduct', upload.single('productimage'), (req, res) => {
+  const {
+      productname, productID, productcatagory, productamount, productprice, 
+      productdescription, notify, notify_amount, productmodelid, user_id
+  } = req.body;
+  console.log(req.body);
+  const notifyValue = (notify === "true" || notify === true) ? 1 : 0;
+  const productimage = req.file ? req.file.filename : null;
+  const sqlcommand = `INSERT INTO Sparepart (SparePart_Name, SparePart_ProductID, SparePart_Amount, SparePart_Price, SparePart_Description, SparePart_Image, SparePart_Notify, SparePart_NotifyAmount, Category_ID)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, (SELECT Category_ID FROM Category WHERE Category_Name = ?))`;
+  db.query(sqlcommand, [productname, productID, productamount, productprice, productdescription, productimage, notifyValue, notify_amount, productcatagory], (err, results) => {
+      if (err) {
+          return res.json(err);
+      }
+      const sparepartID = results.insertId;
+      const modelid = productmodelid.split(',');
+      const insertmap = modelid.map(modelid => [sparepartID, modelid]);
+      const insertsql = `INSERT INTO Model_Link (sparepart_id, Model_id) VALUES ?`;
+      db.query(insertsql, [insertmap], (err, result) => {
+          if (err) {
+            return res.json(err);
+          }
+          //put it do log
+          const wltime = new Date(new Date().getTime()+7*60*60*1000).toISOString().slice(0, 19).replace('T', ' ');
+          const wlaction = 'เพิ่มสินค้า';
+          const wldescription = `เพิ่มสินค้า : "${productname}" จำนวน ${productamount} หน่วย`;
+          const puttologtablesql = `INSERT INTO Warehouse_Log (SparePart_ID, WL_Action, WL_Time, WL_Description, User_ID) VALUES (?,?,?,?,?)`;
+          db.query(puttologtablesql, [sparepartID, wlaction, wltime, wldescription, user_id], (err, results) => {
+              if (err) {
+                  return res.json(err);
+              }
+              res.json(results);
+          });
+      });
   });
 });
 
 router.delete('/deletesparepart/:id', function (req, res) {
-  const sparepartId = req.params.id;
-  const user_id = req.headers["user_id"];
-  //get productname first
-  const getproductnamesql = `SELECT SparePart_Name,SparePart_Image FROM sparepart WHERE SparePart_ID = ?`
-  db.query(getproductnamesql, [sparepartId], function (err, result){
-    if(err)
-    {
-      return res.send(err)
-    }
-    const productname = result[0].SparePart_Name
-    //get image filepath
-    const filename = result[0].SparePart_Image;
-    const filePath = filename ? path.join(__dirname, 'uploads', filename) : null; //if have image get filepath of img
-    //delete image from upload folder
-    if (filename && fs.existsSync(filePath)) {
-      try {
-          fs.unlinkSync(filePath);
-          console.log(`Deleted image: ${filePath}`);
-      } catch (err) {
-          console.error(`Failed to delete image: ${filePath}`, err);
-      }
-    }
-    //delete from sparepart db
-    const sqlcommand = 'DELETE FROM sparepart WHERE SparePart_ID = ?';
-    db.query(sqlcommand, [sparepartId], function (err, result2) {
-      if(err)
-      {
-        return res.send(err)
-      }
-      console.log(result2)
-      //put log
-      const wltime = new Date(new Date().getTime()+7*60*60*1000).toISOString().slice(0, 19).replace('T', ' '); //utc -> gmt+7 thingy
-      const wlaction = 'ลบสินค้า'
-      const wldescription = `ลบสินค้า : "${productname}"`
-      const puttologtablesql = `INSERT INTO warehouse_log (SparePart_ID, WL_Action, WL_Time, WL_Description, user_ID)
-                                VALUES (?,?,?,?,?)`
-      db.query(puttologtablesql, [null,wlaction,wltime,wldescription,user_id], function (err, result3){
-        if(err)
-        {
-          return res.send(err)
+    const sparepartId = req.params.id;
+    const user_id = req.query.user_id;
+    //get productname first
+    const getproductnamesql = `SELECT SparePart_Name, SparePart_Image FROM Sparepart WHERE SparePart_ID = ?`;
+    db.query(getproductnamesql, [sparepartId], function (err, result) {
+        if (err) {
+            return res.status(500).json(err);
         }
-        return res.json({ success: true, message: 'Product deleted and logged successfully' });
-      })
+        //get image filepath
+        const productname = result[0].SparePart_Name;
+        const filename = result[0].SparePart_Image;
+        const filePath = filename ? path.join(__dirname, 'uploads', filename) : null;
+        //delete image from upload folder
+        if (filename && fs.existsSync(filePath)) {
+            try {
+                fs.unlinkSync(filePath);
+                console.log(`Deleted image: ${filePath}`);
+            } catch (err) {
+                console.error(`Failed to delete image: ${filePath}`, err);
+            }
+        }
+        //delete from sparepart db
+        const sqlcommand = 'DELETE FROM Sparepart WHERE SparePart_ID = ?';
+        db.query(sqlcommand, [sparepartId], function (err, result2) {
+            if (err) {
+                return res.status(500).json(err);
+            }
+            //put into warehouse_log
+            const wltime = new Date(new Date().getTime()+7*60*60*1000).toISOString().slice(0, 19).replace('T', ' ');
+            const wlaction = 'ลบสินค้า';
+            const wldescription = `ลบสินค้า : "${productname}"`;
+            const puttologtablesql = `INSERT INTO Warehouse_Log (SparePart_ID, WL_Action, WL_Time, WL_Description, user_ID) VALUES (?,?,?,?,?)`;
+            db.query(puttologtablesql, [null, wlaction, wltime, wldescription, user_id], function (err, result3) {
+                if (err) {
+                    return res.status(500).json(err);
+                }
+                return res.json(result3);
+            });
+        });
     });
-  })
 });
 
 module.exports = router;

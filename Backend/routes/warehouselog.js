@@ -4,7 +4,7 @@ const router = express.Router();
 
 //all log
 router.get('/warehouselog', (req,res) => {
-    const sqlcommand = `SELECT wl.*, u.user_username from warehouse_log wl join user u on wl.user_id = u.user_id order by wl_id desc`
+    const sqlcommand = `SELECT wl.*, u.user_username from Warehouse_Log wl join User u on wl.user_id = u.user_id order by wl_id desc`
     db.query(sqlcommand,(err,result) => 
     {
         if(err)
@@ -23,7 +23,7 @@ router.post('/searchwarehousetime', (req, res) => {
     let condition = []
 
     //based sql
-    let sqlcommand = `SELECT wl.*, u.user_username from warehouse_log wl join user u on wl.user_id = u.user_id`
+    let sqlcommand = `SELECT wl.*, u.user_username from Warehouse_Log wl join User u on wl.user_id = u.user_id`
 
     //if have search time -> add date filter
     if(search_time && search_time.trim() !== "" && search_time2 && search_time2.trim() !== "")
@@ -63,7 +63,7 @@ router.post('/searchwarehousetime', (req, res) => {
 })
 
 router.get('/getadminuser',(req,res) => {
-    const sqlcommand = 'select distinct u.user_username from user u join warehouse_log wl on wl.user_id = u.user_id'
+    const sqlcommand = 'select distinct u.user_username from User u join Warehouse_Log wl on wl.user_id = u.user_id'
     db.query(sqlcommand, (err, result) => {
         if(err) {
             res.send(err)

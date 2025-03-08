@@ -46,33 +46,33 @@ function Toyota() {
 
     const Toyota = [
         {   name: "Yaris", models: [
-                { year: "2024", modelId: 19, image: "https://www.toyotanont.com/public/uploads/cars/2/grade/801af926cb09a486a7c83c0b7bebcbf3.png" },
-                { year: "2019", modelId: 20, image: "https://images.hgmsites.net/lrg/2013-toyota-yaris-3dr-liftback-auto-le-natl-angular-front-exterior-view_100411609_l.jpg" },
-                { year: "2014", modelId: 21, image: "src/components/image/Yaris-2014.jpg" },],},
+                { year: "2024", modelId: 19, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Yaris-2024.jpg` },
+                { year: "2019", modelId: 20, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Yaris-2019.jpg` },
+                { year: "2014", modelId: 21, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Yaris-2014.jpg` },],},
         {   name: "Vios",models: [
-                { year: "2024", modelId: 22, image: "src/components/image/Jazz-2024.jpg" },
-                { year: "2019", modelId: 23, image: "src/components/image/Jazz-2019.jpg" },
-                { year: "2014", modelId: 24, image: "src/components/image/Jazz-2014.jpg" },],},
+                { year: "2024", modelId: 22, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Jazz-2024.jpg` },
+                { year: "2019", modelId: 23, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Jazz-2019.jpg` },
+                { year: "2014", modelId: 24, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Jazz-2014.jpg` },],},
         {   name: "Corolla Altis",models: [
-                { year: "2022", modelId: 25, image: "src/components/image/Corolla Altis-2022.jpg" },
-                { year: "2016", modelId: 26, image: "src/components/image/Corolla Altis-2016.jpg" },
-                { year: "2012", modelId: 27, image: "src/components/image/Corolla Altis-2012.jpg" },],},
+                { year: "2022", modelId: 25, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Corolla Altis-2022.jpg` },
+                { year: "2016", modelId: 26, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Corolla Altis-2016.jpg` },
+                { year: "2012", modelId: 27, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Corolla Altis-2012.jpg` },],},
         {   name: "Camry", models: [
-                { year: "2024", modelId: 28, image: "src/components/image/Camry-2024.jpg" },
-                { year: "2019", modelId: 29, image: "src/components/image/Camry-2019.jpg" },
-                { year: "2014", modelId: 30, image: "src/components/image/Camry-2014.jpg" },],},
+                { year: "2024", modelId: 28, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Camry-2024.jpg` },
+                { year: "2019", modelId: 29, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Camry-2019.jpg` },
+                { year: "2014", modelId: 30, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Camry-2014.jpg` },],},
         {   name: "Fortuner",models: [
-                { year: "2024", modelId: 31, image: "src/components/image/Fortuner-2024.jpg" },
-                { year: "2019", modelId: 32, image: "src/components/image/Fortuner-2019.jpg" },
-                { year: "2014", modelId: 33, image: "src/components/image/Fortuner-2014.jpg" },],},
+                { year: "2024", modelId: 31, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Fortuner-2024.jpg` },
+                { year: "2019", modelId: 32, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Fortuner-2019.jpg` },
+                { year: "2014", modelId: 33, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Fortuner-2014.jpg` },],},
         {   name: "Hilux Revo",models: [
-                { year: "2024", modelId: 34, image: "src/components/image/Hilux Revo-2024.jpg" },
-                { year: "2019", modelId: 35, image: "src/components/image/Hilux Revo-2019.jpg" },
-                { year: "2014", modelId: 36, image: "src/components/image/Hilux Revo-2014.jpg" },],},    
+                { year: "2024", modelId: 34, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Hilux Revo-2024.jpg` },
+                { year: "2019", modelId: 35, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Hilux Revo-2019.jpg` },
+                { year: "2014", modelId: 36, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Hilux Revo-2014.jpg` },],},    
         {   name: "Alphard",models: [
-                { year: "2024", modelId: 37, image: "src/components/image/Alphard-2024.jpg" },
-                { year: "2019", modelId: 38, image: "src/components/image/Alphard-2019.jpg" },
-                { year: "2014", modelId: 39, image: "src/components/image/Alphard-2014.jpg" },],},
+                { year: "2024", modelId: 37, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Alphard-2024.jpg` },
+                { year: "2019", modelId: 38, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Alphard-2019.jpg` },
+                { year: "2014", modelId: 39, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Alphard-2014.jpg` },],},
     ];
 
     useEffect(() => {
@@ -226,7 +226,7 @@ function Toyota() {
                     <div className="flex p-4 ">
                         <div className="flex items-center">
                             <button onClick={() => NavigateEstimate(null)} className="p-2 rounded">
-                                <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                                <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">
@@ -249,7 +249,7 @@ function Toyota() {
                 <div className="flex p-4">
                     <div className="flex items-center">
                         <button onClick={() => setSelectedModel(null)} className="p-2 rounded">
-                            <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                            <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                         </button>
                     </div>
                     <div className="flex p-4 justify-center items-center w-full">
@@ -271,7 +271,7 @@ function Toyota() {
                     <div className="flex p-4">
                         <div className="flex items-center">
                             <button onClick={() => setSelectedYear(null)} className="p-2 rounded">
-                                <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                                <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">

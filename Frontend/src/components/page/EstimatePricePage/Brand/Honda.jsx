@@ -46,29 +46,29 @@ function Honda() {
 
     const Honda = [
         {   name: "City", models: [
-                { year: "2024", modelId: 1, image: "https://d31sro4iz4ob5n.cloudfront.net/upload/car/city-2024/color/lhd-lx-platinum-white-pearl/1.png?v=302232192" },
-                { year: "2019", modelId: 2, image: "https://carsguide-res.cloudinary.com/image/upload/f_auto,fl_lossy,q_auto,t_default/v1/editorial/vhs/Honda-City.png" },
-                { year: "2014", modelId: 3, image: "https://www.gbs2u.com/Storage/35209011/GBS%20WEB%20TEMPLATE/honda%20melaka/V1/CITY1.png" },],},
+                { year: "2024", modelId: 1, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_1.png` },
+                { year: "2019", modelId: 2, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_2.png` },
+                { year: "2014", modelId: 3, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_3.png` },],},
         {   name: "Jazz",models: [
-                { year: "2024", modelId: 4, image: "src/components/image/Jazz-2024.jpg" },
-                { year: "2019", modelId: 5, image: "src/components/image/Jazz-2019.jpg" },
-                { year: "2014", modelId: 6, image: "src/components/image/Jazz-2014.jpg" },],},
+                { year: "2024", modelId: 4, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_4.png` },
+                { year: "2019", modelId: 5, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_5.png` },
+                { year: "2014", modelId: 6, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_6.png` },],},
         {   name: "Civic",models: [
-                { year: "2022", modelId: 7, image: "https://images.jazelc.com/uploads/hardinhonda-2-m2en/2024-Honda-Civic-Sedan-new.png" },
-                { year: "2016", modelId: 8, image: "https://www.motorexpo.co.th/data/content/640_2016031114321828.jpg" },
-                { year: "2012", modelId: 9, image: "https://napista.com.br/static/marketplace-portal/catalog/HONDA/CIVIC/2012/4SA.JPG" },],},
+                { year: "2022", modelId: 7, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_7.png` },
+                { year: "2016", modelId: 8, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_8.png` },
+                { year: "2012", modelId: 9, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_9.png` },],},
         {   name: "Accord", models: [
-                { year: "2024", modelId: 10, image: "src/components/image/Accord-2024.jpg" },
-                { year: "2019", modelId: 11, image: "src/components/image/Accord-2019.jpg" },
-                { year: "2014", modelId: 12, image: "src/components/image/Accord-2014.jpg" },],},
+                { year: "2024", modelId: 10, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_10.png` },
+                { year: "2019", modelId: 11, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_11.png` },
+                { year: "2014", modelId: 12, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_12.png` },],},
         {   name: "HR-V",models: [
-                { year: "2024", modelId: 13, image: "src/components/image/HR-V-2024.jpg" },
-                { year: "2019", modelId: 14, image: "src/components/image/HR-V-2019.jpg" },
-                { year: "2014", modelId: 15, image: "src/components/image/HR-V-2014.jpg" },],},
+                { year: "2024", modelId: 13, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_13.png` },
+                { year: "2019", modelId: 14, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_14.png` },
+                { year: "2014", modelId: 15, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_15.png` },],},
         {   name: "CR-V",models: [
-                { year: "2024", modelId: 16, image: "src/components/image/CR-V-2024.jpg" },
-                { year: "2019", modelId: 17, image: "src/components/image/CR-V-2019.jpg" },
-                { year: "2014", modelId: 18, image: "src/components/image/CR-V-2014.jpg" },],},        
+                { year: "2024", modelId: 16, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_16.png` },
+                { year: "2019", modelId: 17, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_17.png` },
+                { year: "2014", modelId: 18, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_18.png` },],},        
     ];
 
     useEffect(() => {
@@ -222,7 +222,7 @@ function Honda() {
                     <div className="flex p-4 ">
                         <div className="flex items-center">
                             <button onClick={() => NavigateEstimate(null)} className="p-2 rounded">
-                                <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                                <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">
@@ -245,7 +245,7 @@ function Honda() {
                 <div className="flex p-4">
                     <div className="flex items-center">
                         <button onClick={() => setSelectedModel(null)} className="p-2 rounded">
-                            <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                            <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                         </button>
                     </div>
                     <div className="flex p-4 justify-center items-center w-full">
@@ -267,7 +267,7 @@ function Honda() {
                     <div className="flex p-4">
                         <div className="flex items-center">
                             <button onClick={() => setSelectedYear(null)} className="p-2 rounded">
-                                <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
+                                <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">
