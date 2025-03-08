@@ -113,14 +113,21 @@ function Honda() {
     
                 if (Array.isArray(response.data)) {
                     const subCategoryTotals = response.data.reduce((acc, item) => {
-                        acc[item.Sub_Category_Name] = item.TotalAmount;
+                        const key = item.Sub_Category_Name === "Uncategorized"
+                            ? `Uncategorized_${item.Category_ID}`
+                            : item.Sub_Category_Name;
+                        acc[key] = item.TotalAmount;
                         return acc;
                     }, {});
-    
+            
+                    // Ensure "Uncategorized" exists even if not in API response
+                    if (!subCategoryTotals["Uncategorized"]) {
+                        subCategoryTotals["Uncategorized"] = 0;
+                    }
+            
                     setCategoryTotal(subCategoryTotals);
                     console.log("Updated SubCategory Totals:", subCategoryTotals);
-                } else {
-                    console.error("Unexpected response format:", response.data);
+            
                 }
             })
             .catch((error) => {
@@ -282,7 +289,8 @@ function Honda() {
                             </button>
                         </div>
                         <div className={`${isOpen ? 'block' : 'hidden'} lg:hidden absolute inset-x-0 h-full w-full max-w-[20rem] z-30 px-6 py-4 transition-all duration-300 ease-in-out lg:mt-0 lg:p-0 lg:top-0 lg:relative lg:w-auto lg:translate-x-0 lg:items-center`}>
-                            <div class="fixed z-[9999] pointer-events-auto bg-white box-border w-full shadow-2xl shadow-blue-gray-900/10 top-0 left-0"style={{ maxWidth: "300px", height: "100vh", transform: "none",}}>
+                            <div className="fixed z-[9999] pointer-events-auto bg-white box-border w-full shadow-2xl shadow-blue-gray-900/10 top-0 left-0"
+                                style={{ maxWidth: "300px", height: "100vh", transform: "none" }}>
                                 <div className="flex justify-end mr-3 mt-3">
                                     {isOpen && (
                                         <button onClick={toggleMenu}>
@@ -290,91 +298,121 @@ function Honda() {
                                         </button>
                                     )}
                                 </div>
-                                <Card className="bg-white opacity-80 h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
-                                <div className="mb-2 flex items-center gap-4 p-4">
-                                    <img src="https://docs.material-tailwind.com/img/logo-ct-dark.png" alt="brand" className="h-8 w-8" />
+                                <Card className="bg-white opacity-80 h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5 overflow-y-auto max-h-screen scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
+                                    <div className="mb-2 flex items-center gap-4 p-4">
+                                        <img src="https://docs.material-tailwind.com/img/logo-ct-dark.png" alt="brand" className="h-8 w-8" />
                                         <Typography variant="h5" color="blue-gray">Category</Typography>
-                                </div>
-                                    <div className="relative p-2">
-                                        <input value={search_query} type="text" id="search" className="peer w-full px-4 py-2 text-base bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder=" " onChange={e => setSearchQuery(e.target.value)} onKeyPress={(e) => {if (e.key === 'Enter') {search(e);}}}></input>
-                                        <label className="absolute left-4 -top-4 text-gray-400 opacity-80 text-base transition-all duration-100 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:top-[-15px] peer-focus:text-sm peer-focus:text-blue-500">Search...</label>
-                                        <svg id="search" onClick={search} className="absolute right-4 top-1/2 transform -translate-y-1/2 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" >
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                                        </svg>
                                     </div>
-                                    <List><ListItem>
-                                            <div className="hover:text-yellow-800 hover:scale-110" onClick={fetchAllData}>สินค้าทั้งหมด</div>
-                                            <ListItemSuffix>
-                                                <Chip value={`[${totalCategoryAmount}]`} size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
-                                            </ListItemSuffix>
-                                    </ListItem>
-                                    {categories.map((category, index) => (<Accordion key={category.id} open={open === index + 1} icon={<ChevronDownIcon />}>
-                                    <ListItem>
-                                        <AccordionHeader className="text-base font-normal" onClick={() => handleOpen(index + 1)}>
-                                            <ListItemPrefix><img src={category.icon} className="h-3 w-3"/></ListItemPrefix>
-                                            {category.name}
-                                        </AccordionHeader>
-                                    </ListItem>
-                                <AccordionBody className="py-1">
-                                <List>
-                            <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory(category.categoryId, "")}>
-                            {category.name} ทั้งหมด
-                            </ListItem>{category.subcategories.map((sub, i) => (<ListItem key={i} onClick={() => sortByCategory(category.categoryId, sub)}>{sub}
-                                        <ListItemSuffix>
-                                        <Chip value={`[${categoryTotal[sub] || 0}]`} size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
-                                            </ListItemSuffix>
-                                </ListItem>))}
-                                        </List></AccordionBody></Accordion>))}
-                                </List>
-                            </Card>
-                            </div>
-                        </div>
-                        <div className="lg:flex hidden">
-                            <Card className="bg-white opacity-80 h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
-                                <div className="mb-2 flex items-center gap-4 p-4">
-                                    <img src="https://docs.material-tailwind.com/img/logo-ct-dark.png" alt="brand" className="h-8 w-8" />
-                                        <Typography variant="h5" color="blue-gray">Category</Typography>
-                                </div>
                                     <div className="relative p-2">
-                                        <input value={search_query} type="text" id="search" className="peer w-full px-4 py-2 text-base bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder=" " onChange={e => setSearchQuery(e.target.value)} onKeyPress={(e) => {if (e.key === 'Enter') {search(e);}}}></input>
+                                        <input value={search_query} type="text" id="search" className="peer w-full px-4 py-2 text-base bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            placeholder=" " onChange={e => setSearchQuery(e.target.value)} onKeyPress={(e) => { if (e.key === 'Enter') { search(e); } }} />
                                         <label className="absolute left-4 -top-4 text-gray-400 opacity-80 text-base transition-all duration-100 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:top-[-15px] peer-focus:text-sm peer-focus:text-blue-500">Search...</label>
-                                        <svg id="search" onClick={search} className="absolute right-4 top-1/2 transform -translate-y-1/2 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" >
+                                        <svg id="search" onClick={search} className="absolute right-4 top-1/2 transform -translate-y-1/2 size-6"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                                         </svg>
                                     </div>
                                     <List>
-                                    <ListItem className="hover:text-yellow-800 hover:scale-110">
+                                        <ListItem className="hover:text-yellow-800 hover:scale-110">
                                             <div onClick={fetchAllData}>สินค้าทั้งหมด</div>
                                             <ListItemSuffix>
                                                 <Chip value={`[${totalCategoryAmount}]`} size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
                                             </ListItemSuffix>
-                                    </ListItem>
-                                    {categories.map((category, index) => (
-                                <Accordion key={category.id} open={open === index + 1} icon={<ChevronDownIcon strokeWidth={2.5} className={`mx-auto h-4 w-4 transition-transform ${open === 1 ? "rotate-180" : ""}`}/>}>
-                                <ListItem className="hover:text-yellow-800 hover:scale-110">
-                                <AccordionHeader className="text-base font-normal" onClick={() => handleOpen(index + 1)}>
-                                <ListItemPrefix className="hover:text-yellow-800 hover:scale-110">
-                                <img src={category.icon} className="h-5 w-5"/>
-                            </ListItemPrefix>
-                        {category.name}
-                    </AccordionHeader>
-                    </ListItem>
-                <AccordionBody className="py-1">
-                <List>
-                <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory(category.categoryId, "")}>
-                    {category.name} ทั้งหมด
-                            </ListItem>{category.subcategories.map((sub, i) => (<ListItem key={i} onClick={() => sortByCategory(category.categoryId, sub)}>{sub}
-                                        <ListItemSuffix>
-                                        <Chip value={`[${categoryTotal[sub] || 0}]`} size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
-                                            </ListItemSuffix>
-                                </ListItem>))}
-                                        </List>
-                                            </AccordionBody>
-                                        </Accordion>
+                                        </ListItem>
+                                        {categories.map((category, index) => (
+                                            <Accordion key={category.id} open={open === index + 1} icon={<ChevronDownIcon strokeWidth={2.5} className={`mx-auto h-4 w-4 transition-transform ${open === 1 ? "rotate-180" : ""}`} />}>
+                                                <ListItem className="hover:text-yellow-800 hover:scale-110">
+                                                    <AccordionHeader className="text-base font-normal" onClick={() => handleOpen(index + 1)}>
+                                                        <ListItemPrefix className="hover:text-yellow-800 hover:scale-110">
+                                                            <img src={category.icon} className="h-5 w-5" />
+                                                        </ListItemPrefix>
+                                                        <Typography color="blue-gray" className="mr-auto font-normal">
+                                                            {category.name}
+                                                        </Typography>
+                                                    </AccordionHeader>
+                                                </ListItem>
+                                                <AccordionBody className="py-1">
+                                                    <List>
+                                                        <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory(category.categoryId, "")}>
+                                                            <ListItemPrefix>
+                                                                <ChevronRightIcon className="h-3 w-5 ml-3" />
+                                                            </ListItemPrefix>
+                                                            {category.name}ทุกยี่ห้อ
+                                                            <Chip value={`[${category.subcategories.reduce((total, sub) => total + (categoryTotal[sub] || 0), 0) + (categoryTotal[`Uncategorized_${category.categoryId}`] || 0)}]`} size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                                        </ListItem>
+                                                        {category.subcategories.map((sub, i) => (
+                                                            <ListItem className="hover:text-yellow-800 hover:scale-110" key={i} onClick={() => sortByCategory(category.categoryId, sub)}>
+                                                                <ListItemPrefix>
+                                                                    <ChevronRightIcon className="h-3 w-5 ml-3" />
+                                                                </ListItemPrefix>
+                                                                {sub}
+                                                                <Chip value={`[${categoryTotal[sub] || 0}]`} size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                                            </ListItem>
+                                                        ))}
+                                                    </List>
+                                                </AccordionBody>
+                                            </Accordion>
                                         ))}
                                     </List>
                                 </Card>
                             </div>
+                        </div>
+                        <div className="lg:flex hidden">
+                            <Card className="bg-white opacity-80 h-fit w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
+                                <div className="mb-2 flex items-center gap-4 p-4">
+                                    <img src="https://docs.material-tailwind.com/img/logo-ct-dark.png" alt="brand" className="h-8 w-8" />
+                                    <Typography variant="h5" color="blue-gray">Category</Typography>
+                                </div>
+                                <div className="relative p-2">
+                                    <input value={search_query} type="text" id="search" className="peer w-full px-4 py-2 text-base bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder=" " onChange={e => setSearchQuery(e.target.value)} onKeyPress={(e) => {if (e.key === 'Enter') {search(e);}}}></input>
+                                    <label className="absolute left-4 -top-4 text-gray-400 opacity-80 text-base transition-all duration-100 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:top-[-15px] peer-focus:text-sm peer-focus:text-blue-500">Search...</label>
+                                    <svg id="search" onClick={search} className="absolute right-4 top-1/2 transform -translate-y-1/2 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" >
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                                    </svg>
+                                </div>
+                                <List>
+                                    <ListItem className="hover:text-yellow-800 hover:scale-110">
+                                        <div onClick={fetchAllData}>สินค้าทั้งหมด</div>
+                                        <ListItemSuffix>
+                                            <Chip value={`[${totalCategoryAmount}]`} size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                        </ListItemSuffix>
+                                    </ListItem>
+                                    {categories.map((category, index) => (
+                                        <Accordion key={category.id} open={open === index + 1} icon={<ChevronDownIcon strokeWidth={2.5} className={`mx-auto h-4 w-4 transition-transform ${open === 1 ? "rotate-180" : ""}`}/>}>
+                                            <ListItem className="hover:text-yellow-800 hover:scale-110">
+                                                <AccordionHeader className="text-base font-normal" onClick={() => handleOpen(index + 1)}>
+                                                    <ListItemPrefix className="hover:text-yellow-800 hover:scale-110">
+                                                        <img src={category.icon} className="h-5 w-5"/>
+                                                    </ListItemPrefix>
+                                                    <Typography color="blue-gray" className="mr-auto font-normal">
+                                                        {category.name}
+                                                    </Typography>
+                                                </AccordionHeader>
+                                            </ListItem>
+                                            <AccordionBody className="py-1">
+                                                <List>
+                                                    <ListItem className="hover:text-yellow-800 hover:scale-110" onClick={() => sortByCategory(category.categoryId, "")}>
+                                                        <ListItemPrefix>
+                                                            <ChevronRightIcon className="h-3 w-5 ml-3"/>
+                                                        </ListItemPrefix>
+                                                        {category.name}ทุกยี่ห้อ
+                                                        <Chip value={`[${category.subcategories.reduce((total, sub) => total + (categoryTotal[sub] || 0), 0) +(categoryTotal[`Uncategorized_${category.categoryId}`] || 0)}]`} size="sm" variant="ghost" color="blue-gray" className="rounded-full"/></ListItem>
+                                                    {category.subcategories.map((sub, i) => (
+                                                        <ListItem className="hover:text-yellow-800 hover:scale-110" key={i} onClick={() => sortByCategory(category.categoryId, sub)}>
+                                                            <ListItemPrefix>
+                                                                <ChevronRightIcon className="h-3 w-5 ml-3"/>
+                                                            </ListItemPrefix>
+                                                            {sub}
+                                                            <Chip value={`[${categoryTotal[sub] || 0}]`} size="sm" variant="ghost" color="blue-gray" className="rounded-full" />
+                                                        </ListItem>
+                                                    ))}
+                                                </List>
+                                            </AccordionBody>
+                                        </Accordion>
+                                    ))}
+                                </List>
+                            </Card>
+                        </div>
                         <div className="flex container px-6 py-10">
                             <div class="absolute z-10 -mt-20 flex flex-wrap gap-6 w-fit max-sm:-mt-36">
                                 <a class="relative">
@@ -387,7 +425,7 @@ function Honda() {
                                     </button>
                                 </a>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 content-between">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 content-start">
                                 {currentSpareParts.map((val) => (
                                     <div className="bg-white rounded-xl shadow-lg overflow-hidden transition-transform transform hover:scale-105 duration-300 flex flex-col">
                                         <span>

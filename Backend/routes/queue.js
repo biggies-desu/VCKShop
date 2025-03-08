@@ -122,7 +122,7 @@ router.put('/updatequeue/:id', function (req, res) {
 })
 
 router.get('/queuehistory', function (req,res){
-  const sqlcommand = `SELECT * FROM booking ORDER BY DATE(Booking_Date), Booking_Time DESC`
+  const sqlcommand = `SELECT * FROM booking ORDER BY DATE(Booking_Date) desc, Booking_time asc`
   db.query(sqlcommand,function(err,results)
 {
   if(err)
@@ -134,6 +134,25 @@ router.get('/queuehistory', function (req,res){
     res.json(results)
   }
 })
+})
+
+router.post('/queuehistorytime', function (req,res){
+  let time1 = req.body.search_time;
+  let time2 = req.body.search_time2;
+  let sqlcommand;
+
+  if (!time1 || time1.trim() === "" || !time2 || time2.trim() === "") {
+    sqlcommand = `SELECT * FROM booking ORDER BY DATE(Booking_Date) desc, Booking_time asc`
+  } else {
+    sqlcommand = `SELECT * FROM booking where booking_date between ? and ? ORDER BY DATE(Booking_Date) desc, Booking_time asc`
+  }
+
+  db.query(sqlcommand, [time1,time2], function (err, results) {
+    if(err){
+      res.send(err)}
+    else{
+      res.json(results)
+    }})
 })
 
 router.post('/finishqueue', function (req,res) {
@@ -160,6 +179,8 @@ router.post('/finishqueue', function (req,res) {
   })
   })
 })
+
+
 
 router.post('/searchqueuetime', function (req, res) {
   let time1 = req.body.search_time;

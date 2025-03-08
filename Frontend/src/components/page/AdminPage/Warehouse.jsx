@@ -144,7 +144,7 @@ function Warehouse() {
                     <h1 className="max-md:text-lg md:text-4xl text-gray-700">คลังสินค้า</h1>
                 </div>
                 <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex-row md:flex md:space-x-4 items-center">
-                    <input value={search_query} type="search" id="search_query" className="w-full sm:flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-300" placeholder="ค้นหาชื่อ/รหัสสินค้า" onChange={e => setsearch_query(e.target.value)} />
+                    <input value={search_query} type="search" id="search_query" className="w-full sm:flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-300" placeholder="ค้นหาชื่อ/รหัสสินค้า" onChange={e => setsearch_query(e.target.value)} onKeyPress={(e) => { if (e.key === 'Enter') { search(e); }}}/>
                     <button type="button" id="search" onClick={search} className="px-4 py-2 max-md:mt-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">ค้นหา</button>
                     <button type="button" id="add" onClick={addproduct} className="px-4 py-2 max-md:mt-2 max-md:mx-5 bg-green-500 text-white rounded-lg hover:bg-green-600">เพิ่มสินค้า</button>
                 </form>
@@ -244,21 +244,24 @@ function Warehouse() {
 
         {isDetailModalOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl mx-4">
+                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl mx-4 overflow-hidden">
                     <h2 className="text-xl mb-4 kanit-bold">รายละเอียด</h2>
-                    <form>
-                        <div className="mb-4 space-y-2">
-                            <p><strong>รหัสสินค้า:</strong> {Detail.SparePart_ProductID}</p>
-                            <p><strong>ชื่อสินค้า:</strong> {Detail.SparePart_Name}</p>
-                            <p><strong>รายละเอียดสินค้า:</strong> {Detail.SparePart_Description}</p>
-                            <p><strong>จำนวนคงเหลือ:</strong> {Detail.SparePart_Amount}</p>
-                            <p><strong>ราคาต่อหน่วย:</strong> {Detail.SparePart_Price}</p>
-                            <p><strong>ประเภท:</strong> {Detail.Category_Name}</p>
-                        </div>
-                        <div className="flex justify-center space-x-4">
-                            <button onClick={closeDetailModal} className="px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 rounded">ตกลง</button>
-                        </div>
-                    </form>
+                    <div className="max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 pr-2">
+                        <form>
+                            <div className="mb-4 space-y-2">
+                                <p><strong>รหัสสินค้า:</strong> {Detail.SparePart_ProductID}</p>
+                                <p><strong>ชื่อสินค้า:</strong> {Detail.SparePart_Name}</p>
+                                <p><strong>รายละเอียดสินค้า:</strong> {Detail.SparePart_Description}</p>
+                                <p><strong>จำนวนคงเหลือ:</strong> {Detail.SparePart_Amount}</p>
+                                <p><strong>ราคาต่อหน่วย:</strong> {Detail.SparePart_Price}</p>
+                                <p><strong>ประเภท:</strong> {Detail.Category_Name}</p>
+                                <p><strong>รถรุ่น:</strong> {Detail.Model_Details}</p>
+                            </div>
+                            <div className="flex justify-center space-x-4 mt-4">
+                                <button onClick={closeDetailModal} className="px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 rounded">ตกลง</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         )}

@@ -118,14 +118,14 @@ function Queue_Management()
         setishistorymodal(true)
     }
 
-    function searchtime(search_time)
+    function searchtime()
     {
         console.log(search_time,search_time2)
         event.preventDefault()
         axios.post(`${import.meta.env.VITE_API_URL}/searchqueuetime`,
             {
                 search_time: search_time,
-                search_time2: search_time2
+                search_time2: search_time2 || search_time
             })
             .then((res) => {
                 console.log(res)

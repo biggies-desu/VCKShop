@@ -11,6 +11,8 @@ function Queue_History({setishistorymodal})
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(12); // จำนวนรายการที่จะแสดงในแต่ละหน้า
     const [totalPages, setTotalPages] = useState(1);
+    const [search_time, setsearch_time] = useState('')
+    const [search_time2, setsearch_time2] = useState('')
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/queuehistory`)
@@ -38,6 +40,24 @@ function Queue_History({setishistorymodal})
     function CloseDetailModal(item) {
         setIsDetailModalOpen(false);  
     }
+    
+    function searchtime()
+    {
+        console.log(search_time,search_time2)
+        event.preventDefault()
+        axios.post(`${import.meta.env.VITE_API_URL}/queuehistorytime`,
+            {
+                search_time: search_time,
+                search_time2: search_time2 || search_time
+            })
+            .then((res) => {
+                console.log(res)
+                setqueuedata(res.data)
+            })
+        .catch((err) => {
+            console.log(err);
+        })
+    }
 
     const currentQueuedata = queuedata.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -55,6 +75,15 @@ function Queue_History({setishistorymodal})
                 <h1 className="max-md:text-lg md:text-4xl text-gray-700">ประวัติคิวเข้าใช้บริการ</h1>
                 <button className="w-full md:w-auto text-white bg-blue-500 hover:bg-blue-700 px-6 py-2 rounded-lg text-lg transition" onClick={() => setishistorymodal(false)}>กลับ</button>
             </div>
+            <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex-row md:flex md:space-x-4 items-center">      
+                <input className="shadow border rounded-lg w-full md:w-1/3 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time(e.target.value)}/>
+                <input className="shadow border rounded-lg w-full md:w-1/3 py-2 px-4 max-md:mt-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time2(e.target.value)}/>
+                <button type='button' id="search" className="max-md:mt-2 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition"onClick={() => searchtime(search_time,search_time2)}>
+                    <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+                    </svg>
+                </button>
+            </form>
             <div className="relative overflow-x-auto shadow-md rounded-2xl mt-6">
                 <table className="w-full text-sm text-left text-gray-600 bg-white shadow-md rounded-xl">
                     <thead className="text-sm md:text-base text-white bg-blue-500">

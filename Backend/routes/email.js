@@ -27,7 +27,7 @@ router.post('/sentemail', async (req, res) => {
 
     let mailOptions = {
         from: process.env.MAILUSER,
-        to: "biggies7993@gmail.com", // Change to the owner's email later
+        to:  process.env.MAILUSER2, // Change to the owner's email later
         subject: `ข้อความจากคุณ ${name}`,
         text: `เนี้อหาข้อความ\n${message}\nอีเมลติดต่อกลับ : ${email}`
     };

@@ -6,8 +6,6 @@ import { NavLink } from 'react-router-dom'
 export default function Menu() {
   return (
 <aside className="main-sidebar sidebar-dark-primary elevation-4 kanit-regular">
-  {/* Brand Logo */}
-    <img src="/images/LogoNavbar.png" alt="VCKLogo" className="flex justify-center items-center" style={{opacity: '.5'}} />
   {/* Sidebar */}
   <div className="sidebar">
     {/* Sidebar Menu */}

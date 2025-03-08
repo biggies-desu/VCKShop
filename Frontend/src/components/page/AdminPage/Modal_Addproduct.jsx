@@ -121,9 +121,9 @@ function Modal_Addproduct({ setisaddproductmodal }) {
     
     const selectAll = (type, dropdown, selected, setSelected) => {
         const allItems = dropdown.map(item => 
-            type === "brand" ? item.SparePart_Brand_Name :
-            type === "model" ? item.SparePart_Model_Name :
-            item.SparePart_Model_ID
+            type === "brand" ? item.Brand_Name :
+            type === "model" ? item.Model_Name :
+            item.Model_ID
         );
         
         const newSelection = selected.length === allItems.length ? [] : allItems;
@@ -232,8 +232,8 @@ function Modal_Addproduct({ setisaddproductmodal }) {
                         </button>
                         <div className="flex flex-wrap gap-3">
                             {dropdownbrand?.map((item) => (
-                                <button key={item.SparePart_Brand_ID} onClick={() => toggleBrand(item.SparePart_Brand_Name)} className={`px-4 py-2 rounded-full border ${selectedbrand.includes(item.SparePart_Brand_Name)? "bg-blue-500 text-white border-blue-500": "bg-gray-100 text-gray-700 border-gray-300 hover:bg-blue-200"} transition duration-300`}>
-                                    {item.SparePart_Brand_Name}
+                                <button key={item.Brand_ID} onClick={() => toggleBrand(item.Brand_Name)} className={`px-4 py-2 rounded-full border ${selectedbrand.includes(item.Brand_Name)? "bg-blue-500 text-white border-blue-500": "bg-gray-100 text-gray-700 border-gray-300 hover:bg-blue-200"} transition duration-300`}>
+                                    {item.Brand_Name}
                                 </button>
                             ))}
                         </div>
@@ -249,8 +249,8 @@ function Modal_Addproduct({ setisaddproductmodal }) {
                         )}
                         <div className="flex flex-wrap gap-3">
                             {dropdownmodel?.map((item) => (
-                                <button key={item.SparePart_Model_Name} onClick={() => toggleModel(item.SparePart_Model_Name)} className={`px-4 py-2 rounded-full border ${selectedmodel.includes(item.SparePart_Model_Name)? "bg-blue-500 text-white border-blue-500": "bg-gray-100 text-gray-700 border-gray-300 hover:bg-blue-200"} transition duration-300`}>
-                                    {item.SparePart_Brand_Name} {item.SparePart_Model_Name}
+                                <button key={item.Model_Name} onClick={() => toggleModel(item.Model_Name)} className={`px-4 py-2 rounded-full border ${selectedmodel.includes(item.Model_Name)? "bg-blue-500 text-white border-blue-500": "bg-gray-100 text-gray-700 border-gray-300 hover:bg-blue-200"} transition duration-300`}>
+                                    {item.Brand_Name} {item.Model_Name}
                                 </button>
                             ))}
                         </div>
@@ -266,8 +266,8 @@ function Modal_Addproduct({ setisaddproductmodal }) {
                         )}
                         <div className="flex flex-wrap gap-3">
                             {dropdownyear?.map((item) => (
-                                <button key={item.SparePart_Model_ID} onClick={() => toggleYear(item.SparePart_Model_ID)} className={`px-4 py-2 rounded-full border ${selectedyear.includes(item.SparePart_Model_ID) ? "bg-blue-500 text-white border-blue-500" : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-blue-200"} transition duration-300`}>
-                                    {item.SparePart_Model_Name} {item.SparePart_Model_Year}
+                                <button key={item.Model_ID} onClick={() => toggleYear(item.Model_ID)} className={`px-4 py-2 rounded-full border ${selectedyear.includes(item.Model_ID) ? "bg-blue-500 text-white border-blue-500" : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-blue-200"} transition duration-300`}>
+                                    {item.Model_Name} {item.Model_Year}
                                 </button>
                             ))}
                         </div>

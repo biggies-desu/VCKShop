@@ -3,9 +3,15 @@ const db = require('../db')
 const router = express.Router();
 
 router.get('/allsparepart',(req,res) => {
-  const sqlcommand = `SELECT * FROM sparepart
-                    join category ON sparepart.Category_ID = category.Category_ID
-                    ORDER BY sparepart_id DESC;`
+  const sqlcommand = `SELECT s.*, c.Category_Name, 
+                      GROUP_CONCAT(DISTINCT CONCAT(b.Brand_Name, ' ', m.Model_Name, ' (', m.Model_Year, ')') ORDER BY m.Model_ID ASC SEPARATOR ' , ') AS Model_Details
+                      FROM sparepart s
+                      JOIN category c ON s.Category_ID = c.Category_ID
+                      JOIN Model_link ml ON s.SparePart_ID = ml.SparePart_ID
+                      JOIN Model m ON ml.Model_ID = m.Model_ID
+                      JOIN Brand b ON m.Brand_ID = b.Brand_ID
+                      GROUP BY s.SparePart_ID
+                      ORDER BY s.SparePart_ID DESC;`
   db.query(sqlcommand,(err,data) => {
     if(err)     return res.json(err);
     return res.json(data)
@@ -109,17 +115,15 @@ router.get('/categorytotal', function (req, res) {
   // Generate placeholders for each subcategory in the IN clause
   const placeholders = sparePartNames.map(() => '?').join(', ');
 
-  const sqlcommand = `SELECT s.Category_ID, sc.Sub_Category_Name, COUNT(s.SparePart_ID) AS TotalAmount 
-                  FROM sparepart s JOIN category c ON s.Category_ID = c.Category_ID JOIN sub_category sc ON sc.Category_ID = c.Category_ID
-                  JOIN Model_link ml ON s.SparePart_ID = ml.SparePart_ID 
-                  JOIN Model m ON ml.Model_ID = m.Model_ID 
-                  WHERE ml.Model_ID = ? 
-                  AND sc.Sub_Category_Name IN (${placeholders}) GROUP BY s.Category_ID, sc.Sub_Category_Name; `;
+  const sqlcommand = `SELECT c.Category_ID, COALESCE(sc.Sub_Category_Name, 'Uncategorized') AS Sub_Category_Name, COUNT(s.SparePart_ID) AS TotalAmount  FROM sparepart s JOIN category c ON s.Category_ID = c.Category_ID 
+                      LEFT JOIN sub_category sc ON sc.Category_ID = c.Category_ID AND s.SparePart_Name LIKE CONCAT('%', sc.Sub_Category_Name, '%') -- Match by name
+                      JOIN Model_link ml ON s.SparePart_ID = ml.SparePart_ID JOIN Model m ON ml.Model_ID = m.Model_ID 
+                      WHERE ml.Model_ID = ? GROUP BY c.Category_ID, sc.Sub_Category_Name ORDER BY c.Category_ID, sc.Sub_Category_Name`;
 
   // Execute query with dynamic placeholders
   db.query(sqlcommand, [modelId, ...sparePartNames], function (err, results) {
       if (err) {
-          return res.status(500).json({ message: "Database query error", error: err });
+          return res.status(500).json ({ message: "Database query error", error: err });
       } else {
           res.json(results);
       }
@@ -167,7 +171,5 @@ router.get("/categories", (req, res) => {
       res.json(formattedCategories);
   });
 });
-
-
 
 module.exports = router;
