@@ -48,7 +48,7 @@ function Mitsubishi() {
         {   name: "ALL-NEW TRITON ATHLETE", models: [
                 { year: "2024", modelId: 82, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_82.png` },
                 { year: "2019", modelId: 83, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_83.png` },
-                { year: "2014", modelId: 84, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_84.png` },],},
+                { year: "2016", modelId: 84, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_84.png` },],},
     ];
 
     useEffect(() => {
@@ -123,6 +123,7 @@ function Mitsubishi() {
         axios.get(`${import.meta.env.VITE_API_URL}/sparepart?modelId=${modelId}`)
             .then((response) => {
                 setSparePart(response.data); 
+                setCurrentPage(1);
             })
             .catch((error) => {
                 console.error(error);
@@ -160,6 +161,10 @@ function Mitsubishi() {
             .then((res) => {
                 const filteredData = res.data.filter(item => item.SparePart_Name.includes(keyword));
                 setSparePart(filteredData);
+                setCurrentPage(1);
+            })
+            .catch((error) => {
+                console.error(error);
             });
     }
 
@@ -173,6 +178,7 @@ function Mitsubishi() {
             .then((res) => {
                 console.log(res.data);
                 setSparePart(res.data);
+                setCurrentPage(1);
             })
             .catch((error) => {
                 console.error(error);

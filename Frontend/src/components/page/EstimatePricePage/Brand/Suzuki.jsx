@@ -123,6 +123,7 @@ function Suzuki() {
         axios.get(`${import.meta.env.VITE_API_URL}/sparepart?modelId=${modelId}`)
             .then((response) => {
                 setSparePart(response.data); 
+                setCurrentPage(1);
             })
             .catch((error) => {
                 console.error(error);
@@ -160,6 +161,10 @@ function Suzuki() {
             .then((res) => {
                 const filteredData = res.data.filter(item => item.SparePart_Name.includes(keyword));
                 setSparePart(filteredData);
+                setCurrentPage(1);
+            })
+            .catch((error) => {
+                console.error(error);
             });
     }
 
@@ -173,6 +178,7 @@ function Suzuki() {
             .then((res) => {
                 console.log(res.data);
                 setSparePart(res.data);
+                setCurrentPage(1);
             })
             .catch((error) => {
                 console.error(error);

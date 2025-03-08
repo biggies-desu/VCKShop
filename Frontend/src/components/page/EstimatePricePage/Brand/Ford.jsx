@@ -54,7 +54,7 @@ function Ford() {
                 { year: "2019", modelId: 44, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_44.png` },
                 { year: "2014", modelId: 45, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_45.png` },],},
         {   name: "Mustang",models: [
-                { year: "2022", modelId: 46, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_46.png` },
+                { year: "2024", modelId: 46, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_46.png` },
                 { year: "2019", modelId: 47, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_47.png` },
                 { year: "2014", modelId: 48, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_48.png` },],},
     ];
@@ -131,6 +131,7 @@ function Ford() {
         axios.get(`${import.meta.env.VITE_API_URL}/sparepart?modelId=${modelId}`)
             .then((response) => {
                 setSparePart(response.data); 
+                setCurrentPage(1);
             })
             .catch((error) => {
                 console.error(error);
@@ -168,6 +169,7 @@ function Ford() {
             .then((res) => {
                 const filteredData = res.data.filter(item => item.SparePart_Name.includes(keyword));
                 setSparePart(filteredData);
+                setCurrentPage(1);
             });
     }
 
@@ -181,6 +183,7 @@ function Ford() {
             .then((res) => {
                 console.log(res.data);
                 setSparePart(res.data);
+                setCurrentPage(1);
             })
             .catch((error) => {
                 console.error(error);

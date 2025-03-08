@@ -46,33 +46,33 @@ function Toyota() {
 
     const Toyota = [
         {   name: "Yaris", models: [
-                { year: "2024", modelId: 19, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Yaris-2024.jpg` },
-                { year: "2019", modelId: 20, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Yaris-2019.jpg` },
-                { year: "2014", modelId: 21, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Yaris-2014.jpg` },],},
+                { year: "2024", modelId: 19, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_19.png` },
+                { year: "2019", modelId: 20, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_20.png` },
+                { year: "2014", modelId: 21, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_21.png` },],},
         {   name: "Vios",models: [
-                { year: "2024", modelId: 22, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Jazz-2024.jpg` },
-                { year: "2019", modelId: 23, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Jazz-2019.jpg` },
-                { year: "2014", modelId: 24, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Jazz-2014.jpg` },],},
+                { year: "2024", modelId: 22, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_22.png` },
+                { year: "2019", modelId: 23, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_23.png` },
+                { year: "2014", modelId: 24, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_24.png` },],},
         {   name: "Corolla Altis",models: [
-                { year: "2022", modelId: 25, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Corolla Altis-2022.jpg` },
-                { year: "2016", modelId: 26, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Corolla Altis-2016.jpg` },
-                { year: "2012", modelId: 27, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Corolla Altis-2012.jpg` },],},
+                { year: "2022", modelId: 25, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_25.png` },
+                { year: "2016", modelId: 26, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_26.png` },
+                { year: "2012", modelId: 27, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_27.png` },],},
         {   name: "Camry", models: [
-                { year: "2024", modelId: 28, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Camry-2024.jpg` },
-                { year: "2019", modelId: 29, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Camry-2019.jpg` },
-                { year: "2014", modelId: 30, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Camry-2014.jpg` },],},
+                { year: "2024", modelId: 28, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_28.png` },
+                { year: "2019", modelId: 29, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_29.png` },
+                { year: "2014", modelId: 30, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_30.png` },],},
         {   name: "Fortuner",models: [
-                { year: "2024", modelId: 31, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Fortuner-2024.jpg` },
-                { year: "2019", modelId: 32, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Fortuner-2019.jpg` },
-                { year: "2014", modelId: 33, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Fortuner-2014.jpg` },],},
+                { year: "2024", modelId: 31, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_31.png` },
+                { year: "2019", modelId: 32, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_32.png` },
+                { year: "2014", modelId: 33, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_33.png` },],},
         {   name: "Hilux Revo",models: [
-                { year: "2024", modelId: 34, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Hilux Revo-2024.jpg` },
-                { year: "2019", modelId: 35, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Hilux Revo-2019.jpg` },
-                { year: "2014", modelId: 36, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Hilux Revo-2014.jpg` },],},    
+                { year: "2024", modelId: 34, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_34.png` },
+                { year: "2019", modelId: 35, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_35.png` },
+                { year: "2014", modelId: 36, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_36.png` },],},    
         {   name: "Alphard",models: [
-                { year: "2024", modelId: 37, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Alphard-2024.jpg` },
-                { year: "2019", modelId: 38, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Alphard-2019.jpg` },
-                { year: "2014", modelId: 39, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/Alphard-2014.jpg` },],},
+                { year: "2024", modelId: 37, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_37.png` },
+                { year: "2019", modelId: 38, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_38.png` },
+                { year: "2014", modelId: 39, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_39.png` },],},
     ];
 
     useEffect(() => {
@@ -147,6 +147,7 @@ function Toyota() {
         axios.get(`${import.meta.env.VITE_API_URL}/sparepart?modelId=${modelId}`)
             .then((response) => {
                 setSparePart(response.data); 
+                setCurrentPage(1);
             })
             .catch((error) => {
                 console.error(error);
@@ -184,6 +185,10 @@ function Toyota() {
             .then((res) => {
                 const filteredData = res.data.filter(item => item.SparePart_Name.includes(keyword));
                 setSparePart(filteredData);
+                setCurrentPage(1);
+            })
+            .catch((error) => {
+                console.error(error);
             });
     }
 
@@ -197,6 +202,7 @@ function Toyota() {
             .then((res) => {
                 console.log(res.data);
                 setSparePart(res.data);
+                setCurrentPage(1);
             })
             .catch((error) => {
                 console.error(error);

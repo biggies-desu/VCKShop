@@ -46,17 +46,17 @@ function Mazda() {
 
     const Mazda = [
         {   name: "NEW MAZDA2 HATCHBACK", models: [
-                { year: "2024", modelId: 73, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_73.png` },
-                { year: "2019", modelId: 74, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_74.png` },
-                { year: "2014", modelId: 75, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_75.png` },],},
+                { year: "2024", modelId: 73, image: "src/components/image/modelId_73.png" },
+                { year: "2019", modelId: 74, image: "src/components/image/modelId_74.png" },
+                { year: "2014", modelId: 75, image: "src/components/image/modelId_75.png" },],},
         {   name: "NEW MAZDA2 SEDAN",models: [
-                { year: "2024", modelId: 76, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_76.png` },
-                { year: "2019", modelId: 77, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_77.png` },
-                { year: "2014", modelId: 78, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_78.png` },],},
+                { year: "2024", modelId: 76, image: "src/components/image/modelId_76.png" },
+                { year: "2019", modelId: 77, image: "src/components/image/modelId_77.png" },
+                { year: "2014", modelId: 78, image: "src/components/image/modelId_78.png" },],},
         {   name: "NEW MAZDA2 ROOKIE DRIVE",models: [
-                { year: "2024", modelId: 79, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_79.png` },
-                { year: "2019", modelId: 80, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_80.png` },
-                { year: "2014", modelId: 81, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_81.png` },],},
+                { year: "2024", modelId: 79, image: "src/components/image/modelId_79.png" },
+                { year: "2019", modelId: 80, image: "src/components/image/modelId_80.png" },
+                { year: "2014", modelId: 81, image: "src/components/image/modelId_81.png" },],},
     ];
 
     useEffect(() => {
@@ -131,6 +131,7 @@ function Mazda() {
         axios.get(`${import.meta.env.VITE_API_URL}/sparepart?modelId=${modelId}`)
             .then((response) => {
                 setSparePart(response.data); 
+                setCurrentPage(1);
             })
             .catch((error) => {
                 console.error(error);
@@ -168,6 +169,10 @@ function Mazda() {
             .then((res) => {
                 const filteredData = res.data.filter(item => item.SparePart_Name.includes(keyword));
                 setSparePart(filteredData);
+                setCurrentPage(1);
+            })
+            .catch((error) => {
+                console.error(error);
             });
     }
 
@@ -181,6 +186,7 @@ function Mazda() {
             .then((res) => {
                 console.log(res.data);
                 setSparePart(res.data);
+                setCurrentPage(1);
             })
             .catch((error) => {
                 console.error(error);
@@ -210,7 +216,7 @@ function Mazda() {
                     <div className="flex p-4 ">
                         <div className="flex items-center">
                             <button onClick={() => NavigateEstimate(null)} className="p-2 rounded">
-                                <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
+                                <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">
@@ -233,7 +239,7 @@ function Mazda() {
                 <div className="flex p-4">
                     <div className="flex items-center">
                         <button onClick={() => setSelectedModel(null)} className="p-2 rounded">
-                            <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
+                            <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
                         </button>
                     </div>
                     <div className="flex p-4 justify-center items-center w-full">
@@ -255,7 +261,7 @@ function Mazda() {
                     <div className="flex p-4">
                         <div className="flex items-center">
                             <button onClick={() => setSelectedYear(null)} className="p-2 rounded">
-                                <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
+                                <img src="src/components/image/back-icon.png" className="h-10 w-10" alt="ย้อนกลับ"/>
                             </button>
                         </div>
                         <div className="flex p-4 justify-center items-center w-full">

@@ -54,9 +54,9 @@ function Nissan() {
                 { year: "2019", modelId: 53, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_53.png` },
                 { year: "2014", modelId: 54, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_54.png` },],},
         {   name: "TERRA SPORT",models: [
-                { year: "2022", modelId: 55, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_55.png` },
-                { year: "2016", modelId: 56, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_56.png` },
-                { year: "2012", modelId: 57, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_57.png` },],},
+                { year: "2024", modelId: 55, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_55.png` },
+                { year: "2019", modelId: 56, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_56.png` },
+                { year: "2014", modelId: 57, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_57.png` },],},
         {   name: "NAVARA PRO-4X / PRO-2X", models: [
                 { year: "2024", modelId: 58, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_58.png` },
                 { year: "2019", modelId: 59, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_59.png` },
@@ -151,6 +151,7 @@ function Nissan() {
         axios.get(`${import.meta.env.VITE_API_URL}/sparepart?modelId=${modelId}`)
             .then((response) => {
                 setSparePart(response.data); 
+                setCurrentPage(1);
             })
             .catch((error) => {
                 console.error(error);
@@ -188,6 +189,10 @@ function Nissan() {
             .then((res) => {
                 const filteredData = res.data.filter(item => item.SparePart_Name.includes(keyword));
                 setSparePart(filteredData);
+                setCurrentPage(1);
+            })
+            .catch((error) => {
+                console.error(error);
             });
     }
 
@@ -201,6 +206,7 @@ function Nissan() {
             .then((res) => {
                 console.log(res.data);
                 setSparePart(res.data);
+                setCurrentPage(1);
             })
             .catch((error) => {
                 console.error(error);
