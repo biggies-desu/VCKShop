@@ -5,14 +5,9 @@ import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: "/",
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "src"), // Allows easy imports
-    },
-  },
+  base: "./",
   build: {
-    outDir: "dist",
-    assetsDir: "assets",
+    outDir: "dist", // Output directory
+    assetsDir: "assets", // Folder for JS/CSS
   },
 })
