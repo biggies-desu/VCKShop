@@ -6,11 +6,41 @@ function Account()
     const [accountdata, setaccountdata] = useState([])
     const [roledata, setroledata] = useState([])
     const [searchname, setsearchname] = useState('')
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(12); // จำนวนรายการที่จะแสดงในแต่ละหน้า
+    const [totalPages, setTotalPages] = useState(1);
+    const [isDeleteModalOpen, setisDeleteModalOpen] = useState('');
+    const [deleteId, setDeleteId] = useState('');
 
     //fetch data
     useEffect(() => {
         fetchdata()
     }, [])
+
+    useEffect(() => {
+        if (accountdata.length > 0) {
+            const totalPages = Math.ceil(accountdata.length / itemsPerPage);
+            setTotalPages(totalPages); 
+        }
+    }, [accountdata, itemsPerPage]);
+
+    const openModal = (user_id) => {
+        setDeleteId(user_id);
+        setisDeleteModalOpen(true);
+    };
+    
+    const closeModal = () => {
+        setDeleteId('');
+        setisDeleteModalOpen(false);
+    };
+
+    function deleteitem(user_id) {
+        openModal(user_id);
+    }
+
+    function cancelDelete() {
+        closeModal();
+    }
 
     function fetchdata()
     {
@@ -60,6 +90,7 @@ function Account()
         .then((res) => {
             console.log(res)
             setaccountdata(res.data)
+            setCurrentPage(1);
         })
         .catch((err) => {
             console.log(err)
@@ -67,17 +98,26 @@ function Account()
         })
     }
 
-    function delete_func(user_id)
+    function delete_func()
     {
-        axios.delete(`${import.meta.env.VITE_API_URL}/deleteaccount/${user_id}`)
+        axios.delete(`${import.meta.env.VITE_API_URL}/deleteaccount/${deleteId}`)
         .then((res)=>{
             console.log(res)
             fetchdata()
+            window.location.reload()
         })
         .catch((err) => {
             console.log(err)
         })
     }
+
+    const currentQueuedata = accountdata.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+    const changePage = (pageNumber) => {
+        if (pageNumber > 0 && pageNumber <= totalPages) {
+            setCurrentPage(pageNumber);
+        }
+    };
 
     return <>
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -93,39 +133,71 @@ function Account()
                 </svg>
             </button>
         </form>
-    <div className="relative overflow-x-auto shadow-md rounded-2xl mt-6">
-    <table className="w-full text-sm text-left text-gray-600 bg-white shadow-md rounded-lg">
-            <thead className="text-sm md:text-base text-white bg-blue-500">
-                <tr>
-                    <th class='text-start px-3 py-2'>Username</th>
-                    <th class='text-start px-3 py-2'>Role</th>
-                    <th class='text-end px-3 py-2'>ลบบัญชี</th>
-                </tr>
-            </thead>
-        <tbody>
-            {accountdata.map((item) => (
-                <tr key = {item.user_id} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100 md:text-lg">
-                    <td className ='text-start px-3 py-2'>{item.user_username}</td>
-                    <td className="text-start px-3 py-2">
-                        <select className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" value={item.role_id} onChange={(e) => rolechange(item.user_id, e.target.value)}>
-                            {roledata.map(role => (
-                                <option key={role.Role_ID} value={role.Role_ID}>
-                                    {role.Role_Name}
-                                </option>
-                            ))}
-                        </select>
-                    </td>
-                    <td className='text-end px-3 py-2'>
-                    <button className="px-6 py-4" type="button" onClick={() => delete_func(item.user_id)}>❌</button>
-                    </td>
-                </tr>
-            ))
-            }
-        </tbody>
-    </table>
+        <div className="relative overflow-x-auto shadow-md rounded-2xl mt-6">
+        <table className="w-full text-sm text-left text-gray-600 bg-white shadow-md rounded-lg">
+                <thead className="text-sm md:text-base text-white bg-blue-500">
+                    <tr>
+                        <th class='text-start px-3 py-2'>Username</th>
+                        <th class='text-start px-3 py-2'>Role</th>
+                        <th class='text-end px-3 py-2'>ลบบัญชี</th>
+                    </tr>
+                </thead>
+            <tbody>
+                {currentQueuedata.map((item) => (
+                    <tr key = {item.user_id} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100 md:text-lg">
+                        <td className ='text-start px-3 py-2'>{item.user_username}</td>
+                        <td className="text-start px-3 py-2">
+                            <select className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" value={item.role_id} onChange={(e) => rolechange(item.user_id, e.target.value)}>
+                                {roledata.map(role => (
+                                    <option key={role.Role_ID} value={role.Role_ID}>
+                                        {role.Role_Name}
+                                    </option>
+                                ))}
+                            </select>
+                        </td>
+                        <td className='text-end px-3 py-2'>
+                        <button className="px-6 py-4" type="button" onClick={() => deleteitem(item.user_id)}>❌</button>
+                        </td>
+                    </tr>
+                ))
+                }
+            </tbody>
+        </table>
+        </div>
+        <ul class="flex space-x-5 justify-center font-[sans-serif] p-10">
+            <button className="flex items-center justify-center shrink-0 bg-gray-100 w-9 h-9 rounded-md cursor-pointer hover:bg-blue-400" onClick={() => changePage(currentPage > 1 ? currentPage - 1 : 1)}>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 fill-gray-400" viewBox="0 0 55.753 55.753">
+                    <path d="M12.745 23.915c.283-.282.59-.52.913-.727L35.266 1.581a5.4 5.4 0 0 1 7.637 7.638L24.294 27.828l18.705 18.706a5.4 5.4 0 0 1-7.636 7.637L13.658 32.464a5.367 5.367 0 0 1-.913-.727 5.367 5.367 0 0 1-1.572-3.911 5.369 5.369 0 0 1 1.572-3.911z" data-original="#000000" />
+                </svg>
+            </button>
+                        
+            {[...Array(totalPages)].map((_, index) => (
+                <li key={index} className={`flex items-center justify-center shrink-0 border cursor-pointer text-base font-bold text-gray-800 px-[13px] h-9 rounded-md ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'hover:border-blue-500'}`} onClick={() => changePage(index + 1)}>
+                    {index + 1}
+                </li>
+            ))}
+            <button className="flex items-center justify-center shrink-0 bg-gray-100 w-9 h-9 rounded-md cursor-pointer hover:bg-blue-400" onClick={() => changePage(currentPage < totalPages ? currentPage + 1 : totalPages)}>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 fill-gray-400 rotate-180" viewBox="0 0 55.753 55.753">
+                    <path d="M12.745 23.915c.283-.282.59-.52.913-.727L35.266 1.581a5.4 5.4 0 0 1 7.637 7.638L24.294 27.828l18.705 18.706a5.4 5.4 0 0 1-7.636 7.637L13.658 32.464a5.367 5.367 0 0 1-.913-.727 5.367 5.367 0 0 1-1.572-3.911 5.369 5.369 0 0 1 1.572-3.911z"data-original="#000000" />
+                </svg>
+            </button>
+        </ul>
     </div>
-    </div>
-    
+
+    {isDeleteModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
+            <div className="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+                <div class="p-4 md:p-5 text-center">
+                    <svg class="w-20 h-20 text-red-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h3 class="mt-2 mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">ต้องการลบผู้ใช้งานหรือไม่?</h3>
+                    <button onClick={delete_func} data-modal-hide="popup-modal" type="button" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">ใช่, ยืนยัน</button>
+                    <button onClick={cancelDelete} data-modal-hide="popup-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">ไม่, ยกเลิก</button>
+                </div>
+            </div>
+        </div>
+    )}
     </>
 }
 

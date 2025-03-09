@@ -40,14 +40,15 @@ function Warehouse_History()
         event.preventDefault();
         axios.post(`${import.meta.env.VITE_API_URL}/searchwarehousetime`, 
             {
-                search_time: search_time || "",
-                search_time2: search_time2 || "",
+                search_time: search_time,
+                search_time2: search_time2 || search_time,
                 action: action || "",
                 user_username: user || ""
             }
         )
         .then((res) => {
             setlogdata(res.data);
+            setCurrentPage(1);
         })
         .catch((err) => {
             console.log(err);

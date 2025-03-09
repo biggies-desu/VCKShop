@@ -39,24 +39,28 @@ function Tax()
         }
     }, [taxdata, itemsPerPage]); 
 
-    function searchtime()
-    {
-        if(search_time,search_time2)
-        {
+    function searchtime() {
+        if (search_time) {
             axios.all([
-                axios.post(`${import.meta.env.VITE_API_URL}/getsearchtax`,{search_time: search_time, search_time2: search_time2,}),
-                axios.post(`${import.meta.env.VITE_API_URL}/getselecttotalprice`,{search_time: search_time, search_time2: search_time2,})
+                axios.post(`${import.meta.env.VITE_API_URL}/getsearchtax`, {
+                    search_time: search_time,
+                    search_time2: search_time2 || search_time // กรณี search_time2 ไม่มีค่า ให้ใช้ search_time
+                }),
+                axios.post(`${import.meta.env.VITE_API_URL}/getselecttotalprice`, {
+                    search_time: search_time,
+                    search_time2: search_time2 || search_time
+                })
             ])
             .then((res) => {
-                console.log(res[0].data)
-                console.log(res[1].data)
-            settaxdata(res[0].data)
-            settotalprice(res[1].data)
-            setissearch(true)
-        })
-            .catch((err)=>{
-            console.log(err)
-        })
+                console.log(res[0].data);
+                console.log(res[1].data);
+                settaxdata(res[0].data);
+                settotalprice(res[1].data);
+                setissearch(true);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
         }
     }
 

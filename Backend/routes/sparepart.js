@@ -40,6 +40,7 @@ router.put('/updatesparepart/:id',(req, res) => {
       if (err) {
         return res.send(err);
       }
+      console.log(results)
       const wltime = new Date(new Date().getTime()+7*60*60*1000).toISOString().slice(0, 19).replace('T', ' '); //utc -> gmt+7 thingy
       const wlaction = 'แก้ไขจำนวน/ราคาสินค้า'
       const wldescription = `แก้ไข : "${productname}" เป็นจำนวน ${productamount} หน่วย, ราคา ${productprice} บาท`
@@ -49,7 +50,7 @@ router.put('/updatesparepart/:id',(req, res) => {
         if(err) {
           return res.send(err)
         }
-        return res.json({ success: true, message: 'Product edited and logged successfully' });
+        return res.json(result2);
       })
   });
 })
@@ -57,7 +58,7 @@ router.put('/updatesparepart/:id',(req, res) => {
 
 router.get("/sparepart", (req, res) => {
   const ModelId = req.query.modelId; // ดึงค่าจาก query parameter
-  const query = `SELECT s.*, sml.Model_id FROM Sparepart s join Model_Link sml ON s.sparepart_id = sml.sparepart_id WHERE sml.Model_id = ?`
+  const query = `SELECT s.*, sml.Model_ID FROM Sparepart s JOIN Model_Link sml ON s.SparePart_ID = sml.SparePart_ID WHERE sml.Model_ID = ?` // query ที่จะดึงข้อมูลจากฐานข้อมูล 
   db.query(query, [ModelId], (err, results) => { // ใช้ตัวแปร ModelId แทนค่าใน query
       if (err) {
           res.json(err)
@@ -84,12 +85,16 @@ router.get("/sparepartcategory", (req, res) => {
 
 router.post('/searchquery',function (req,res) {
   let search_query = req.body.search_query
-  const sqlcommand = `SELECT * FROM Sparepart JOIN Category ON Sparepart.Category_ID = Category.Category_ID 
-                      JOIN Model_Link sml ON Sparepart.SparePart_ID = sml.SparePart_ID 
-                      JOIN Model ON sml.Model_ID = Model.Model_ID 
-                      JOIN Brand ON Model.Brand_ID = Brand.Brand_ID 
+  const sqlcommand = `SELECT s.*, c.Category_Name, 
+                      GROUP_CONCAT(DISTINCT CONCAT(b.Brand_Name, ' ', m.Model_Name, ' (', m.Model_Year, ')') ORDER BY m.Model_ID ASC SEPARATOR ' , ') AS Model_Details
+                      FROM Sparepart s
+                      JOIN Category c ON s.Category_ID = c.Category_ID
+                      JOIN Model_Link ml ON s.SparePart_ID = ml.SparePart_ID
+                      JOIN Model m ON ml.Model_ID = m.Model_ID
+                      JOIN Brand b ON m.Brand_ID = b.Brand_ID
                       WHERE SparePart_Name LIKE CONCAT('%', ?, '%') OR SparePart_ProductID LIKE CONCAT('%', ?, '%')
-                      GROUP BY Sparepart.Sparepart_ID, sml.Model_link_id`
+                      GROUP BY s.SparePart_ID
+                      ORDER BY s.SparePart_ID DESC;`
   db.query(sqlcommand,[search_query,search_query],function(err,results)
   {
     if (err){
@@ -171,5 +176,7 @@ router.get("/categories", (req, res) => {
       res.json(formattedCategories);
   });
 });
+
+
 
 module.exports = router;

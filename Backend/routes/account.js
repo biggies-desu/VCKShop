@@ -2,14 +2,6 @@ const express = require('express');
 const db = require('../db');
 const router = express.Router();
 
-// router.get('/user',(req,res) => {
-//     const sqlcommand = "select * from user"
-//     db.query(sqlcommand,(err,data) => {
-//       if(err)     return res.json(err);
-//       return res.json(data)
-//     })
-//   })
-
 router.get('/user', (req,res) => {
   const sqlcommand = `select u.user_id, u.user_username, r.role_id from User u
   join Role r on u.role_id = r.role_id`

@@ -9,7 +9,6 @@ require('dotenv').config();
 
 const LINE_USERID = process.env.LINE_USERID
 const LINE_ACCESSTOKEN = process.env.LINE_ACCESSTOKEN
-const API_URL = process.env.API_URL
 
 
 router.post('/linemessage',(req,res) =>
@@ -59,10 +58,10 @@ router.get('/getnotifyitem', (req,res) => {
 })
     //using cron to schedule call line api
     //[min] [hour] [day of month] [month] [day of week]
-cron.schedule('0 */8 * * *', async () => { // notify every 3 hours
+cron.schedule('0 */3 * * *', async () => { // notify every 3 hours
   try{
     const timestamp = new Date().toLocaleString('th-TH') //create timestamp
-    const getnotifyitemapi = await axios.get(`${API_URL}/getnotifyitem`);
+    const getnotifyitemapi = await axios.get('http://localhost:5000/getnotifyitem');
     const data = getnotifyitemapi.data
     
     //loop over data -> formatdata
@@ -73,7 +72,7 @@ cron.schedule('0 */8 * * *', async () => { // notify every 3 hours
     const message = `แจ้งเตือนอะไหล่คงเหลือ\nเวลา : ${timestamp}\n${formatdata}`
       request.post(
         {
-          url: `${API_URL}/linemessage`,
+          url: 'http://localhost:5000/linemessage',
           json: { message: message }, //sent message to api/linemessage
         },
         (err, response, body) => {

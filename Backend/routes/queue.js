@@ -109,7 +109,7 @@ router.put('/updatequeue/:id', function (req, res) {
       return res.send(err)
     }
     //update
-    const sqlcommand = `UPDATE booking SET Booking_Date = ?, Booking_Time = ? WHERE Booking_ID = ?`;
+    const sqlcommand = `UPDATE Booking SET Booking_Date = ?, Booking_Time = ? WHERE Booking_ID = ?`;
     db.query(sqlcommand, [bookingdate, bookingtime, bookingId], function (err, results) {
       if(err){
         res.send(err)

@@ -64,7 +64,7 @@ function Honda() {
         {   name: "HR-V",models: [
                 { year: "2024", modelId: 13, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_13.png` },
                 { year: "2019", modelId: 14, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_14.png` },
-                { year: "2014", modelId: 15, image: `${import.meta.env.VITE_IMAGE_BASE_URL}modelId_15.png` },],},
+                { year: "2014", modelId: 15, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_15.png` },],},
         {   name: "CR-V",models: [
                 { year: "2024", modelId: 16, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_16.png` },
                 { year: "2019", modelId: 17, image: `${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_17.png` },
@@ -141,12 +141,18 @@ function Honda() {
     
         axios.get(`${import.meta.env.VITE_API_URL}/sparepart?modelId=${modelId}`)
             .then((response) => {
-                setSparePart(response.data); 
+                if (Array.isArray(response.data)) {
+                    setSparePart(response.data);
+                } else {
+                    console.error("sparepart ไม่ใช่ array", response.data);
+                    setSparePart([]); // fallback
+                }
                 setCurrentPage(1);
             })
             .catch((error) => {
                 console.error(error);
             });
+
     }
 
     function AddToCart(val) {
@@ -177,14 +183,19 @@ function Honda() {
         const modelId = Honda.find((car) => car.name === selectedModel)?.models.find((model) => model.year === selectedYear)?.modelId;
     
         axios.get(`${import.meta.env.VITE_API_URL}/sparepartcategory?modelId=${modelId}&category=${category}`)
-            .then((res) => {
-                const filteredData = res.data.filter(item => item.SparePart_Name.includes(keyword));
-                setSparePart(filteredData);
-                setCurrentPage(1);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+  .then((res) => {
+      const filteredData = res.data.filter(item => item.SparePart_Name.includes(keyword));
+      if (Array.isArray(filteredData)) {
+          setSparePart(filteredData);
+      } else {
+          setSparePart([]);
+      }
+      setCurrentPage(1);
+  })
+  .catch((error) => {
+      console.error(error);
+  });
+
     }    
 
     const search = (event) => {
@@ -194,14 +205,19 @@ function Honda() {
         console.log("search : ", search_query);
 
         axios.post(`${import.meta.env.VITE_API_URL}/searchquery`, { search_query })
-            .then((res) => {
-                console.log(res.data);
-                setSparePart(res.data);
-                setCurrentPage(1);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+  .then((res) => {
+      if (Array.isArray(res.data)) {
+          setSparePart(res.data);
+      } else {
+          console.error("ผลลัพธ์ search ไม่ใช่ array", res.data);
+          setSparePart([]);
+      }
+      setCurrentPage(1);
+  })
+  .catch((error) => {
+      console.error(error);
+  });
+
     };
 
     const NavigateEstimate = () => {
@@ -209,7 +225,9 @@ function Honda() {
     };
 
     // ฟังก์ชันเพื่อแสดงผลข้อมูลในหน้าแต่ละหน้า
-    const currentSpareParts = sparepart.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    const currentSpareParts = Array.isArray(sparepart) ? sparepart.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) : [];
+
+
 
     // ฟังก์ชันการเปลี่ยนหน้า
     const changePage = (pageNumber) => {

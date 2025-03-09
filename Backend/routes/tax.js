@@ -33,23 +33,24 @@ router.get('/getcurrentmonthtotalprice', (req,res) => {
 })
 
 router.post('/getsearchtax', (req,res) => 
-{
-    const {search_time, search_time2} = req.body
-    console.log(search_time,search_time2)
-    const sqLcommand = `select b.booking_id, b.booking_date, b.booking_time,
-    round(sum(s.sparepart_price*bs.booking_sparepart_quantity),2) as totalprice,
-    group_concat(s.sparepart_name separator ', ') as sparepart_name
-    from Sparepart s join Booking_Sparepart bs join Booking b on s.sparepart_ID = bs.sparepart_ID and b.booking_id = bs.booking_id
-    where b.booking_status = 'เสร็จสิ้นแล้ว' and date_format(b.booking_date, '%Y-%m-%d') between ? and ?
-    group by b.booking_id, b.booking_date
-    order by b.booking_date desc, b.booking_time desc`
-    db.query(sqLcommand,[search_time,search_time2],(err,results) => {
-        if(err){
-            return res.json(err)
-        }
-            return res.json(results)
+    {
+        let {search_time, search_time2} = req.body
+        search_time2 = search_time2 || search_time;
+        console.log(search_time,search_time2)
+        const sqLcommand = `select b.booking_id, b.booking_date, b.booking_time,
+        round(sum(s.sparepart_price*bs.booking_sparepart_quantity),2) as totalprice,
+        group_concat(s.sparepart_name separator ', ') as sparepart_name
+        from Sparepart s join Booking_Sparepart bs join Booking b on s.sparepart_ID = bs.sparepart_ID and b.booking_id = bs.booking_id
+        where b.booking_status = 'เสร็จสิ้นแล้ว' and date_format(b.booking_date, '%Y-%m-%d') between ? and ?
+        group by b.booking_id, b.booking_date
+        order by b.booking_date desc, b.booking_time desc`
+        db.query(sqLcommand,[search_time,search_time2],(err,results) => {
+            if(err){
+                return res.json(err)
+            }
+                return res.json(results)
+        })
     })
-})
 
 router.post('/getselecttotalprice', (req,res) => {
     const {search_time, search_time2} = req.body
@@ -77,9 +78,15 @@ router.get('/default_vat', (req,res) => {
 
 router.get('/gettaxdetail/:id', (req,res) => {
     const searchbookingid = req.params.id
-    const sqlcommand = `select bs.booking_sparepart_quantity, round((s.sparepart_price*bs.booking_sparepart_quantity)) as totalprice, s.sparepart_productid, s.sparepart_name from Sparepart
-    join Booking b join Booking_Sparepart bs on b.booking_id = bs.booking_id join Sparepart s on s.sparepart_id = bs.sparepart_id
-    where b.booking_status = 'เสร็จสิ้นแล้ว' and b.booking_id = ? group by bs.booking_id, bs.sparepart_id`
+    const sqlcommand = `
+  SELECT bs.booking_sparepart_quantity, 
+         ROUND(s.sparepart_price * bs.booking_sparepart_quantity) AS totalprice, 
+         s.sparepart_productid, 
+         s.sparepart_name 
+  FROM Booking_Sparepart bs
+  JOIN Sparepart s ON s.sparepart_id = bs.sparepart_id
+  JOIN Booking b ON b.booking_id = bs.booking_id
+  WHERE b.booking_status = 'เสร็จสิ้นแล้ว' AND b.booking_id = ?`;
     db.query(sqlcommand,[searchbookingid],(err,results) => {
         if(err){
             return res.json(err)
