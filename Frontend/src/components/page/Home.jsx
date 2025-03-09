@@ -23,66 +23,66 @@ function Home() {
           </div>
         </div>
         <div className="py-5 md:py-16 kanit-bold bg-orange-100">
-          <div className="container mx-auto text-center grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
+          <div className="container mx-auto  text-center grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
             <div className="bg-white p-6 max-md:border-2 border-black rounded-2xl shadow-lg md:-translate-y-24 transform hover:-translate-y-2 md:hover:-translate-y-28 transition-transform duration-300">
               <div className="space-y-3 mt-4">
-                <a className="text-xl font-semibold text-gray-800 hover:text-blue-600 transition-colors duration-300">บริการซ่อมแซมรถยนต์</a>
+                <a className="text-xl no-underline font-semibold text-gray-800 hover:text-blue-600 transition-colors duration-300">บริการซ่อมแซมรถยนต์</a>
                 <ul className="space-y-2">
                   <li>
-                    <a className="text-lg text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">ซ่อมเครื่องยนต์</a>
+                    <a className="text-lg no-underline text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">ซ่อมเครื่องยนต์</a>
                   </li>
                   <li>
-                    <a className="text-lg text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">ซ่อมช่วงล่าง</a>
+                    <a className="text-lg no-underline text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">ซ่อมช่วงล่าง</a>
                   </li>
                   <li>
-                    <a className="text-lg text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">ซ่อมระบบไฟฟ้ารถยนต์</a>
+                    <a className="text-lg no-underline text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">ซ่อมระบบไฟฟ้ารถยนต์</a>
                   </li>
                   <li>
-                    <a className="text-lg text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">ซ่อมระบบเบรก</a>
+                    <a className="text-lg no-underline text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">ซ่อมระบบเบรก</a>
                   </li>
                   <li>
-                    <a className="text-lg text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">ซ่อมแซมและตรวจสอบระบบไฟฟ้าภายใน</a>
+                    <a className="text-lg no-underline text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">ซ่อมแซมและตรวจสอบระบบไฟฟ้าภายใน</a>
                   </li>
                 </ul>
               </div>
             </div>
             <div class="bg-white p-6 max-md:border-2 border-black rounded-2xl shadow-lg md:-translate-y-24 transform hover:-translate-y-2 md:hover:-translate-y-28 transition-transform duration-300">
               <div className="space-y-3 mt-4">
-                <a className="text-xl font-semibold text-gray-800 hover:text-blue-600 transition-colors duration-300">บริการการตรวจเช็คและบำรุงรักษา</a>
+                <a className="text-xl no-underline font-semibold text-gray-800 hover:text-blue-600 transition-colors duration-300">บริการการตรวจเช็คและบำรุงรักษา</a>
                 <ul className="space-y-2">
                   <li>
-                    <a className="text-lg text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">เปลี่ยนน้ำมันเครื่อง</a>
+                    <a className="text-lg text-gray-700 no-underline hover:text-blue-500 transition-colors duration-300 kanit-light">เปลี่ยนน้ำมันเครื่อง</a>
                   </li>
                   <li>
-                    <a className="text-lg text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">ตรวจเช็คระบบเบรกและช่วงล่าง</a>
+                    <a className="text-lg text-gray-700 no-underline hover:text-blue-500 transition-colors duration-300 kanit-light">ตรวจเช็คระบบเบรกและช่วงล่าง</a>
                   </li>
                   <li>
-                    <a className="text-lg text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">ตรวจสอบระบบไฟฟ้า</a>
+                    <a className="text-lg text-gray-700 no-underline hover:text-blue-500 transition-colors duration-300 kanit-light">ตรวจสอบระบบไฟฟ้า</a>
                   </li>
                   <li>
-                    <a className="text-lg text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">เปลี่ยนไส้กรองอากาศและน้ำมัน</a>
+                    <a className="text-lg text-gray-700 no-underline hover:text-blue-500 transition-colors duration-300 kanit-light">เปลี่ยนไส้กรองอากาศและน้ำมัน</a>
                   </li>
                   <li>
-                    <a className="text-lg text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">ตรวจเช็คและเปลี่ยนสายพาน</a>
+                    <a className="text-lg text-gray-700 no-underline hover:text-blue-500 transition-colors duration-300 kanit-light">ตรวจเช็คและเปลี่ยนสายพาน</a>
                   </li>
                 </ul>
               </div>
             </div>
             <div className="bg-white p-6 max-md:border-2 border-black rounded-2xl shadow-lg md:-translate-y-24 transform hover:-translate-y-2 md:hover:-translate-y-28 transition-transform duration-300">
               <div className="space-y-3 mt-4">
-                <a className="text-xl font-semibold text-gray-800 hover:text-blue-600 transition-colors duration-300">บริการแต่งรถยนต์</a>
+                <a className="text-xl font-semibold no-underline text-gray-800 hover:text-blue-600 transition-colors duration-300">บริการแต่งรถยนต์</a>
                 <ul className="space-y-2">
                   <li>
-                    <a className="text-lg text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">แต่งภายนอก (Body Kits)</a>
+                    <a className="text-lg text-gray-700 no-underline hover:text-blue-500 transition-colors duration-300 kanit-light">แต่งภายนอก (Body Kits)</a>
                   </li>
                   <li>
-                    <a className="text-lg text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">เปลี่ยนล้อและยาง</a>
+                    <a className="text-lg text-gray-700 no-underline hover:text-blue-500 transition-colors duration-300 kanit-light">เปลี่ยนล้อและยาง</a>
                   </li>
                   <li>
-                    <a className="text-lg text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">ติดตั้งไฟ LED และชุดแต่ง</a>
+                    <a className="text-lg text-gray-700 no-underline hover:text-blue-500 transition-colors duration-300 kanit-light">ติดตั้งไฟ LED และชุดแต่ง</a>
                   </li>
                   <li>
-                    <a className="text-lg text-gray-700 hover:text-blue-500 transition-colors duration-300 kanit-light">ติดตั้งกันชนหน้าหลัง</a>
+                    <a className="text-lg text-gray-700 no-underline hover:text-blue-500 transition-colors duration-300 kanit-light">ติดตั้งกันชนหน้าหลัง</a>
                   </li>
                 </ul>
               </div>
@@ -112,7 +112,7 @@ function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="relative bg-white rounded-lg shadow-lg overflow-hidden">
                 <img className="w-full h-48 object-cover" src={`${import.meta.env.VITE_IMAGE_BASE_URL}/Card_4.jpg`} alt="Blog 1"/>
-                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                <div className="absolute inset-0 bg-opacity-40 flex items-center justify-center">
                   <p className="text-white font-bold text-xl">อะไหล่เต็มคลัง</p>
                 </div>
                 <div className="absolute bottom-4 left-4 text-white text-sm">
@@ -121,7 +121,7 @@ function Home() {
               </div>
               <div className="relative bg-white rounded-lg shadow-lg overflow-hidden">
                 <img className="w-full h-48 object-cover" src={`${import.meta.env.VITE_IMAGE_BASE_URL}/Card_5.jpg`} alt="Blog 2"/>
-                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                <div className="absolute inset-0 bg-opacity-40 flex items-center justify-center">
                   <p className="text-white font-bold text-xl">ของแต่งเพรียบพร้อม</p>
                 </div>
                 <div className="absolute bottom-4 left-4 text-white text-sm">
@@ -130,7 +130,7 @@ function Home() {
               </div>
               <div className="relative bg-white rounded-lg shadow-lg overflow-hidden">
                 <img className="w-full h-48 object-cover" src={`${import.meta.env.VITE_IMAGE_BASE_URL}/Card_6.jpg`} alt="Blog 3"/>
-                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                <div className="absolute inset-0 bg-opacity-40 flex items-center justify-center">
                   <p className="text-white font-bold text-xl">มีล้อหลากหลาย</p>
                 </div>
                 <div className="absolute bottom-4 left-4 text-white text-sm">

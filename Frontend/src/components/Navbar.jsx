@@ -69,7 +69,7 @@ function Navbar() {
                     <NavLink
                         to="/"
                         className={({ isActive }) =>
-                            isActive ? "text-yellow-400 " : "text-white hover:text-yellow-400 hover:scale-125 group"
+                            isActive ? "text-yellow-400 no-underline" : "text-white hover:text-yellow-400 hover:scale-125 group no-underline"
                         }
                     >
                         หน้าแรก
@@ -79,7 +79,7 @@ function Navbar() {
                     <NavLink
                         to="/estimateprice"
                         className={({ isActive }) =>
-                            isActive ? "text-yellow-400" : "text-white hover:text-yellow-400 hover:scale-125 group"
+                            isActive ? "text-yellow-400 no-underline" : "text-white hover:text-yellow-400 hover:scale-125 group no-underline"
                         }
                     >
                         ประเมินราคาและจองเข้าใช้
@@ -89,7 +89,7 @@ function Navbar() {
                     <NavLink
                         to="/aboutus"
                         className={({ isActive }) =>
-                            isActive ? "text-yellow-400" : "text-white hover:text-yellow-400 hover:scale-125 group"
+                            isActive ? "text-yellow-400 no-underline" : "text-white hover:text-yellow-400 hover:scale-125 group no-underline"
                         }
                     >
                         ติดต่อสอบถาม
@@ -117,7 +117,7 @@ function Navbar() {
                                                 <NavLink
                                                     to="/profile"
                                                     className={({ isActive }) =>
-                                                        isActive ? "font-bold text-yellow-400" : "hover:scale-110 hover:text-yellow-400"
+                                                        isActive ? "font-bold text-yellow-400 no-underline" : "hover:scale-110 hover:text-yellow-400 no-underline"
                                                     }
                                                 >
                                                     <div className="flex items-center space-x-3 py-2 px-4 text-sm hover:bg-gray-700 rounded-md">
@@ -130,7 +130,7 @@ function Navbar() {
                                                     key={index}
                                                     onClick={item.label === "Sign Out" ? handleLogout : closeMenu}
                                                     className={({ isActive }) =>
-                                                        isActive ? "text-red-400 hover:text-yellow-400 hover:scale-110" : "font-bold"
+                                                        isActive ? "text-red-400 hover:text-yellow-400 hover:scale-110 no-underline" : "font-bold no-underline"
                                                     }
                                                 >
                                                     <div className="flex items-center space-x-3 py-2 px-4 text-sm hover:bg-gray-700 rounded-md">
@@ -151,7 +151,7 @@ function Navbar() {
                             <NavLink
                                 to="/login"
                                 className={({ isActive }) =>
-                                    isActive ? "text-yellow-400 font-bold" : "text-white hover:text-yellow-400"
+                                    isActive ? "text-yellow-400 font-bold no-underline" : "text-white hover:text-yellow-400 no-underline"
                                 }>
                                 <button className="px-4 py-2 border border-white rounded-md text-white hover:bg-blue-400 hover:text-black">
                                     Log In
