@@ -102,7 +102,7 @@ function Tax()
         <div className="bg-yellow-400 p-4 rounded-lg shadow-md mt-4">
             <div className="flex justify-between items-center">
             <div>
-                <h3 className="text-3xl font-bold text-gray-800">{ (totalprice?.[0]?.totalprice * (vat / (vat + 100))).toFixed(2) || "0.00" } บาท</h3>
+                <h3 className="text-3xl font-bold text-gray-800">{Number(totalprice?.[0]?.totalprice * (vat / (vat + 100))).toLocaleString('en-US', {minimumFractionDigits: 2,maximumFractionDigits: 2})} บาท</h3>
                 <p className="text-gray-700">จำนวนภาษีในเดือนที่ {(new Date()).getMonth()+1}</p>
             </div>
             <div className="text-gray-600">
@@ -115,7 +115,7 @@ function Tax()
             <div className="bg-yellow-400 p-4 rounded-lg shadow-md mt-4">
             <div className="flex justify-between items-center">
             <div>
-                <h3 className="text-3xl font-bold text-gray-800">{ (totalprice?.[0]?.totalprice * (vat / (vat + 100))).toFixed(2) || "0.00"} บาท</h3>
+                <h3 className="text-3xl font-bold text-gray-800">{Number(totalprice?.[0]?.totalprice * (vat / (vat + 100))).toLocaleString('en-US', {minimumFractionDigits: 2,maximumFractionDigits: 2})} บาท</h3>
                 <p className="text-gray-700">จำนวนภาษีในช่วงเวลาที่เลือก</p>
             </div>
             <div className="text-gray-600">
@@ -161,7 +161,7 @@ function Tax()
                         <td className='px-4 py-3'>{new Date(item.booking_date).toLocaleDateString('th-TH')}</td>
                         <td className='px-4 py-3'>{item.booking_time}</td>
                         <button type='button' onClick={() => openDetailModal(item)} className="text-blue-500 hover:text-blue-700 px-4 py-3">📄รายละเอียด</button>
-                        <td className='px-4 py-3'>{(item.totalprice * (vat / (vat + 100))).toFixed(2)} บาท</td>
+                        <td className='px-4 py-3'>{Number(item.totalprice * (vat / (vat + 100))).toLocaleString('en-US', {minimumFractionDigits: 2,maximumFractionDigits: 2})} บาท</td>
                     </tr>
                 ))}
                 </tbody>
@@ -214,7 +214,8 @@ function Tax()
                             <td className="text-start py-4">{item.sparepart_productid}</td>
                             <td className="text-start py-4">{item.sparepart_name}</td>
                             <td className="text-center py-4">{item.booking_sparepart_quantity}</td>
-                            <td className="text-end py-4">{(item.totalprice * (vat / (vat + 100))).toFixed(2)} บาท</td>
+                            <td className="text-end py-4">{Number(item.totalprice * (vat / (vat + 100))).toLocaleString('en-US', {minimumFractionDigits: 2,maximumFractionDigits: 2})} บาท</td>
+                            
                             </tr>
                         ))
                     ) : (<tr>

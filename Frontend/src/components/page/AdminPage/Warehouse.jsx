@@ -179,7 +179,7 @@ function Warehouse() {
                                     <td className="px-6 py-4">{item.SparePart_Name}</td>
                                     <td className="px-6 py-4">{item.Category_Name}</td>
                                     <td className="px-6 py-4">{item.SparePart_Amount}</td>
-                                    <td className="px-6 py-4">{item.SparePart_Price}</td>
+                                    <td className="px-6 py-4">{Number(item.SparePart_Price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                                     <td className="px-6 py-4">
                                         <button className="px-6 py-4" type="button" onClick={() => openDetailModal(item)}>📄</button>
                                     </td>

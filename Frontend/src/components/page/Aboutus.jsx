@@ -7,6 +7,7 @@ function AboutUs() {
     const [name, setname] = useState()
     const [email, setemail] = useState()
     const [message, setmessage] = useState()
+    const [isModalSuccess, setisModalSuccess] = useState(false);
 
     function sentemail()
     {
@@ -19,20 +20,28 @@ function AboutUs() {
         })
         .then((res) => {
             console.log(res)
+            setisModalSuccess(true);
         })
         .catch((err) => {
             console.log(err)
         })
     }
+
+    function closeSuccessPopup() {
+        setisModalSuccess(false);
+        window.location.reload();
+    }
+
     return (
     <>
     <Navbar />
     <section className="text-gray-600 body-font relative kanit-regular bg-orange-100">
         <div className="container px-5 py-24 mx-auto flex sm:flex-nowrap flex-wrap">
+          {/* แผนที่ */}
             <div className="w-screen lg:w-1/2 md:w-1/2 bg-gray-300 rounded-lg overflow-hidden flex items-end justify-start relative border-black border-2">
                 <iframe className="w-full h-[700px] object-cover" title="map"src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d247794.69523511943!2d100.03556679453122!3d13.970976199999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30e28c0784a586bf%3A0x9f5688451e16e72c!2z4Lin4Li04LiK4Lix4Lii4LiB4Liy4Lij4Lii4Liy4LiHdmNrc2hvcOC4reC4ueC5iOC5g-C4q-C4oeC5iA!5e0!3m2!1sth!2sth!4v1721076138569!5m2!1sth!2sth" alt="Location Map"/>
             </div>
-            <div className="bg-white flex max-lg:flex-wrap lg:flex-nowrap xl:flex-wrap py-3 rounded shadow-md absolute mt-96 ml-10 md:w-1/4 lg:w-1/3 xl:w-1/3 2xl:w-1/5 max-sm:w-1/2">
+            <div className="bg-white flex max-lg:flex-wrap lg:flex-nowrap xl:flex-wrap py-3 rounded shadow-md absolute mt-96 ml-10 md:w-1/4 lg:w-1/3 xl:w-1/3 2xl:w-1/4 max-sm:w-1/2">
                 <div className="lg:w-1/2 px-6">
                     <h2 className="title-font font-semibold text-gray-900 tracking-widest text-xs">ADDRESS</h2>
                     <p className="mt-1">วิชัยการยางVCKShop ถนน บางกรวย - กรุงเทพ ตำบลไทรน้อย อำเภอไทรน้อย นนทบุรี 11150
@@ -67,6 +76,24 @@ function AboutUs() {
             </div>
         </div>
         </section>
+
+        {isModalSuccess && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                <div className="bg-white p-8 rounded shadow-lg">
+                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
+                        <svg class="h-6 w-6 text-green-600" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <h2 className="md:text-2xl mb-4">ระบบได้รับข้อความของคุณเรียบร้อยแล้ว!</h2>
+                    <div className="flex justify-center">
+                        <button onClick={closeSuccessPopup} className="block rounded px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-500 active:bg-green-700 focus:bg-green-500">
+                            ตกลง
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
     <Footer />
     </>
   );

@@ -84,13 +84,13 @@ function EstimatePrice() {
                     {cart.map((item, index) => (
                         <div key={index} className='flex flex-col md:flex-row justify-between'>
                             <p className="text-start text-lg flex flex-row justify-between w-12/12 sm:w-9/12 lg:w-10/12 2xl:w-11/12">{index + 1}. {item.SparePart_Name}<span className="ml-auto hidden md:flex flex-col md:flex-row">จำนวน :&nbsp;</span><span className="text-red-500 flex flex-col md:flex-row">{item.quantity}</span>&nbsp;รายการ</p>
-                            <p className="sm:text-end text-lg">{item.SparePart_Price.toFixed(2) * item.quantity} บาท</p>
+                            <p className="sm:text-end text-lg">{Number(item.SparePart_Price.toFixed(2) * item.quantity).toLocaleString('en-US', {minimumFractionDigits: 2,maximumFractionDigits: 2})} บาท</p>
                       </div>
                     ))}
                     {selectedServices.map((item, index) => (
                         <div key={index} className="flex flex-col md:flex-row justify-between">
                             <p className="sm:text-end text-start text-lg">{cart.length + index + 1}. {item.Service_Name}</p>
-                            <p className="sm:text-end text-lg">{item.Service_Price.toFixed(2)} บาท</p>
+                            <p className="sm:text-end text-lg">{Number(item.Service_Price.toFixed(2)).toLocaleString('en-US', {minimumFractionDigits: 2,maximumFractionDigits: 2})} บาท</p>
                         </div>
                     ))}
                     <div className="flex flex-col py-4 px-4">
@@ -100,7 +100,7 @@ function EstimatePrice() {
                         </div>
                         <div className="flex justify-end items-center gap-6">
                             <p className="text-end text-2xl font-bold text-blue-600">รวม <span className="text-red-600">{cart.reduce((total, item) => total + item.quantity, 0) + selectedServices.length}</span> รายการ</p>
-                            <p className="text-end text-2xl font-bold text-blue-600">{totalPrice.toFixed(2)} บาท</p>
+                            <p className="text-end text-2xl font-bold text-blue-600">{Number(totalPrice.toFixed(2)).toLocaleString('en-US', {minimumFractionDigits: 2,maximumFractionDigits: 2})} บาท</p>
                         </div>
                     </div>
                 </div>

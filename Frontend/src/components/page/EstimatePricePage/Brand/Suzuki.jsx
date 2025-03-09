@@ -422,7 +422,7 @@ function Suzuki() {
                                                 <p className="text-gray-400 text-sm mb-4">รหัสสินค้า {val.SparePart_ProductID}</p>
                                                 <p className="text-cyan-400 mb-3">{val.SparePart_Description}</p>
                                             <div className="flex justify-between items-center mb-6">
-                                                <p className="text-red-500 text-lg font-semibold">* {val.SparePart_Price} บาท</p>
+                                                <p className="text-red-500 text-lg font-semibold">* {Number(val.SparePart_Price).toLocaleString('en-US', {minimumFractionDigits: 2,maximumFractionDigits: 2})} บาท</p>
                                                 <p className="text-sm text-gray-500">คงเหลือ: {val.SparePart_Amount} ชิ้น</p>
                                             </div>
                                             <div className="flex flex-col mt-auto">

@@ -216,15 +216,15 @@ function Queue()
     <div className="bg-gray-100 p-6 shadow-md mx-auto w-full">
     <h1 className="text-3xl font-semibold text-center">เครื่องมือสำหรับการจองเข้าใช้บริการอู่</h1>
 
-    <div className="flex">
-        <div className="w-1/3 p-6">
+    <div className="md:flex">
+        <div className="md:w-1/3 p-6">
             <h2 className="text-lg font-semibold mb-4">ระบุวันที่ต้องการจอง</h2>
             <label className="block text-gray-700 mb-2" for="date"> วันที่จอง </label>
             <input className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="date" type="date" min={new Date().toISOString().split("T")[0]} onChange={(e) => handleDateChange(e.target.value)}></input>
             {errorDate && <p className="text-red-500 text-sm mt-2">{errorDate}</p>}
         </div>
 
-        <div className="w-2/3  p-6">
+        <div className="md:w-2/3 p-6">
             <h2 className="text-lg font-semibold mb-4">ระบุเวลาที่ต้องการจอง</h2>
             <label className="block text-gray-700 mb-2" for="time"> เวลา </label>
             <select id="time" className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value={time} onChange={(e) => handleTimeChange(e.target.value)}>
@@ -240,16 +240,16 @@ function Queue()
     </div>
 
     <div class="mt-4 bg-white p-6 rounded shadow">
-        <h2 class="text-[2vw] font-semibold mb-4">รายละเอียดผู้จอง</h2>
+        <h2 class="md:text-[2vw] font-semibold mb-4">รายละเอียดผู้จอง</h2>
             <form class="space-y-8" onSubmit={handleSubmit}>
-                <div class="flex space-x-4">
-                    <div class="w-1/2">
-                        <label class="block">ชื่อ-นามสกุล <span class="text-red-500">*</span></label>
+                <div class="md:flex md:space-x-4">
+                    <div class="md:w-1/2">
+                        <label class="block text-sm font-normal">ชื่อ-นามสกุล <span class="text-red-500">*</span></label>
                         <input type="FullName" class="w-full border border-gray-300 p-2 rounded" placeholder="ชื่อ-นามสกุล" value={fullName} onChange={(e) => setFullName(e.target.value)}></input>
                         {errorFullName && <p className="text-red-500 text-sm mt-2">{errorFullName}</p>}
                     </div>
-                    <div class="w-1/2">
-                        <label class="block text-sm font-normal">เบอร์โทรศัพท์ <span class="text-red-500">*</span></label>
+                    <div class="md:w-1/2">
+                        <label class="block text-sm font-normal max-md:mt-5">เบอร์โทรศัพท์ <span class="text-red-500">*</span></label>
                         <input type="tel" inputMode="numeric" class="w-full border border-gray-300 p-2 rounded" placeholder="เบอร์โทรศัพท์" value={phoneNumber}
                             maxlength="10" onChange={(e) => {
                                 // ตรวจสอบให้กรอกเฉพาะตัวเลข
@@ -260,13 +260,13 @@ function Queue()
                         {errorPhoneNumber && <p className="text-red-500 text-sm mt-2">{errorPhoneNumber}</p>}
                     </div>
                 </div>
-                <div class="flex space-x-4">
-                    <div class="w-1/3">
+                <div class="md:flex md:space-x-4">
+                    <div class="md:w-1/3">
                         <label class="block text-sm font-normal">อีเมล <span class="text-red-500 text-xs">(ไม่บังคับ)</span></label>
                         <input type="email" class="w-full border border-gray-300 p-2 rounded" placeholder="อีเมล" value={email} onChange={(e) => setEmail(e.target.value)}></input>
                     </div>
-                    <div class="w-1/3">
-                        <label class="block text-sm font-normal">เลขทะเบียนรถ <span class="text-red-500 text-xs">*</span></label>
+                    <div class="md:w-1/3">
+                        <label class="block text-sm font-normal max-md:mt-5">เลขทะเบียนรถ <span class="text-red-500 text-xs">*</span></label>
                         <input type="CarRegistration" class="w-full border border-gray-300 p-2 rounded" placeholder="เลขทะเบียนรถ" value={CarRegistration} onChange={(e) => setCarRegistration(e.target.value)}></input>
                         {errorCarRegistration && <p className="text-red-500 text-sm mt-2">{errorCarRegistration}</p>}
                     </div>
@@ -313,7 +313,7 @@ function Queue()
                             d="M256 0C114.84 0 0 114.84 0 256s114.84 256 256 256 256-114.84 256-256S397.16 0 256 0zm0 470.487c-118.265 0-214.487-96.214-214.487-214.487 0-118.265 96.221-214.487 214.487-214.487 118.272 0 214.487 96.221 214.487 214.487 0 118.272-96.215 214.487-214.487 214.487z"
                             data-original="#000000" />
                     </svg>
-                    <h4 class="text-[2vw] text-gray-800 font-semibold mt-4">จองคิวเสร็จสิ้น!!</h4>
+                    <h4 class="md:text-[2vw] text-gray-800 font-semibold mt-4">จองคิวเสร็จสิ้น!!</h4>
                     <p class="text-sm text-gray-500 leading-relaxed mt-4 px-2">ลูกค้าสามารถเข้าใช้บริการในวันเวลาที่ทำการจองไว้</p>
                     <div class='justify-center item-center'>
                         <button type="button" onClick={() => closeconfirmmodal()} class="text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 font-medium rounded-lg text-base px-4 py-2 mt-4">ตกลง</button>
