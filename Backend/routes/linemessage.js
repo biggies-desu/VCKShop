@@ -4,40 +4,13 @@ const cron = require('node-cron');
 const request = require('request')
 const axios = require('axios')
 const router = express.Router();
+const { HttpsProxyAgent } = require('https-proxy-agent');
 
 require('dotenv').config();
 
-const LINE_USERID = process.env.LINE_USERID
 const LINE_ACCESSTOKEN = process.env.LINE_ACCESSTOKEN
-
-
-router.post('/linemessage',(req,res) =>
-    {
-      //get message
-      let message = req.body.message
-      console.log(message)
-      //set header
-      let headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${LINE_ACCESSTOKEN}`
-      }
-      //set body
-      let body = JSON.stringify({
-        "messages":[
-            {
-                "type":"text",
-                "text":message
-            }
-        ]
-    })
-    request.post({
-      url: 'https://api.line.me/v2/bot/message/broadcast',
-      headers: headers,
-      body: body
-    }, (err, res, body) => {
-      console.log(res)
-  })
-})
+const proxyip = process.env.PROXY_IP
+const proxyAgent = new HttpsProxyAgent(`${proxyip}`);
 
 router.get('/getnotifyitem', (req,res) => {
   // if sparepartnotify is true
@@ -54,39 +27,57 @@ router.get('/getnotifyitem', (req,res) => {
   else {
     res.json(results)
   }
+  })
 })
-})
-    //using cron to schedule call line api
-    //[min] [hour] [day of month] [month] [day of week]
-cron.schedule('0 */3 * * *', async () => { // notify every 3 hours
-  try{
-    const timestamp = new Date().toLocaleString('th-TH') //create timestamp
-    const getnotifyitemapi = await axios.get('http://localhost:5000/getnotifyitem');
-    const data = getnotifyitemapi.data
-    
-    //loop over data -> formatdata
-    const formatdata = data.map(item => {
-      return `- ${item.SparePart_Name} คงเหลือ ${item.SparePart_Amount} ชิ้น`
-    }).join(`\n`)
-
-    const message = `แจ้งเตือนอะไหล่คงเหลือ\nเวลา : ${timestamp}\n${formatdata}`
-      request.post(
-        {
-          url: 'http://localhost:5000/linemessage',
-          json: { message: message }, //sent message to api/linemessage
-        },
-        (err, response, body) => {
-          if (err) {
-            console.error('Error sending scheduled message:', err);
-          } else {
-            console.log('Scheduled message sent:', body);
+//[min] [hour] [day of month] [month] [day of week]
+cron.schedule('*/30 * * * *', async () => {
+    try {
+      const timestamp = new Date().toLocaleString('th-TH');
+      console.log(`Sending LINE notification at ${timestamp}`);
+      const { data } = await axios.get('https://vckracing.shop/api/getnotifyitem');
+      //fetch data
+      const formatdata = data.map(item =>
+        `- ${item.SparePart_Name} คงเหลือ ${item.SparePart_Amount} ชิ้น`
+      ).join('\n');
+      //generated full message
+      const fullMessage = `แจ้งเตือนอะไหล่คงเหลือ\nเวลา : ${timestamp}\n${formatdata}`;
+      const chars = Array.from(fullMessage); //char array
+      const messageChunks = [];
+      //more than 500 char then split to other chunk (since line can handle only 500 char/balloon)
+      for (let i = 0; i < chars.length; i += 500) {
+          messageChunks.push(chars.slice(i, i + 500).join(''));
+      }
+      //make it only 5 balloon per 1 line api call (accord to documentation)
+      for (let i = 0; i < messageChunks.length; i += 5) {
+        const batch = messageChunks.slice(i, i + 5).map(text => (
+          {
+            type: 'text',
+            text: text
           }
+        )
+      );
+      //sent to line api
+      const response = await axios.post(
+        'https://api.line.me/v2/bot/message/broadcast',
+        { messages: batch },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${LINE_ACCESSTOKEN}`
+          },
+          httpsAgent: proxyAgent,
+          timeout: 10000
         }
       );
+      console.log(response.data);
+    }
   }
-  catch(err)
-  {
-    console.log(err)
+  catch (err) {
+    if (err.response) {
+      console.error(err.response.status, err.response.data);
+    } else {
+      console.error(err.message);
+    }
   }
 });
 
