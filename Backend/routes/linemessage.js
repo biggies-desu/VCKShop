@@ -30,7 +30,7 @@ router.get('/getnotifyitem', (req,res) => {
   })
 })
 //[min] [hour] [day of month] [month] [day of week]
-cron.schedule('0 */8 * * *', async () => {
+cron.schedule('0 8,20 * * *', async () => {
     try {
       const timestamp = new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
       console.log(`Sending LINE notification at ${timestamp}`);

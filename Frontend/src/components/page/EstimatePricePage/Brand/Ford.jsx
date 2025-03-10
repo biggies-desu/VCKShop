@@ -66,10 +66,8 @@ function Ford() {
     }, [selectedYear, selectedModel]);
     
     useEffect(() => {
-        if (sparepart.length > 0) {
-            const totalPages = Math.ceil(sparepart.length / itemsPerPage);
-            setTotalPages(totalPages);
-        }
+        const totalPages = Math.ceil(sparepart.filter(item => item.SparePart_Amount > 0).length / itemsPerPage);
+        setTotalPages(totalPages);
     }, [sparepart, itemsPerPage]);
 
     useEffect(() => {
@@ -123,7 +121,6 @@ function Ford() {
             });
         }
     }, [selectedModel, selectedYear, categories]);
-    
     
     function fetchAllData() {
         const modelId = Ford.find((car) => car.name === selectedModel)?.models.find((model) => model.year === selectedYear)?.modelId;
@@ -195,7 +192,8 @@ function Ford() {
     };
 
     // ฟังก์ชันเพื่อแสดงผลข้อมูลในหน้าแต่ละหน้า
-    const currentSpareParts = sparepart.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    const filteredSpareParts = Array.isArray(sparepart) ? sparepart.filter(item => item.SparePart_Amount > 0): [];
+    const currentSpareParts = filteredSpareParts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
     // ฟังก์ชันการเปลี่ยนหน้า
     const changePage = (pageNumber) => {

@@ -78,11 +78,10 @@ function Honda() {
     }, [selectedYear, selectedModel]);
     
     useEffect(() => {
-        if (sparepart.length > 0) {
-            const totalPages = Math.ceil(sparepart.length / itemsPerPage);
-            setTotalPages(totalPages);
-        }
-    }, [sparepart, itemsPerPage]);
+        const totalPages = Math.ceil(sparepart.filter(item => item.SparePart_Amount > 0).length / itemsPerPage);
+        setTotalPages(totalPages);
+      }, [sparepart, itemsPerPage]);
+      
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/categories`)
@@ -158,7 +157,7 @@ function Honda() {
     function AddToCart(val) {
         setCart((prevCart) => {
             const existingItemIndex = prevCart.findIndex((item) => item.SparePart_ID === val.SparePart_ID);
-            const selectedQty = quantities[val.SparePart_ID] || 1; // ค่าจำนวนที่ผู้ใช้เลือก
+            const selectedQty = quantities[val.SparePart_ID] || 0; // ค่าจำนวนที่ผู้ใช้เลือก
     
             if (existingItemIndex !== -1) {
                 // ถ้ามีสินค้าชนิดนี้อยู่ในตะกร้าแล้ว ให้เพิ่มจำนวน
@@ -183,19 +182,18 @@ function Honda() {
         const modelId = Honda.find((car) => car.name === selectedModel)?.models.find((model) => model.year === selectedYear)?.modelId;
     
         axios.get(`${import.meta.env.VITE_API_URL}/sparepartcategory?modelId=${modelId}&category=${category}`)
-  .then((res) => {
-      const filteredData = res.data.filter(item => item.SparePart_Name.includes(keyword));
-      if (Array.isArray(filteredData)) {
-          setSparePart(filteredData);
-      } else {
-          setSparePart([]);
-      }
-      setCurrentPage(1);
-  })
-  .catch((error) => {
-      console.error(error);
-  });
-
+        .then((res) => {
+            const filteredData = res.data.filter(item => item.SparePart_Name.includes(keyword));
+            if (Array.isArray(filteredData)) {
+                setSparePart(filteredData);
+            } else {
+                setSparePart([]);
+            }
+            setCurrentPage(1);
+        })
+        .catch((error) => {
+            console.error(error);
+        });
     }    
 
     const search = (event) => {
@@ -205,19 +203,18 @@ function Honda() {
         console.log("search : ", search_query);
 
         axios.post(`${import.meta.env.VITE_API_URL}/searchquery`, { search_query })
-  .then((res) => {
-      if (Array.isArray(res.data)) {
-          setSparePart(res.data);
-      } else {
-          console.error("ผลลัพธ์ search ไม่ใช่ array", res.data);
-          setSparePart([]);
-      }
-      setCurrentPage(1);
-  })
-  .catch((error) => {
-      console.error(error);
-  });
-
+        .then((res) => {
+            if (Array.isArray(res.data)) {
+                setSparePart(res.data);
+            } else {
+                console.error("ผลลัพธ์ search ไม่ใช่ array", res.data);
+                setSparePart([]);
+            }
+            setCurrentPage(1);
+        })
+        .catch((error) => {
+            console.error(error);
+        });
     };
 
     const NavigateEstimate = () => {
@@ -225,8 +222,8 @@ function Honda() {
     };
 
     // ฟังก์ชันเพื่อแสดงผลข้อมูลในหน้าแต่ละหน้า
-    const currentSpareParts = Array.isArray(sparepart) ? sparepart.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage) : [];
-
+    const filteredSpareParts = Array.isArray(sparepart) ? sparepart.filter(item => item.SparePart_Amount > 0): [];
+    const currentSpareParts = filteredSpareParts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
 
     // ฟังก์ชันการเปลี่ยนหน้า

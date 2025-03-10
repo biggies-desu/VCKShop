@@ -57,11 +57,9 @@ function Suzuki() {
         }
     }, [selectedYear, selectedModel]);
     
-    useEffect(() => {
-        if (sparepart.length > 0) {
-            const totalPages = Math.ceil(sparepart.length / itemsPerPage);
-            setTotalPages(totalPages);
-        }
+     useEffect(() => {
+        const totalPages = Math.ceil(sparepart.filter(item => item.SparePart_Amount > 0).length / itemsPerPage);
+        setTotalPages(totalPages);
     }, [sparepart, itemsPerPage]);
 
     useEffect(() => {
@@ -190,7 +188,8 @@ function Suzuki() {
     };
 
     // ฟังก์ชันเพื่อแสดงผลข้อมูลในหน้าแต่ละหน้า
-    const currentSpareParts = sparepart.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    const filteredSpareParts = Array.isArray(sparepart) ? sparepart.filter(item => item.SparePart_Amount > 0): [];
+    const currentSpareParts = filteredSpareParts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
     // ฟังก์ชันการเปลี่ยนหน้า
     const changePage = (pageNumber) => {

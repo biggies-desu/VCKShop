@@ -121,9 +121,12 @@ router.get('/categorytotal', function (req, res) {
   const placeholders = sparePartNames.map(() => '?').join(', ');
 
   const sqlcommand = `SELECT c.Category_ID, COALESCE(sc.Sub_Category_Name, 'Uncategorized') AS Sub_Category_Name, COUNT(s.SparePart_ID) AS TotalAmount  FROM Sparepart s JOIN Category c ON s.Category_ID = c.Category_ID 
-                      LEFT JOIN Sub_Category sc ON sc.Category_ID = c.Category_ID AND s.SparePart_Name LIKE CONCAT('%', sc.Sub_Category_Name, '%') -- Match by name
-                      JOIN Model_Link ml ON s.SparePart_ID = ml.SparePart_ID JOIN Model m ON ml.Model_ID = m.Model_ID 
-                      WHERE ml.Model_ID = ? GROUP BY c.Category_ID, sc.Sub_Category_Name ORDER BY c.Category_ID, sc.Sub_Category_Name`;
+                      LEFT JOIN Sub_Category sc ON sc.Category_ID = c.Category_ID AND s.SparePart_Name LIKE CONCAT('%', sc.Sub_Category_Name, '%')
+                      JOIN Model_Link ml ON s.SparePart_ID = ml.SparePart_ID 
+                      JOIN Model m ON ml.Model_ID = m.Model_ID 
+                      WHERE ml.Model_ID = ? AND s.SparePart_Amount > 0 
+                      GROUP BY c.Category_ID, sc.Sub_Category_Name 
+                      ORDER BY c.Category_ID, sc.Sub_Category_Name`;
 
   // Execute query with dynamic placeholders
   db.query(sqlcommand, [modelId, ...sparePartNames], function (err, results) {
@@ -176,7 +179,4 @@ router.get("/categories", (req, res) => {
       res.json(formattedCategories);
   });
 });
-
-
-
 module.exports = router;
