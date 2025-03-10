@@ -13,6 +13,7 @@ function Queue_History({setishistorymodal})
     const [totalPages, setTotalPages] = useState(1);
     const [search_time, setsearch_time] = useState('')
     const [search_time2, setsearch_time2] = useState('')
+    const [search_carregistration, setsearch_carregistration] = useState("");
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/queuehistory`)
@@ -41,18 +42,36 @@ function Queue_History({setishistorymodal})
         setIsDetailModalOpen(false);  
     }
     
-    function searchtime()
+    // function searchtime()
+    // {
+    //     console.log(search_time,search_time2)
+    //     event.preventDefault()
+    //     axios.post(`${import.meta.env.VITE_API_URL}/queuehistorytime`,
+    //         {
+    //             search_time: search_time,
+    //             search_time2: search_time2 || search_time
+    //         })
+    //         .then((res) => {
+    //             console.log(res)
+    //             setqueuedata(res.data)
+    //         })
+    //     .catch((err) => {
+    //         console.log(err);
+    //     })
+    // }
+
+    function search()
     {
-        console.log(search_time,search_time2)
-        event.preventDefault()
-        axios.post(`${import.meta.env.VITE_API_URL}/queuehistorytime`,
+        axios.post(`${import.meta.env.VITE_API_URL}/searchqueuehistory`,
             {
                 search_time: search_time,
-                search_time2: search_time2 || search_time
+                search_time2: search_time2 || search_time,
+                search_carregistration: search_carregistration
             })
             .then((res) => {
                 console.log(res)
                 setqueuedata(res.data)
+                setCurrentPage(1);
             })
         .catch((err) => {
             console.log(err);
@@ -78,7 +97,8 @@ function Queue_History({setishistorymodal})
             <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex-row md:flex md:space-x-4 items-center">      
                 <input className="shadow border rounded-lg w-full md:w-1/3 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time(e.target.value)}/>
                 <input className="shadow border rounded-lg w-full md:w-1/3 py-2 px-4 max-md:mt-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time2(e.target.value)}/>
-                <button type='button' id="search" className="max-md:mt-2 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition"onClick={() => searchtime(search_time,search_time2)}>
+                <input value={search_carregistration} type="search" id="search_carregistration" className="w-full sm:flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-300" placeholder="เลขทะเบียนรถ" onChange={e => setsearch_carregistration(e.target.value)} onKeyPress={(e) => { if (e.key === 'Enter') { search(e); }}}/>
+                <button type='button' id="search" className="max-md:mt-2 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition" onClick={() => search()}>
                     <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
                     </svg>
@@ -90,6 +110,7 @@ function Queue_History({setishistorymodal})
                         <tr>
                             <th className='text-start px-4 py-3'>วันที่จอง</th>
                             <th className='text-start px-6 py-3'>เวลาที่จอง</th>
+                            <th className='text-center px-6 py-3'>เลขทะเบียนรถ</th>
                             <th className='text-end px-6 py-3'>ดูรายละเอียด</th>
                             <th className='text-end px-6 py-3'>สถานะ</th>
                         </tr>
@@ -99,6 +120,7 @@ function Queue_History({setishistorymodal})
                             <tr key={index} className="border-b hover:bg-blue-100 md:text-lg">
                                 <td className='text-start px-4 py-3'>{new Date(item.Booking_Date).toLocaleDateString('th-TH')}</td>
                                 <td className='text-start px-4 py-3'>{item.Booking_Time}</td>
+                                <td className='text-center px-6 py-3'>{item.Booking_CarRegistration}</td>
                                 <td className='text-end py-3'>
                                     <button type='button' onClick={() => openDetailModal(item)} className="text-blue-500 hover:text-blue-700">📄</button>  
                                 </td>

@@ -155,6 +155,45 @@ router.post('/queuehistorytime', function (req,res){
     }})
 })
 
+router.post('/searchqueuehistory', (req, res) => {
+  let { search_time, search_time2, search_carregistration } = req.body;
+  let querydata = [];
+  let condition = [];
+
+  // base SQL
+  let sqlcommand = `SELECT * FROM Booking`;
+
+  // เงื่อนไขช่วงวันที่
+  if (search_time && search_time.trim() !== "" && search_time2 && search_time2.trim() !== "") {
+    condition.push("Booking_Date BETWEEN ? AND ?");
+    querydata.push(search_time, search_time2);
+  }
+
+  // เงื่อนไขค้นหาทะเบียนรถ
+  if (search_carregistration && search_carregistration.trim() !== "") {
+    condition.push("Booking_CarRegistration LIKE CONCAT('%', ?, '%')");
+    querydata.push(search_carregistration);
+  }
+
+  // รวมเงื่อนไขทั้งหมด ถ้ามี
+  if (condition.length > 0) {
+    sqlcommand += " WHERE " + condition.join(" AND ");
+  }
+
+  // การจัดเรียงข้อมูล
+  sqlcommand += " ORDER BY DATE(Booking_Date) DESC, Booking_time ASC";
+
+  console.log(sqlcommand, querydata);
+
+  db.query(sqlcommand, querydata, (err, results) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.json(results);
+    }
+  });
+});
+
 router.post('/finishqueue', function (req,res) {
   let finishqueueno = req.body.finishqueueno //booking_id
   //set to finished
@@ -180,30 +219,43 @@ router.post('/finishqueue', function (req,res) {
   })
 })
 
+router.post('/searchqueue', (req, res) => {
+  let { search_time, search_time2, search_carregistration } = req.body;
+  let querydata = [];
+  let condition = [];
 
+  // base SQL
+  let sqlcommand = `SELECT * FROM Booking WHERE Booking_Status = 'ยังไม่เสร็จสิ้น'`;
 
-router.post('/searchqueuetime', function (req, res) {
-  let time1 = req.body.search_time;
-  let time2 = req.body.search_time2;
-  let sqlcommand;
-
-  if (!time1 || time1.trim() === "" || !time2 || time2.trim() === "") {
-    sqlcommand = `select * from Booking
-                  where Booking_Status = 'ยังไม่เสร็จสิ้น'
-                  order by date(Booking_Date);`
-  } else {
-    sqlcommand = `select * from Booking
-                  where Booking_Status = 'ยังไม่เสร็จสิ้น'
-                  and Booking_Date between ? and ?
-                  order by date(Booking_Date);`
+  // เงื่อนไขค้นหาช่วงวันที่
+  if (search_time && search_time.trim() !== "" && search_time2 && search_time2.trim() !== "") {
+    condition.push("Booking_Date BETWEEN ? AND ?");
+    querydata.push(search_time, search_time2);
   }
 
-  db.query(sqlcommand, [time1,time2], function (err, results) {
-    if(err){
-      res.send(err)}
-    else{
-      res.json(results)
-    }})
-  })
+  // เงื่อนไขค้นหาทะเบียนรถ
+  if (search_carregistration && search_carregistration.trim() !== "") {
+    condition.push("Booking_CarRegistration LIKE CONCAT('%', ?, '%')");
+    querydata.push(search_carregistration);
+  }
+
+  // รวมเงื่อนไขทั้งหมด
+  if (condition.length > 0) {
+    sqlcommand += " AND " + condition.join(" AND ");
+  }
+
+  sqlcommand += " ORDER BY DATE(Booking_Date) ASC";
+
+  console.log(sqlcommand, querydata);
+
+  db.query(sqlcommand, querydata, (err, results) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.json(results);
+    }
+  });
+});
+
 
 module.exports = router
