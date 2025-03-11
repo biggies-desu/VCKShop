@@ -94,11 +94,11 @@ function Queue_History({setishistorymodal})
                 <h1 className="max-md:text-lg md:text-4xl text-gray-700">ประวัติคิวเข้าใช้บริการ</h1>
                 <button className="w-full md:w-auto text-white bg-blue-500 hover:bg-blue-700 px-6 py-2 rounded-lg text-lg transition" onClick={() => setishistorymodal(false)}>กลับ</button>
             </div>
-            <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex-row md:flex md:space-x-4 items-center">      
+            <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex flex-col gap-2 md:flex-row md:items-center md:space-x-4 md:gap-0">      
                 <input className="shadow border rounded-lg w-full md:w-1/3 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time(e.target.value)}/>
-                <input className="shadow border rounded-lg w-full md:w-1/3 py-2 px-4 max-md:mt-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time2(e.target.value)}/>
+                <input className="shadow border rounded-lg w-full md:w-1/3 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time2(e.target.value)}/>
                 <input value={search_carregistration} type="search" id="search_carregistration" className="w-full sm:flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-300" placeholder="เลขทะเบียนรถ" onChange={e => setsearch_carregistration(e.target.value)} onKeyPress={(e) => { if (e.key === 'Enter') { search(e); }}}/>
-                <button type='button' id="search" className="max-md:mt-2 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition" onClick={() => search()}>
+                <button type='button' id="search" className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition md:w-auto w-fit self-center md:self-auto px-4" onClick={() => search()}>
                     <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
                     </svg>

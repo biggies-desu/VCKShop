@@ -16,6 +16,8 @@ function Warehouse() {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(12); // จำนวนรายการที่จะแสดงในแต่ละหน้า
     const [totalPages, setTotalPages] = useState(1);
+    const [dropdowncategory, setdropdowncategory] = useState([])
+    const [category, setcategory] = useState('')
 
     const token = jwtDecode(localStorage.getItem('token'));
 
@@ -31,10 +33,14 @@ function Warehouse() {
 
     function fetchdata(){
         console.log(token.user_id)
-        axios.get(`${import.meta.env.VITE_API_URL}/allsparepart`)
+        axios.all([
+            axios.get(`${import.meta.env.VITE_API_URL}/allsparepart`),
+            axios.get(`${import.meta.env.VITE_API_URL}/getdropdowncategory`),
+        ])
+        
             .then((res) => {
-                console.log("API Response:", res.data);
-                setapidata(res.data);
+                setapidata(res[0].data)
+                setdropdowncategory(res[1].data)
             })
             .catch((err) => {
                 console.error("API Error:", err);
@@ -43,6 +49,7 @@ function Warehouse() {
 
     useEffect(() => {
         fetchdata()
+        console.log(apidata,dropdowncategory)
     }, []);
 
     useEffect(() => {
@@ -66,8 +73,10 @@ function Warehouse() {
     function search(event) {
         event.preventDefault();
         console.log("search : ", search_query);
+        console.log("category : ", category);
         axios.post(`${import.meta.env.VITE_API_URL}/searchquery`, {
-            search_query: search_query
+            search_query: search_query,
+            category: category
         })
         .then((res) => {
             console.log(res);
@@ -149,8 +158,17 @@ function Warehouse() {
                 <div className='kanit-bold flex flex-row justify-center bg-white p-4 shadow-md rounded-lg'>
                     <h1 className="max-md:text-lg md:text-4xl text-gray-700">คลังสินค้า</h1>
                 </div>
-                <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex-row md:flex md:space-x-4 items-center">
-                    <input value={search_query} type="search" id="search_query" className="w-full sm:flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-300" placeholder="ค้นหาชื่อ/รหัสสินค้า" onChange={e => setsearch_query(e.target.value)} onKeyPress={(e) => { if (e.key === 'Enter') { search(e); }}}/>
+                <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex flex-wrap gap-2 md:flex-nowrap md:items-center md:space-x-4">
+                <select id="ีcategory" className="shadow border rounded-lg w-full md:w-1/3 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    type="text" value={category} placeholder='ประเภทอะไหล่' onChange={(e) => setcategory(e.target.value)}>
+                    <option selected value=''>ทั้งหมด</option>
+                    {dropdowncategory.map((category, index) => (
+                    <option key={index} value={category.Category_Name}>
+                        {category.Category_Name}
+                    </option>
+                    ))}
+                </select>
+                    <input value={search_query} type="search" id="search_query" className="w-full md:flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-300" placeholder="ค้นหาชื่อ/รหัสสินค้า" onChange={e => setsearch_query(e.target.value)} onKeyPress={(e) => { if (e.key === 'Enter') { search(e); }}}/> 
                     <button type="button" id="search" onClick={search} className="px-4 py-2 max-md:mt-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">ค้นหา</button>
                     <button type="button" id="add" onClick={addproduct} className="px-4 py-2 max-md:mt-2 max-md:mx-5 bg-green-500 text-white rounded-lg hover:bg-green-600">เพิ่มสินค้า</button>
                 </form>
