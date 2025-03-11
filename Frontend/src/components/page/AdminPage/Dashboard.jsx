@@ -19,7 +19,8 @@ function Dashboard()
     const [chart2, setchart2] = useState([])
     const colormapping = {
         "เสร็จสิ้นแล้ว":"#4CAF50",
-        "ยังไม่เสร็จสิ้น":"#FF5722"
+        "กำลังดำเนินการ":"#FFF59D",
+        "รอดำเนินการ":"#FF5722"
     }
 
     const getRandomColor = () => {
@@ -128,7 +129,7 @@ function Dashboard()
         <div class="small-box bg-warning">
             <div class="inner">
                 <h3>{queuestatusdata[0]?.value}</h3>
-                <p>คิวที่เสร็จแล้ว</p>
+                <p>คิวที่รอดำเนินการ</p>
             </div>
             <div class="icon">
                 <i class="ion ion-stats-bars"></i>
@@ -137,7 +138,16 @@ function Dashboard()
         <div class="small-box bg-warning">
             <div class="inner">
                 <h3>{queuestatusdata[1]?.value}</h3>
-                <p>คิวที่ยังไม่เสร็จ</p>
+                <p>คิวที่กำลังดำเนินการ</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+            </div>
+        </div>
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>{queuestatusdata[2]?.value}</h3>
+                <p>คิวที่เสร็จแล้ว</p>
             </div>
             <div class="icon">
                 <i class="ion ion-stats-bars"></i>

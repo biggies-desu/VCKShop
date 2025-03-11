@@ -14,6 +14,7 @@ function Queue_History({setishistorymodal})
     const [search_time, setsearch_time] = useState('')
     const [search_time2, setsearch_time2] = useState('')
     const [search_carregistration, setsearch_carregistration] = useState("");
+    const [search_status, setSearchStatus] = useState('');
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/queuehistory`)
@@ -41,24 +42,6 @@ function Queue_History({setishistorymodal})
     function CloseDetailModal(item) {
         setIsDetailModalOpen(false);  
     }
-    
-    // function searchtime()
-    // {
-    //     console.log(search_time,search_time2)
-    //     event.preventDefault()
-    //     axios.post(`${import.meta.env.VITE_API_URL}/queuehistorytime`,
-    //         {
-    //             search_time: search_time,
-    //             search_time2: search_time2 || search_time
-    //         })
-    //         .then((res) => {
-    //             console.log(res)
-    //             setqueuedata(res.data)
-    //         })
-    //     .catch((err) => {
-    //         console.log(err);
-    //     })
-    // }
 
     function search()
     {
@@ -66,7 +49,8 @@ function Queue_History({setishistorymodal})
             {
                 search_time: search_time,
                 search_time2: search_time2 || search_time,
-                search_carregistration: search_carregistration
+                search_carregistration: search_carregistration,
+                search_status: search_status
             })
             .then((res) => {
                 console.log(res)
@@ -88,50 +72,56 @@ function Queue_History({setishistorymodal})
 
     return<>    
     <div className="p-6 bg-gray-100 min-h-screen">
-        <div className='flex flex-col text-nowrap'>
-            <div className='kanit-bold flex flex-col md:flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg space-y-4 md:space-y-0'>
-                <div></div>
-                <h1 className="max-md:text-lg md:text-4xl text-gray-700">ประวัติคิวเข้าใช้บริการ</h1>
-                <button className="w-full md:w-auto text-white bg-blue-500 hover:bg-blue-700 px-6 py-2 rounded-lg text-lg transition" onClick={() => setishistorymodal(false)}>กลับ</button>
-            </div>
-            <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex flex-col gap-2 md:flex-row md:items-center md:space-x-4 md:gap-0">      
-                <input className="shadow border rounded-lg w-full md:w-1/3 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time(e.target.value)}/>
-                <input className="shadow border rounded-lg w-full md:w-1/3 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time2(e.target.value)}/>
-                <input value={search_carregistration} type="search" id="search_carregistration" className="w-full sm:flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-300" placeholder="เลขทะเบียนรถ" onChange={e => setsearch_carregistration(e.target.value)} onKeyPress={(e) => { if (e.key === 'Enter') { search(e); }}}/>
-                <button type='button' id="search" className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition md:w-auto w-fit self-center md:self-auto px-4" onClick={() => search()}>
-                    <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
-                    </svg>
-                </button>
-            </form>
-            <div className="relative overflow-x-auto shadow-md rounded-2xl mt-6">
-                <table className="w-full text-sm text-left text-gray-600 bg-white shadow-md rounded-xl">
-                    <thead className="text-sm md:text-base text-white bg-blue-500">
-                        <tr>
-                            <th className='text-start px-4 py-3'>วันที่จอง</th>
-                            <th className='text-start px-6 py-3'>เวลาที่จอง</th>
-                            <th className='text-center px-6 py-3'>เลขทะเบียนรถ</th>
-                            <th className='text-end px-6 py-3'>ดูรายละเอียด</th>
-                            <th className='text-end px-6 py-3'>สถานะ</th>
+        <div className='kanit-bold flex flex-col md:flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg space-y-4 md:space-y-0'>
+            <div></div>
+            <h1 className="max-md:text-lg md:text-4xl text-gray-700">ประวัติคิวเข้าใช้บริการ</h1>
+            <button className="w-full md:w-auto text-white bg-blue-500 hover:bg-blue-700 px-6 py-2 rounded-lg text-lg transition" onClick={() => setishistorymodal(false)}>กลับ</button>
+        </div>
+        <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex-row md:flex md:space-x-4 items-center">      
+            <input className="shadow border rounded-lg w-full md:w-1/3 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time(e.target.value)}/>
+            <input className="shadow border rounded-lg w-full md:w-1/3 py-2 px-4 max-md:mt-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time2(e.target.value)}/>
+            <select className="shadow border rounded-lg w-full md:w-1/4 py-2 px-4 max-md:mt-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" value={search_status} onChange={(e) => setSearchStatus(e.target.value)}>
+                <option value="">ทั้งหมด</option>
+                <option value="รอดำเนินการ">🔴 รอดำเนินการ</option>
+                <option value="กำลังดำเนินการ">🟡 กำลังดำเนินการ</option>
+                <option value="เสร็จสิ้นแล้ว">🟢 เสร็จสิ้นแล้ว</option>
+            </select>
+            <input value={search_carregistration} type="search" id="search_carregistration" className="shadow border rounded-lg w-full md:w-1/4 py-2 px-4 max-md:mt-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="เลขทะเบียนรถ" onChange={e => setsearch_carregistration(e.target.value)} onKeyPress={(e) => { if (e.key === 'Enter') { search(e); }}}/>
+            <button type='button' id="search" className="max-md:mt-2 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition" onClick={() => search()}>
+                <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+                </svg>
+            </button>
+        </form>
+        <div className="relative overflow-x-auto shadow-md rounded-2xl mt-6">
+            <table className="w-full text-sm text-left text-gray-600 bg-white shadow-md rounded-xl">
+                <thead className="text-sm md:text-base text-white bg-blue-500">
+                    <tr>
+                        <th className='text-start px-4 py-3'>วันที่จอง</th>
+                        <th className='text-start px-6 py-3'>เวลาที่จอง</th>
+                        <th className='text-center px-6 py-3'>เลขทะเบียนรถ</th>
+                        <th className='text-center px-6 py-3'>ช่างผู้รับผิดชอบ</th>
+                        <th className='text-end px-6 py-3'>ดูรายละเอียด</th>
+                        <th className='text-end px-6 py-3'>สถานะ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {currentQueuedata.map((item, index) => (
+                        <tr key={index} className="border-b hover:bg-blue-100 md:text-lg">
+                            <td className='text-start px-4 py-3'>{new Date(item.Booking_Date).toLocaleDateString('th-TH')}</td>
+                            <td className='text-start px-4 py-3'>{item.Booking_Time}</td>
+                            <td className='text-center px-6 py-3'>{item.Booking_CarRegistration}</td>
+                            <td className='text-center px-6 py-3'>{item.Technician_Names || "-"}</td>
+                            <td className='text-end py-3'>
+                                <button type='button' onClick={() => openDetailModal(item)} className="text-blue-500 hover:text-blue-700">📄</button>  
+                            </td>
+                            <td className={`text-end px-3 py-2 ${item.Booking_Status === "รอดำเนินการ" ? "text-red-500" : item.Booking_Status === "กำลังดำเนินการ" ? "text-yellow-500" : item.Booking_Status === "เสร็จสิ้นแล้ว" ? "text-green-500" : ""}`}>
+                                {item.Booking_Status}
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {currentQueuedata.map((item, index) => (
-                            <tr key={index} className="border-b hover:bg-blue-100 md:text-lg">
-                                <td className='text-start px-4 py-3'>{new Date(item.Booking_Date).toLocaleDateString('th-TH')}</td>
-                                <td className='text-start px-4 py-3'>{item.Booking_Time}</td>
-                                <td className='text-center px-6 py-3'>{item.Booking_CarRegistration}</td>
-                                <td className='text-end py-3'>
-                                    <button type='button' onClick={() => openDetailModal(item)} className="text-blue-500 hover:text-blue-700">📄</button>  
-                                </td>
-                                <td className={`text-end px-3 py-2 ${item.Booking_Status === "เสร็จสิ้นแล้ว" ? "text-green-500" : "text-red-500"}`}>
-                                    {item.Booking_Status}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                    ))}
+                </tbody>
+            </table>
         </div>
         <ul class="flex space-x-5 justify-center font-[sans-serif] p-10">
             <button className="flex items-center justify-center shrink-0 bg-gray-100 w-9 h-9 rounded-md cursor-pointer hover:bg-blue-400" onClick={() => changePage(currentPage > 1 ? currentPage - 1 : 1)}>
@@ -163,9 +153,9 @@ function Queue_History({setishistorymodal})
                             <p><strong>เวลาที่จอง:</strong> {Detail.Booking_Time}</p>
                             <p><strong>ชื่อจริง:</strong> {Detail.Booking_FirstName}</p>
                             <p><strong>นามสกุล:</strong> {Detail.Booking_LastName}</p>
-                            <p><strong>ประเภทการบริการ:</strong> {Detail.Service_Name}</p>
                             <p><strong>รายละเอียดการจอง:</strong> {Detail.Booking_Description ? Detail.Booking_Description : "-"}</p>
                             <p><strong>เลขทะเบียนรถ:</strong> {Detail.Booking_CarRegistration ? Detail.Booking_CarRegistration : "-"}</p>
+                            <p><strong>ช่างผู้รับผิดชอบ:</strong> {Detail.Technician_Names || "-"}</p>
                         </div>
                         <div className="flex justify-center">
                             <button type='button' className="px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 rounded" onClick={CloseDetailModal}>ตกลง</button>

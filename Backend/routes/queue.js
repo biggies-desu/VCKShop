@@ -36,7 +36,7 @@ router.post('/addqueue', function (req,res) {
 
   //insert to booking table
   const sqlcommand1 = `INSERT INTO Booking (Booking_Date,	Booking_Time,	Booking_FirstName, Booking_LastName, User_ID, Booking_Description, Booking_CarRegistration, Booking_Status)
-                      VALUES (?,?,?,?,?,?,?,'ยังไม่เสร็จสิ้น')`
+                      VALUES (?,?,?,?,?,?,?,'รอดำเนินการ')`
     db.query(sqlcommand1,[date,time,firstName,lastName,userID,details,CarRegistration],(err,data1) => {
       if(err)
       {
@@ -84,7 +84,7 @@ router.delete('/deletequeue/:id', (req, res) => {
 
 
 router.get('/allqueue', function (req,res){
-  const sqlcommand = `SELECT * FROM Booking WHERE Booking_Status = 'ยังไม่เสร็จสิ้น' ORDER BY DATE(Booking_Date) ASC`
+  const sqlcommand = `SELECT * FROM Booking WHERE Booking_Status != 'เสร็จสิ้นแล้ว' ORDER BY DATE(Booking_Date) ASC`
   db.query(sqlcommand,function(err,results)
   {
   if(err)
@@ -121,20 +121,21 @@ router.put('/updatequeue/:id', function (req, res) {
   })
 })
 
-router.get('/queuehistory', function (req,res){
-  const sqlcommand = `SELECT * FROM Booking ORDER BY DATE(Booking_Date) desc, Booking_time asc`
-  db.query(sqlcommand,function(err,results)
-{
-  if(err)
-  {
-    res.send(err)
-  }
-  else
-  {
-    res.json(results)
-  }
-})
-})
+router.get('/queuehistory', function (req, res) {
+  const sqlcommand = `SELECT b.*, GROUP_CONCAT(t.Technician_Name SEPARATOR ', ') AS Technician_Names FROM Booking b
+                      LEFT JOIN Booking_Technician bt ON b.Booking_ID = bt.Booking_ID
+                      LEFT JOIN Technician t ON bt.Technician_ID = t.Technician_ID
+                      GROUP BY b.Booking_ID
+                      ORDER BY DATE(b.Booking_Date) DESC, b.Booking_Time ASC`;
+
+  db.query(sqlcommand, function (err, results) {
+    if (err) {
+      res.status(500).json({ error: err });
+    } else {
+      res.json(results);
+    }
+  });
+});
 
 router.post('/queuehistorytime', function (req,res){
   let time1 = req.body.search_time;
@@ -156,76 +157,94 @@ router.post('/queuehistorytime', function (req,res){
 })
 
 router.post('/searchqueuehistory', (req, res) => {
-  let { search_time, search_time2, search_carregistration } = req.body;
+  let { search_time, search_time2, search_carregistration, search_status } = req.body;
   let querydata = [];
   let condition = [];
 
-  // base SQL
-  let sqlcommand = `SELECT * FROM Booking`;
+  let sql = `SELECT b.*, GROUP_CONCAT(t.Technician_Name SEPARATOR ', ') AS Technician_Names FROM Booking b
+             LEFT JOIN Booking_Technician bt ON b.Booking_ID = bt.Booking_ID
+             LEFT JOIN Technician t ON bt.Technician_ID = t.Technician_ID`;
 
-  // เงื่อนไขช่วงวันที่
-  if (search_time && search_time.trim() !== "" && search_time2 && search_time2.trim() !== "") {
-    condition.push("Booking_Date BETWEEN ? AND ?");
+  if (search_time && search_time2) {
+    condition.push("b.Booking_Date BETWEEN ? AND ?");
     querydata.push(search_time, search_time2);
   }
 
-  // เงื่อนไขค้นหาทะเบียนรถ
   if (search_carregistration && search_carregistration.trim() !== "") {
-    condition.push("Booking_CarRegistration LIKE CONCAT('%', ?, '%')");
+    condition.push("b.Booking_CarRegistration LIKE CONCAT('%', ?, '%')");
     querydata.push(search_carregistration);
   }
 
-  // รวมเงื่อนไขทั้งหมด ถ้ามี
-  if (condition.length > 0) {
-    sqlcommand += " WHERE " + condition.join(" AND ");
+  if (search_status && search_status.trim() !== "") {
+    condition.push("Booking_Status = ?");
+    querydata.push(search_status);
   }
 
-  // การจัดเรียงข้อมูล
-  sqlcommand += " ORDER BY DATE(Booking_Date) DESC, Booking_time ASC";
+  if (condition.length > 0) {
+    sql += " WHERE " + condition.join(" AND ");
+  }
 
-  console.log(sqlcommand, querydata);
+  sql += " GROUP BY b.Booking_ID ORDER BY DATE(b.Booking_Date) DESC, b.Booking_Time ASC";
 
-  db.query(sqlcommand, querydata, (err, results) => {
+  db.query(sql, querydata, (err, results) => {
     if (err) {
-      res.send(err);
+      console.log("searchqueuehistory error:", err);
+      return res.status(500).json({ error: err });
+    }
+    res.json(results);
+  });
+});
+
+
+router.post('/updatequeue_status', function (req, res) {
+  const booking_id = req.body.booking_id;
+  const status = req.body.status;
+
+  const sql = `UPDATE Booking SET Booking_status = ? WHERE Booking_id = ?`;
+  db.query(sql, [status, booking_id], function (err, result) {
+    if (err) {
+      return res.status(500).json({ error: err });
+    }
+
+    // ลดอะไหล่ถ้าเสร็จสิ้นแล้ว
+    if (status === 'เสร็จสิ้นแล้ว') {
+      const sparepartSql = `UPDATE Sparepart s 
+                            JOIN Booking_Sparepart bs ON s.Sparepart_ID = bs.SparePart_ID
+                            SET s.Sparepart_Amount = s.Sparepart_Amount - bs.Booking_SparePart_Quantity
+                            WHERE bs.Booking_ID = ?`;
+
+      db.query(sparepartSql, [booking_id], (err2, result2) => {
+        if (err2) return res.status(500).json({ error: err2 });
+        return res.json({ message: 'อัปเดตสถานะ + ลดอะไหล่เรียบร้อย' });
+      });
     } else {
-      res.json(results);
+      return res.json({ message: 'อัปเดตสถานะเรียบร้อย' });
     }
   });
 });
 
-router.post('/finishqueue', function (req,res) {
-  let finishqueueno = req.body.finishqueueno //booking_id
-  //set to finished
-  const sqlcommand = `UPDATE Booking set Booking_status = 'เสร็จสิ้นแล้ว' WHERE Booking_id = ?`
-  db.query(sqlcommand,[finishqueueno], function(err, results)
-{
-  if(err) {
-    res.send(err)
-  }
-  //reduce sparepart when click finish
-  const sqlcommand2 = `UPDATE Sparepart s JOIN Booking_Sparepart bs on s.Sparepart_ID = bs.Sparepart_ID
-                      set s.Sparepart_Amount = s.Sparepart_Amount - bs.Booking_SparePart_Quantity
-                      where bs.Booking_ID = ?`
-  db.query(sqlcommand2,[finishqueueno], (err,results) => {
-    if(err){
-      res.send(err)
-    }
-    else
-    {
-      res.json(results)
-    }
-  })
+
+router.get('/technician', (req,res) => {
+  const sqlcommand = `select * from Technician`
+  db.query(sqlcommand, (err,result) => {
+    if (err)
+      {
+        return res.json(err)
+      }
+      else
+      {
+        res.json(result)
+      }
   })
 })
 
 router.post('/searchqueue', (req, res) => {
-  let { search_time, search_time2, search_carregistration } = req.body;
+  let { search_time, search_time2, search_carregistration, search_status } = req.body;
   let querydata = [];
   let condition = [];
 
   // base SQL
-  let sqlcommand = `SELECT * FROM Booking WHERE Booking_Status = 'ยังไม่เสร็จสิ้น'`;
+  let sqlcommand = `SELECT * FROM Booking WHERE (Booking_Status = 'รอดำเนินการ' OR Booking_Status = 'กำลังดำเนินการ')`;
 
   // เงื่อนไขค้นหาช่วงวันที่
   if (search_time && search_time.trim() !== "" && search_time2 && search_time2.trim() !== "") {
@@ -237,6 +256,11 @@ router.post('/searchqueue', (req, res) => {
   if (search_carregistration && search_carregistration.trim() !== "") {
     condition.push("Booking_CarRegistration LIKE CONCAT('%', ?, '%')");
     querydata.push(search_carregistration);
+  }
+
+  if (search_status && search_status.trim() !== "") {
+    condition.push("Booking_Status = ?");
+    querydata.push(search_status);
   }
 
   // รวมเงื่อนไขทั้งหมด
@@ -254,6 +278,44 @@ router.post('/searchqueue', (req, res) => {
     } else {
       res.json(results);
     }
+  });
+});
+
+
+router.post('/assign_technicians', (req, res) => {
+  const { booking_id, technician_ids } = req.body;
+
+  if (!Array.isArray(technician_ids)) {
+    return res.status(400).json();
+  }
+
+  const deleteSql = `DELETE FROM Booking_Technician WHERE Booking_ID = ?`;
+  db.query(deleteSql, [booking_id], (err1) => {
+    if (err1) return res.status(500).json({ error: err1 });
+
+    if (technician_ids.length === 0) {
+      return res.json();
+    }
+
+    const values = technician_ids.map(tid => [booking_id, tid]);
+    const insertSql = `INSERT INTO Booking_Technician (Booking_ID, Technician_ID) VALUES ?`;
+
+    db.query(insertSql, [values], (err2, result) => {
+      if (err2) return res.status(500).json({ error: err2 });
+      res.json(result );
+    });
+  });
+});
+
+
+router.get('/booking_technicians/:booking_id', (req, res) => {
+  const booking_id = req.params.booking_id;
+  const sql = `SELECT t.Technician_ID, t.Technician_Name FROM Booking_Technician bt
+               JOIN Technician t ON bt.Technician_ID = t.Technician_ID
+               WHERE bt.Booking_ID = ?`;
+  db.query(sql, [booking_id], (err, result) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json(result);
   });
 });
 
