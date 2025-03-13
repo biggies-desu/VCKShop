@@ -3,19 +3,13 @@ import { BrowserRouter, Navigate, Outlet } from 'react-router-dom'
 import './index.css'
 
 import { Routes , Route } from 'react-router-dom'
-import Navbar from './components/Navbar.jsx'
 
 import Home from './components/page/Home.jsx'
 import Queue from './components/page/Queue.jsx'
 
 import EstimatePrice from './components/page/EstimatePricePage/EstimatePrice.jsx'
-import Ford from './components/page/EstimatePricePage/Brand/Ford.jsx'
-import Honda from './components/page/EstimatePricePage/Brand/Honda.jsx'
-import Mazda from './components/page/EstimatePricePage/Brand/Mazda.jsx'
-import Mitsubishi from './components/page/EstimatePricePage/Brand/Mitsubishi.jsx'
-import Nissan from './components/page/EstimatePricePage/Brand/Nissan.jsx'
-import Susuki from './components/page/EstimatePricePage/Brand/Suzuki.jsx'
-import Toyota from './components/page/EstimatePricePage/Brand/Toyota.jsx'
+
+import Allcarmodels from './components/page/EstimatePricePage/Allcarmodels.jsx'
 
 import Aboutus from './components/page/Aboutus.jsx'
 import Login from './components/page/Login.jsx'
@@ -85,13 +79,7 @@ function App() {
       <Route path='/' element={<Home/>}/>
       <Route path='/estimateprice' element={<EstimatePrice/>}/>
 
-      <Route path='/Ford' element={<Ford/>}/>
-      <Route path='/Honda' element={<Honda/>}/>
-      <Route path='/Mazda' element={<Mazda/>}/>
-      <Route path='/Mitsubishi' element={<Mitsubishi/>}/>
-      <Route path='/Nissan' element={<Nissan/>}/>
-      <Route path='/Suzuki' element={<Susuki/>}/>
-      <Route path='/Toyota' element={<Toyota/>}/>
+      <Route path='/allcarmodels' element={<Allcarmodels/>}/>
 
       <Route element={<Protectroute role={[2]}/>}>
         <Route path='/queue' element={<Queue/>}/>

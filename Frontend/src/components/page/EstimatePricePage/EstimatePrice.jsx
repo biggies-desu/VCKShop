@@ -44,29 +44,6 @@ function EstimatePrice() {
                 console.log(err);
               });
         ;} ,[]);
-
-    function getPagePath()  {
-        switch (brand) {
-            case "Honda":
-                return "/Honda";
-            case "Toyota":
-                return "/Toyota";
-            case "Ford":
-                return "/Ford";
-            case "Nissan":
-                return "/Nissan";
-            case "Mazda":
-                return "/Mazda";
-            case "Mitsubishi":
-                return "/Mitsubishi";
-            case "Suzuki":
-                return "/Suzuki";
-            case "อื่นๆ":
-                return "/Other"
-            default:
-                return "/EstimatePrice";
-        }
-    };
     
     function Cart() {
         useEffect(() => {
@@ -127,7 +104,7 @@ function EstimatePrice() {
                         <option key={index} value={item.Brand_Name}>{item.Brand_Name}</option>
                     ))}
                 </select>
-                <Link to={getPagePath()}>
+                <Link to="/Allcarmodels" state={{ selectedBrand: brand }}>
                     <button className="p-3 bg-orange-300 text-white rounded-xl hover:bg-orange-200 shadow-md">
                         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="black" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
@@ -136,7 +113,6 @@ function EstimatePrice() {
                 </Link>
             </div>
         </div>
-
         <div className="mb-4">
             <label className="block text-gray-700 mb-2">บริการ</label>
             <div className="flex space-x-2">

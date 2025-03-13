@@ -29,56 +29,179 @@ router.get('/getnotifyitem', (req,res) => {
   }
   })
 })
-//[min] [hour] [day of month] [month] [day of week]
-cron.schedule('0 1,13 * * *', async () => {
-    try {
-      const timestamp = new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
-      console.log(`Sending LINE notification at ${timestamp}`);
-      const { data } = await axios.get('https://vckracing.shop/api/getnotifyitem');
-      //fetch data
-      const formatdata = data.map(item =>
-        `- ${item.SparePart_Name} คงเหลือ ${item.SparePart_Amount} ชิ้น`
-      ).join('\n');
-      //generated full message
-      const fullMessage = `แจ้งเตือนอะไหล่คงเหลือ\nเวลา : ${timestamp}\n${formatdata}`;
-      const chars = Array.from(fullMessage); //char array
-      const messageChunks = [];
-      //more than 500 char then split to other chunk (since line can handle only 500 char/balloon)
-      for (let i = 0; i < chars.length; i += 500) {
-          messageChunks.push(chars.slice(i, i + 500).join(''));
-      }
-      //make it only 5 balloon per 1 line api call (accord to documentation)
-      for (let i = 0; i < messageChunks.length; i += 5) {
-        const batch = messageChunks.slice(i, i + 5).map(text => (
+
+function generateFlexCarousel(data, timestamp) {
+  const bubbles = [];
+  const chunkSize = 10; //each bubble = 10 items
+  for (let i = 0; i < data.length; i += chunkSize) {
+    const chunk = data.slice(i, i + chunkSize);
+    //body of flex message (map to res data)
+    const contentBoxes = chunk.map(item => ({
+      type: "box",
+      layout: "horizontal",
+      contents: [
+        {
+          type: "text",
+          text: `${item.SparePart_Name}`,
+          size: "sm",
+          flex: 2,
+          wrap: true,
+          maxLines: 3
+        },
+        {
+          type: "text",
+          text: `${item.SparePart_Amount} ชิ้น`,
+          size: "sm",
+          flex: 1,
+          align: "end",
+          gravity: "top",
+          color: "#FF4444"
+        }
+      ]
+    }));
+    const bubble = {
+      type: "bubble",
+      size: "giga",
+      header: {
+        type: "box",
+        layout: "vertical",
+        contents: [
           {
-            type: 'text',
-            text: text
+            type: "image",
+            url: "https://vckracing.shop/images/LogoNavbar.png",
+            size: "full",
+            aspectRatio: "5:1",
+            aspectMode: "cover"
           }
-        )
-      );
-      //sent to line api
+        ]
+      },
+      hero: {
+        type: "box",
+        layout: "vertical",
+        contents: [
+          {
+            type: "text",
+            text: "🔧 แจ้งเตือนอะไหล่คงเหลือ 🚗",
+            weight: "bold",
+            size: "xl",
+            align: "center",
+            style: "italic"
+          },
+          {
+            type: "text",
+            text: `เวลา : ${timestamp}`,
+            align: "center",
+            size: "md",
+            color: "#cdcdcd"
+          },
+          {
+            type: "separator",
+            margin: "md",
+            color: "#666666"
+          }
+        ]
+      },
+      body: {
+        type: "box",
+        layout: "vertical",
+        spacing: "sm",
+        contents: [
+          {
+            type: "box",
+            layout: "horizontal",
+            spacing: "sm",
+            contents: [
+              { type: "text", text: "ชื่ออะไหล่", weight: "bold", flex: 2 },
+              { type: "text", text: "คงเหลือ", weight: "bold", flex: 1, align: "end" }
+            ]
+          },
+          ...contentBoxes
+        ]
+      },
+      footer: {
+        type: "box",
+        layout: "vertical",
+        contents: [
+          {
+            type: "text",
+            text: `หน้าที่ ${Math.floor(i / chunkSize) + 1}`,
+            align: "end",
+            color: "#cdcdcd",
+            size: "sm",
+            style: "italic"
+          }
+        ]
+      }
+    };
+    bubbles.push(bubble);
+  }
+  return {
+    type: "carousel",
+    contents: bubbles
+  };
+}
+async function sendtoline() {
+  try {
+    const timestamp = new Date().toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
+    const { data } = await axios.get('https://vckracing.shop/api/getnotifyitem');
+    const flexCarousel = generateFlexCarousel(data, timestamp);
+    // split into 10 bubbles per carousel 
+    const bubbleChunks = [];
+    const bubbles = flexCarousel.contents;
+    const maxpercarousel = 10;
+    for (let i = 0; i < bubbles.length; i += maxpercarousel) {
+      const chunk = bubbles.slice(i, i + maxpercarousel);
+      bubbleChunks.push({
+        type: 'carousel',
+        contents: chunk
+      });
+    }
+    //send 5 carousel per api call
+    for (let i = 0; i < bubbleChunks.length; i += 5) {
+      const messageBatch = bubbleChunks.slice(i, i + 5).map(carousel => ({
+        type: 'flex',
+        altText: 'แจ้งเตือนอะไหล่คงเหลือ',
+        contents: carousel
+      }));
       const response = await axios.post(
         'https://api.line.me/v2/bot/message/broadcast',
-        { messages: batch },
+        {
+          messages: messageBatch
+        },
         {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${LINE_ACCESSTOKEN}`
           },
-          httpsAgent: proxyAgent,
+          httpsAgent: proxyAgent, //for some reason Line API just blocking Hostinger IP (unable to call API) so I rent proxy and use it
           timeout: 10000
         }
       );
       console.log(response.data);
     }
-  }
-  catch (err) {
+  } catch (err) {
     if (err.response) {
       console.error(err.response.status, err.response.data);
     } else {
       console.error(err.message);
     }
   }
+}
+
+//[min] [hour] [day of month] [month] [day of week] - UTC on server so this should be sent at 8am,8pm in GMT+7
+cron.schedule('0 1,13 * * *', () => {
+  sendtoline();
+})
+
+//for debug purpose
+router.get('/sendnotifytest', async (req, res) => {
+  try {
+    await sendtoline();
+    res.json(res);
+  } catch (err) {
+    res.json(err);
+  }
 });
+
 
 module.exports = router
