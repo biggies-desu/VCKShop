@@ -25,7 +25,7 @@ router.put('/updatesparepart/:id',(req, res) => {
   let productnotify_amount = req.body.productnotify_amount
   let user_id = req.body.user_id
   console.log(req.body)
-  const getproductnamesql = `SELECT SparePart_Name FROM Sparepart WHERE SparePart_ID = ?`
+  const getproductnamesql = `SELECT SparePart_Name,Category_ID FROM Sparepart WHERE SparePart_ID = ?`
   //get productname first
   db.query(getproductnamesql, [sparepartId], (err, result) => {
     if(err)
@@ -33,6 +33,7 @@ router.put('/updatesparepart/:id',(req, res) => {
       return res.send(err)
     }
     const productname = result[0].SparePart_Name
+    const category_id = result[0].Category_ID
     //update
     const sqlcommand = `UPDATE Sparepart SET SparePart_Amount = ?, SparePart_Price = ?, SparePart_Notify = ?, SparePart_NotifyAmount = ?
                         WHERE SparePart_ID = ?`;
@@ -42,11 +43,11 @@ router.put('/updatesparepart/:id',(req, res) => {
       }
       console.log(results)
       const wltime = new Date(new Date().getTime()+7*60*60*1000).toISOString().slice(0, 19).replace('T', ' '); //utc -> gmt+7 thingy
-      const wlaction = 'แก้ไขจำนวน/ราคาสินค้า'
-      const wldescription = `แก้ไข : "${productname}" เป็นจำนวน ${productamount} หน่วย, ราคา ${productprice} บาท`
-      const puttologtablesql = `INSERT INTO Warehouse_Log (SparePart_ID, WL_Action, WL_Time, WL_Description, user_id)
-                                VALUES (?,?,?,?,?)`
-      db.query(puttologtablesql, [sparepartId, wlaction, wltime, wldescription, user_id], function (err,result2) {
+      const wlactionid = 2
+      const wldescription = `"${productname}" เป็นจำนวน ${productamount} หน่วย, ราคา ${productprice} บาท`
+      const puttologtablesql = `INSERT INTO Warehouse_Log (SparePart_ID, WL_Time, WL_Description, user_id, Category_ID, WL_Action_ID)
+                                VALUES (?,?,?,?,?,?)`
+      db.query(puttologtablesql, [sparepartId, wltime, wldescription, user_id, category_id, wlactionid], function (err,result2) {
         if(err) {
           return res.send(err)
         }
@@ -57,45 +58,67 @@ router.put('/updatesparepart/:id',(req, res) => {
 });
 
 router.get("/sparepart", (req, res) => {
-  const ModelId = req.query.modelId; // ดึงค่าจาก query parameter
+  const ModelId = req.query.modelId;
   const query = `SELECT s.*, sml.Model_ID FROM Sparepart s JOIN Model_Link sml ON s.SparePart_ID = sml.SparePart_ID WHERE sml.Model_ID = ?` // query ที่จะดึงข้อมูลจากฐานข้อมูล 
-  db.query(query, [ModelId], (err, results) => { // ใช้ตัวแปร ModelId แทนค่าใน query
+  db.query(query, [ModelId], (err, results) => {
       if (err) {
           res.json(err)
       } else {
-          res.json(results); // ส่งผลลัพธ์กลับไปยัง frontend
+          res.json(results);
       }
   });
 });
 
 router.get("/sparepartcategory", (req, res) => {
-  const ModelId = req.query.modelId; // ดึงค่าจาก query parameter
+  const ModelId = req.query.modelId;
   const Category = req.query.category
-  const keyword = req.query.keyword || ''; // กำหนดค่า default เป็นค่าว่างถ้าไม่มีการส่งคำค้นหา
+  const keyword = req.query.keyword || '';
   console.log(req.query)
   const query = `SELECT s.* FROM Sparepart s JOIN Model_Link sml ON s.SparePart_ID = sml.SparePart_ID WHERE sml.Model_ID = ? AND s.Category_ID = ? AND s.SparePart_Name LIKE ?;` // query ที่จะดึงข้อมูลจากฐานข้อมูล 
-  db.query(query, [ModelId, Category, `%${keyword}%`], (err, results) => { // ใช้ตัวแปร ModelId แทนค่าใน query
+  db.query(query, [ModelId, Category, `%${keyword}%`], (err, results) => {
       if (err) {
           res.status(500).json({ message: "Error fetching data", error: err });
       } else {
-          res.json(results); // ส่งผลลัพธ์กลับไปยัง frontend
+          res.json(results);
       }
   });
 });
 
 router.post('/searchquery',function (req,res) {
-  let search_query = req.body.search_query
-  const sqlcommand = `SELECT s.*, c.Category_Name, 
+  let {search_query, category} = req.body
+  let querydata = [];
+  let condition = [];
+
+  let sqlcommand = `SELECT s.*, c.Category_Name, 
                       GROUP_CONCAT(DISTINCT CONCAT(b.Brand_Name, ' ', m.Model_Name, ' (', m.Model_Year, ')') ORDER BY m.Model_ID ASC SEPARATOR ' , ') AS Model_Details
                       FROM Sparepart s
                       JOIN Category c ON s.Category_ID = c.Category_ID
                       JOIN Model_Link ml ON s.SparePart_ID = ml.SparePart_ID
                       JOIN Model m ON ml.Model_ID = m.Model_ID
                       JOIN Brand b ON m.Brand_ID = b.Brand_ID
-                      WHERE SparePart_Name LIKE CONCAT('%', ?, '%') OR SparePart_ProductID LIKE CONCAT('%', ?, '%')
-                      GROUP BY s.SparePart_ID
-                      ORDER BY s.SparePart_ID DESC;`
-  db.query(sqlcommand,[search_query,search_query],function(err,results)
+                      `
+
+  //if category have selected
+  if(category !== "")
+  {
+        condition.push("c.Category_Name = ?")
+        querydata.push(category)
+  }
+  //if searching
+  if(search_query !== "")
+  {
+    condition.push("(s.SparePart_Name LIKE CONCAT('%', ?, '%') OR s.SparePart_ProductID LIKE CONCAT('%', ?, '%'))");
+        querydata.push(search_query,search_query)
+  }
+  //if at least 1 condition
+  if(condition.length > 0)
+  {
+      sqlcommand = sqlcommand+" WHERE "+condition.join(" and ")
+  }
+  //group order by
+  sqlcommand = sqlcommand+" GROUP BY s.SparePart_ID ORDER BY s.SparePart_ID DESC;"
+  console.log(sqlcommand,querydata)
+  db.query(sqlcommand,querydata,(err,results) =>
   {
     if (err){
       return res.send(err)
@@ -105,6 +128,7 @@ router.post('/searchquery',function (req,res) {
     }
   })
 })
+
 
 router.get('/categorytotal', function (req, res) {
   const modelId = req.query.modelId;

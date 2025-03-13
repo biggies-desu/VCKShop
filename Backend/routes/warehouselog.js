@@ -4,7 +4,10 @@ const router = express.Router();
 
 //all log
 router.get('/warehouselog', (req,res) => {
-    const sqlcommand = `SELECT wl.*, u.user_username from Warehouse_Log wl join User u on wl.user_id = u.user_id order by wl_id desc`
+    const sqlcommand = `SELECT wl.*, u.user_username, c.Category_Name, s.Sparepart_Name, wla.WL_Action_Name from Warehouse_Log wl join User u on wl.user_id = u.user_id
+    LEFT JOIN Sparepart s ON s.SparePart_ID = wl.SparePart_ID
+    LEFT JOIN Category c ON c.Category_ID = s.Category_ID
+    join Warehouse_Log_Action wla on wla.WL_Action_ID = wl.WL_Action_ID order by wl_id desc`
     db.query(sqlcommand,(err,result) => 
     {
         if(err)
@@ -17,13 +20,16 @@ router.get('/warehouselog', (req,res) => {
 
 //search one
 router.post('/searchwarehousetime', (req, res) => { 
-    let {search_time,search_time2,action,user_username} = req.body;
+    let {search_time,search_time2,action,user_username,category,searchname} = req.body;
     console.log(req.body)
     let querydata = []
     let condition = []
 
     //based sql
-    let sqlcommand = `SELECT wl.*, u.user_username from Warehouse_Log wl join User u on wl.user_id = u.user_id`
+    let sqlcommand = `SELECT wl.*, u.user_username, c.Category_Name, s.Sparepart_Name, wla.WL_Action_Name from Warehouse_Log wl join User u on wl.user_id = u.user_id
+    LEFT JOIN Sparepart s ON s.SparePart_ID = wl.SparePart_ID
+    LEFT JOIN Category c ON c.Category_ID = s.Category_ID
+    join Warehouse_Log_Action wla on wla.WL_Action_ID = wl.WL_Action_ID`
 
     //if have search time -> add date filter
     if(search_time && search_time.trim() !== "" && search_time2 && search_time2.trim() !== "")
@@ -34,7 +40,7 @@ router.post('/searchwarehousetime', (req, res) => {
     //if have action select
     if(action && action.trim() !== "")
     {
-        condition.push("wl_action = ?")
+        condition.push("wla.wl_action_name = ?")
         querydata.push(action)
     }
     //if select user
@@ -42,6 +48,18 @@ router.post('/searchwarehousetime', (req, res) => {
     {
         condition.push("u.user_username = ?")
         querydata.push(user_username)
+    }
+    //if select category
+    if(category && category.trim() !== "")
+    {
+        condition.push("c.category_name = ?")
+        querydata.push(category)
+    }
+    //if name mentioned
+    if(searchname && searchname.trim() !== "")
+    {
+        condition.push("s.SparePart_Name LIKE CONCAT('%', ?, '%') OR s.SparePart_ProductID LIKE CONCAT('%', ?, '%') OR wl.WL_Description LIKE CONCAT('%', ?, '%')")
+        querydata.push(searchname,searchname,searchname)
     }
     //if have at least 1 condition (time,user,action searched), edit sql
     if(condition.length > 0)

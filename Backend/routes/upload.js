@@ -87,10 +87,11 @@ router.post('/addproduct', upload.single('productimage'), (req, res) => {
           }
           //put it do log
           const wltime = new Date(new Date().getTime()+7*60*60*1000).toISOString().slice(0, 19).replace('T', ' ');
-          const wlaction = 'เพิ่มสินค้า';
-          const wldescription = `เพิ่มสินค้า : "${productname}" จำนวน ${productamount} หน่วย`;
-          const puttologtablesql = `INSERT INTO Warehouse_Log (SparePart_ID, WL_Action, WL_Time, WL_Description, User_ID) VALUES (?,?,?,?,?)`;
-          db.query(puttologtablesql, [sparepartID, wlaction, wltime, wldescription, user_id], (err, results) => {
+          const wlactionid = 1;
+          const wldescription = `"${productname}" จำนวน ${productamount} หน่วย`;
+          const puttologtablesql = `INSERT INTO Warehouse_Log (SparePart_ID, WL_Action_ID, WL_Time, WL_Description, User_ID, Category_ID)
+                                    VALUES (?, ?, ?, ?, ?, (SELECT Category_ID FROM Category WHERE Category_Name = ?))`;
+              db.query(puttologtablesql, [sparepartID, wlactionid, wltime, wldescription, user_id, productcatagory], (err, results) => {
               if (err) {
                   return res.json(err);
               }
@@ -104,7 +105,7 @@ router.delete('/deletesparepart/:id', function (req, res) {
     const sparepartId = req.params.id;
     const user_id = req.query.user_id;
     //get productname first
-    const getproductnamesql = `SELECT SparePart_Name, SparePart_Image FROM Sparepart WHERE SparePart_ID = ?`;
+    const getproductnamesql = `SELECT SparePart_Name, SparePart_Image, Category_ID FROM Sparepart WHERE SparePart_ID = ?`;
     db.query(getproductnamesql, [sparepartId], function (err, result) {
         if (err) {
             return res.status(500).json(err);
@@ -112,6 +113,7 @@ router.delete('/deletesparepart/:id', function (req, res) {
         //get image filepath
         const productname = result[0].SparePart_Name;
         const filename = result[0].SparePart_Image;
+        const productcatagory = result[0].Category_ID;
         const filePath = filename ? path.join(__dirname, 'uploads', filename) : null;
         //delete image from upload folder
         if (filename && fs.existsSync(filePath)) {
@@ -124,16 +126,17 @@ router.delete('/deletesparepart/:id', function (req, res) {
         }
         //delete from sparepart db
         const sqlcommand = 'DELETE FROM Sparepart WHERE SparePart_ID = ?';
+        console.log(productcatagory)
         db.query(sqlcommand, [sparepartId], function (err, result2) {
             if (err) {
                 return res.status(500).json(err);
             }
             //put into warehouse_log
             const wltime = new Date(new Date().getTime()+7*60*60*1000).toISOString().slice(0, 19).replace('T', ' ');
-            const wlaction = 'ลบสินค้า';
-            const wldescription = `ลบสินค้า : "${productname}"`;
-            const puttologtablesql = `INSERT INTO Warehouse_Log (SparePart_ID, WL_Action, WL_Time, WL_Description, user_ID) VALUES (?,?,?,?,?)`;
-            db.query(puttologtablesql, [null, wlaction, wltime, wldescription, user_id], function (err, result3) {
+            const wlactionid = 3;
+            const wldescription = `"${productname}"`;
+            const puttologtablesql = `INSERT INTO Warehouse_Log (SparePart_ID, WL_Action_ID, WL_Time, WL_Description, user_ID, Category_ID) VALUES (?,?,?,?,?,?)`;
+            db.query(puttologtablesql, [null, wlactionid, wltime, wldescription, user_id, productcatagory], function (err, result3) {
                 if (err) {
                     return res.status(500).json(err);
                 }
