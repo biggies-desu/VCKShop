@@ -111,10 +111,12 @@ router.get('/getcurrentprofile/:userid', (req, res) => {
 router.put('/updateprofile/:userid',(req,res) =>
 {
   const userid = req.params.userid
-  let firstname = req.body.firstname
-  let lastname = req.body.lastname
-  let email = req.body.email
-  let telephone = req.body.telephone
+  
+  const firstname = req.body.firstname === "" ? null : req.body.firstname;
+  const lastname = req.body.lastname === "" ? null : req.body.lastname;
+  const email = req.body.email === "" ? null : req.body.email;
+  const telephone = req.body.telephone === "" ? null : req.body.telephone;
+  
   console.log(req.body)
   
   try{

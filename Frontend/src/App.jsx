@@ -25,6 +25,7 @@ import Warehouse_History from './components/page/AdminPage/Warehouse_History.jsx
 import Tax from './components/page/AdminPage/Tax.jsx'
 import Notify from './components/page/AdminPage/Notify.jsx'
 import HelpPage from './components/page/AdminPage/HelpPage.jsx'
+import SettingsPage from './components/page/AdminPage/SettingsPage.jsx'
 
 import {jwtDecode} from "jwt-decode";
 import { useState, useEffect } from 'react'
@@ -100,6 +101,7 @@ function App() {
           <Route path='tax' element={<Tax />} />
           <Route path='notify' element={<Notify />} />
           <Route path='helppage' element={<HelpPage />} />
+          <Route path='settingsPage' element={<SettingsPage />} />
         </Route>
       </Route>
     </Routes>

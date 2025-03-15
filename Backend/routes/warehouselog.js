@@ -58,8 +58,10 @@ router.post('/searchwarehousetime', (req, res) => {
     //if name mentioned
     if(searchname && searchname.trim() !== "")
     {
-        condition.push("s.SparePart_Name LIKE CONCAT('%', ?, '%') OR s.SparePart_ProductID LIKE CONCAT('%', ?, '%') OR wl.WL_Description LIKE CONCAT('%', ?, '%')")
-        querydata.push(searchname,searchname,searchname)
+        condition.push(`(s.SparePart_Name LIKE CONCAT('%', ?, '%') 
+                        OR s.SparePart_ProductID LIKE CONCAT('%', ?, '%') 
+                        OR wl.WL_Description LIKE CONCAT('%', ?, '%'))`)
+        querydata.push(searchname, searchname, searchname)
     }
     //if have at least 1 condition (time,user,action searched), edit sql
     if(condition.length > 0)

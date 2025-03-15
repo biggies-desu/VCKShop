@@ -60,13 +60,17 @@ export default function Menu() {
             Line notify
             </NavLink>
             </li>
+            <li className="nav-item">
+            <NavLink to='SettingsPage' className="nav-link">
+            <i className="fas fa-wrench nav-icon" style={{ marginRight: "25px" }}/>
+            SettingsPage
+            </NavLink>
+            </li>
           </ul>
         </li>
       </ul>
     </nav>
-    {/* /.sidebar-menu */}
   </div>
-  {/* /.sidebar */}
 </aside>
 
   )

@@ -17,7 +17,9 @@ function EstimatePrice() {
     const location = useLocation();
     const { state } = location || {};
     const [cart, setCart] = useState(state?.cart || []);
+    const modelId = state?.modelId || null;
     const totalPrice = [...cart, ...selectedServices].reduce((sum, item) => sum + (item.SparePart_Price || 0) * (item.quantity || 1) + (item.Service_Price || 0),0);
+
 
     const navigate = useNavigate();
 
@@ -55,7 +57,6 @@ function EstimatePrice() {
     
         if (cart.length > 0 || selectedServices.length > 0) {
             const sparePartIds = cart.map((item) => item.SparePart_ID);
-            console.log(sparePartIds);
             return (
                 <div>
                     {cart.map((item, index) => (
@@ -87,8 +88,8 @@ function EstimatePrice() {
         }
     }
     const Navigatetoqueue = () => {
-        navigate('/queue', { state: { cart, selectedServices } });
-    };    
+        navigate('/queue', { state: { cart, selectedServices, modelId } });
+    };
 
     return <>
     <Navbar />

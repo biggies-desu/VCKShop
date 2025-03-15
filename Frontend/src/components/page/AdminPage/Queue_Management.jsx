@@ -23,6 +23,8 @@ function Queue_Management()
     const [itemsPerPage] = useState(12); // จำนวนรายการที่จะแสดงในแต่ละหน้า
     const [totalPages, setTotalPages] = useState(1);
     const [techniciandata,settechniciandata] = useState([])
+    const [status, setstatus] = useState('')
+    const [statusdropdown, setstatusdropdown] = useState([])
 
     const openModal = (index) => {
         setDeleteId(index);
@@ -39,25 +41,23 @@ function Queue_Management()
         setTime("");    // รีเซ็ตเวลาเมื่อเลือกวันใหม่
     };
 
-    const handleTimeChange = (selectedTime) => {
-       setEditQueue({ ...editQueue, Booking_Time: selectedTime });
-       setTime(selectedTime);
+    const handleTimeChange = (selectedDate) => {
+        setDate(selectedDate);
+        setTime("");
         
-        // ตรวจสอบวันที่และเวลาที่เลือก
-        if (date && selectedTime) {
-            axios.post(`${import.meta.env.VITE_API_URL}/checkQueue`, { date, time: selectedTime })
+        if (selectedDate) {
+            axios.post(`${import.meta.env.VITE_API_URL}/checkQueue`, { date: selectedDate })
                 .then((res) => {
-                    const { queueCount, isFull } = res.data;
-                    // ถ้าเวลานั้นเต็มหรือจองมากกว่า 3 คน จะทำให้เวลานั้นไม่สามารถเลือกได้
-                    if (isFull || queueCount >= 3) {
-                        setDisabledTimes(prevDisabledTimes => [...prevDisabledTimes, selectedTime]);
-                    } else {
-                        // หากเวลานั้นไม่เต็มแล้ว ให้ลบออกจาก disabledTimes
-                        setDisabledTimes(prevDisabledTimes => prevDisabledTimes.filter(time => time !== selectedTime));
+                    const bookedTimes = res.data;
+                    const disabled = [];
+                    for (const time in bookedTimes) {
+                        if (bookedTimes[time] >= 3) {
+                            disabled.push(time);
+                        }
                     }
-                    console.log(disabledTimes)
+                    setDisabledTimes(disabled);
                 })
-                .catch((err) => console.log(err));
+                .catch((err) => console.error("checkQueue error:", err));
         }
     };
     
@@ -81,30 +81,21 @@ function Queue_Management()
       };
 
       const fetchdata = async () => {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/allqueue`);
-        const queueList = await Promise.all(
-          res.data.map(async (item) => {
-            const techIds = await fetchTechniciansPerBooking(item.Booking_ID);
-            return { ...item, Technician_IDs: techIds };
-          })
-        );
-        setqueuedata(queueList);
-
-    if (date) {
-        axios.post(`${import.meta.env.VITE_API_URL}/checkQueue`, { date })
-            .then((res) => {
-                const bookedTimes = res.data; 
-                const disabled = [];
-                
-                for (const time in bookedTimes) {
-                    if (bookedTimes[time] >= 3) {
-                        disabled.push(time);
-                    }
-                }
-                setDisabledTimes(disabled);
-                console.log(disabled);
-            })
-            .catch((err) => console.error(err));
+        try {
+            const [queueRes, statusRes] = await Promise.all([
+                axios.get(`${import.meta.env.VITE_API_URL}/allqueue`),
+                axios.get(`${import.meta.env.VITE_API_URL}/getdropdownquetestatus`)
+            ]);
+            const queueList = queueRes.data.map(item => ({
+                ...item,
+                Technician_IDs: item.Technician_IDs
+                    ? item.Technician_IDs.split(',').map(id => parseInt(id))
+                    : []
+            }));
+            setqueuedata(queueList);
+            setstatusdropdown(statusRes.data);
+        } catch (err) {
+            console.error("Error in fetchdata:", err);
         }
     };
 
@@ -168,26 +159,26 @@ function Queue_Management()
           search_time: search_time,
           search_time2: search_time2 || search_time,
           search_carregistration: search_carregistration,
-          search_status: search_status
+          search_status: status
         })
-        .then(async (res) => {
-          const rawData = res.data;
-      
-          const queueListWithTechnicians = await Promise.all(
-            rawData.map(async (item) => {
-              const techIds = await fetchTechniciansPerBooking(item.Booking_ID);
-              return { ...item, Technician_IDs: techIds };
-            })
-          );
-      
-          setqueuedata(queueListWithTechnicians);
-          setCurrentPage(1);
-        })
+        .then((res) => {
+            const rawData = res.data;
+          
+            // Directly parse Technician_IDs from raw data
+            const queueList = rawData.map(item => ({
+              ...item,
+              Technician_IDs: item.Technician_IDs 
+                ? item.Technician_IDs.split(',').map(id => parseInt(id))
+                : []
+            }));
+          
+            setqueuedata(queueList);
+            setCurrentPage(1);
+          })
         .catch((err) => {
           console.log(err);
         });
       }
-      
 
     function openEditModal(item) {
         setEditQueue(item);
@@ -199,6 +190,7 @@ function Queue_Management()
     }
 
     function handleStatusChange(booking_id, status) {
+        console.log(booking_id,status)
         axios.post(`${import.meta.env.VITE_API_URL}/updatequeue_status`, {
           booking_id,
           status,
@@ -263,20 +255,46 @@ function Queue_Management()
                 <h1 className="max-md:text-lg md:text-4xl text-gray-700">รายการคิวเข้าใช้บริการ</h1>
                 <button className="w-full md:w-auto text-white bg-blue-500 hover:bg-blue-700 px-6 py-2 rounded-lg text-lg transition" onClick={() => history()}>ประวัติ</button>
             </div>
-            <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex-row md:flex md:space-x-4 items-center">      
-                <input className="shadow border rounded-lg w-full md:w-1/3 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time(e.target.value)}/>
-                <input className="shadow border rounded-lg w-full md:w-1/3 py-2 px-4 max-md:mt-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="date" type="date" required onChange={(e) => setsearch_time2(e.target.value)}/>
-                <select className="shadow border rounded-lg w-full md:w-1/4 py-2 px-4 max-md:mt-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" value={search_status} onChange={(e) => setSearchStatus(e.target.value)}>
-                    <option value="">ทั้งหมด</option>
-                    <option value="รอดำเนินการ">🔴 รอดำเนินการ</option>
-                    <option value="กำลังดำเนินการ">🟡 กำลังดำเนินการ</option>
-                </select>
-                <input value={search_carregistration} type="search" id="search_carregistration" className="shadow border rounded-lg w-full md:w-1/4 py-2 px-4 max-md:mt-2 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="เลขทะเบียนรถ" onChange={e => setsearch_carregistration(e.target.value)} onKeyPress={(e) => { if (e.key === 'Enter') { search(e); }}}/>
-                <button type='button' id="search" className="max-md:mt-2 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition" onClick={() => search()}>
-                    <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+            <form className="mt-4 p-4 bg-white shadow-md rounded-lg">
+            <div className="flex flex-col md:flex-row md:space-x-4 md:items-end space-y-2 md:space-y-0">
+                <div className="w-full md:w-1/4">
+                <label htmlFor="search_time" className="block text-gray-700 text-sm font-medium mb-1">วันที่เริ่มต้น</label>
+                <input id="search_time" type="date"
+                    className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" onChange={(e) => setsearch_time(e.target.value)}/>
+                </div>
+                <div className="w-full md:w-1/4">
+                    <label htmlFor="search_time2" className="block text-gray-700 text-sm font-medium mb-1">วันที่สิ้นสุด</label>
+                    <input id="search_time2" type="date"
+                    className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" onChange={(e) => setsearch_time2(e.target.value)} />
+                </div>
+                <div className="w-full md:w-1/4">
+                    <label htmlFor="search_status" className="block text-gray-700 text-sm font-medium mb-1">สถานะคิว</label>
+                    <select id="search_status" value={status} onChange={(e) => setstatus(e.target.value)}
+                        className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <option value="">ทั้งหมด</option>
+                        {statusdropdown.filter((s) => s.Booking_Status_ID === 1 || s.Booking_Status_ID === 2)
+                        .map((status, index) => (
+                            <option key={index} value={status.Booking_Status_ID}>
+                                {status.Booking_Status_Name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="w-full md:w-1/4">
+                    <label htmlFor="search_carregistration" className="block text-gray-700 text-sm font-medium mb-1">เลขทะเบียนรถ</label>
+                    <input type="text" id="search_carregistration"
+                        value={search_carregistration} onChange={(e) => setsearch_carregistration(e.target.value)} placeholder="เลขทะเบียนรถ"
+                        className="h-[42px] shadow border rounded-lg w-full px-4 text-gray-700 text-sm leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+                    </div>
+                <div className="w-full md:w-auto flex flex-col items-start md:items-end">
+                <label className="block text-transparent mb-1">Search</label>
+                <button type="button" onClick={search} className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition">
+                    <svg className="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
                     </svg>
                 </button>
+                </div>
+            </div>
             </form>
             <div className='relative overflow-x-auto shadow-md rounded-2xl mt-6'>
                 <table className="w-full text-left text-gray-600 bg-white shadow-md rounded-lg">
@@ -296,54 +314,63 @@ function Queue_Management()
                             <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100 md:text-lg">
                                 <td className='px-4 py-3'>{new Date(item.Booking_Date).toLocaleDateString('th-TH')}</td>
                                 <td className='px-4 py-3'>{item.Booking_Time}</td>
-                                <td className='text-center py-3'>{item.Booking_CarRegistration}</td>
+                                <td className='text-center py-3'>{item.Car_RegisNum}</td>
                                 <td className='text-center py-3'>
-                                    <button type='button' onClick={() => openDetailModal(item)} className="text-blue-500 hover:text-blue-700">📄รายละเอียด</button>  
+                                    <button type='button' onClick={() => openDetailModal(item)} className="text-blue-500 hover:text-blue-700">📄</button>  
                                 </td>
                                 <td className='text-center py-3'>
-                                    <button type='button' onClick={() => openEditModal(item)} className="text-yellow-500 hover:text-yellow-700">✏️แก้ไข</button>
+                                    <button type='button' onClick={() => openEditModal(item)} className="text-yellow-500 hover:text-yellow-700">✏️</button>
                                 </td>
                                 <td className="text-center py-3">
                                     <div className="flex flex-col items-center space-y-2">
-                                        <select value={item.Booking_Status} onChange={(e) => handleStatusChange(item.Booking_ID, e.target.value)} className={`shadow border rounded-lg w-full py-2 px-4 leading-tight focus:outline-none focus:ring-2 
-                                            ${item.Booking_Status === "รอดำเนินการ" ? "bg-red-200 text-red-800" :
-                                            item.Booking_Status === "กำลังดำเนินการ" ? "bg-yellow-200 text-yellow-800" :
-                                            item.Booking_Status === "เสร็จสิ้นแล้ว" ? "bg-green-200 text-green-800" : ""}`
-                                        }>
-                                            <option value="รอดำเนินการ">🔴รอดำเนินการ</option>
-                                            <option value="กำลังดำเนินการ">🟡กำลังดำเนินการ</option>
-                                            <option value="เสร็จสิ้นแล้ว">🟢เสร็จสิ้นแล้ว</option>
+                                    <select
+                                        value={item.Booking_Status_ID}
+                                        onChange={(e) => handleStatusChange(item.Booking_ID, parseInt(e.target.value))}
+                                        className="shadow border rounded-lg w-full py-2 px-4 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        >
+                                        {statusdropdown.map((status, index) => (
+                                            <option key={index} value={status.Booking_Status_ID}>
+                                            {status.Booking_Status_Name}
+                                            </option>
+                                        ))}
                                         </select>
 
-                                        {(item.Booking_Status === "กำลังดำเนินการ" || item.Booking_Status === "เสร็จสิ้นแล้ว") && (
+                                        {(item.Booking_Status_ID === 2 || item.Booking_Status_ID === 3) && (
                                         <div className="w-full">
                                             <div className="flex flex-wrap gap-2 mb-2">
-                                            {item.Technician_IDs?.map((tid) => { const tech = techniciandata.find(t => t.Technician_ID === tid);
+                                            {item.Technician_IDs?.map((tid) => {
+                                                const tech = techniciandata.find(t => t.Technician_ID === tid);
                                                 return (
                                                 <span key={tid} className="flex items-center bg-teal-100 text-teal-800 text-sm px-2 py-1 rounded-full border border-teal-300">
                                                     {tech?.Technician_Name || "ไม่พบชื่อ"}
-                                                    <button type="button" className="ml-2 text-sm hover:text-red-500" onClick={() => {const newSelected = item.Technician_IDs.filter(id => id !== tid); handleTechnicianChange(item.Booking_ID, newSelected);}}>
-                                                        ✕
+                                                    <button
+                                                    type="button"
+                                                    className="ml-2 text-sm hover:text-red-500"
+                                                    onClick={() => {const newSelected = item.Technician_IDs.filter(id => id !== tid);handleTechnicianChange(item.Booking_ID, newSelected);}}>✕
                                                     </button>
-                                                </span>
-                                                );
+                                                </span>);
                                             })}
                                             </div>
-                                            <select value="" onChange={(e) => {const selectedTid = parseInt(e.target.value);const alreadySelected = item.Technician_IDs?.includes(selectedTid);if (!alreadySelected) {const newSelected = [...(item.Technician_IDs || []), selectedTid];
-                                                handleTechnicianChange(item.Booking_ID, newSelected);}}}className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-green-400">
+                                            <select value="" onChange={(e) => {const selectedTid = parseInt(e.target.value);
+                                                const alreadySelected = item.Technician_IDs?.includes(selectedTid);
+                                                if (!alreadySelected) {
+                                                    const newSelected = [...(item.Technician_IDs || []), selectedTid];
+                                                    handleTechnicianChange(item.Booking_ID, newSelected);
+                                                }
+                                            }}
+                                            className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-green-400">
                                             <option value="">เลือกช่างผู้รับผิดชอบ</option>
-                                            {Array.isArray(techniciandata) && techniciandata.map((tech) => (
+                                            {Array.isArray(techniciandata) &&techniciandata.map((tech) => (
                                                 <option key={tech.Technician_ID} value={tech.Technician_ID}>
                                                     {tech.Technician_Name}
                                                 </option>
                                                 ))}
                                             </select>
-                                        </div>
-                                        )}
+                                        </div>)}
                                     </div>
                                 </td>
                                 <td className='text-center py-3'>
-                                    <button type='button' onClick={() => deleteitem(item.Booking_ID)} className="text-red-500 hover:text-red-700">❌ลบคิว</button>  
+                                    <button type='button' onClick={() => deleteitem(item.Booking_ID)} className="text-red-500 hover:text-red-700">❌</button>  
                                 </td>
                             </tr>
                         ))}
@@ -408,10 +435,11 @@ function Queue_Management()
                         <div className="mb-4 space-y-2">
                             <p><strong>วันที่จอง:</strong> {new Date(Detail.Booking_Date).toLocaleDateString('th-TH')}</p>
                             <p><strong>เวลาที่จอง:</strong> {Detail.Booking_Time}</p>
-                            <p><strong>ชื่อจริง:</strong> {Detail.Booking_FirstName}</p>
-                            <p><strong>นามสกุล:</strong> {Detail.Booking_LastName}</p>
+                            <p><strong>ชื่อจริง:</strong> {Detail.User_Firstname}</p>
+                            <p><strong>นามสกุล:</strong> {Detail.User_Lastname}</p>
+                            <p><strong>รุ่นของรถ:</strong>{Detail.Model_Name} {Detail.Model_Year}</p>
+                            <p><strong>เลขทะเบียนรถ:</strong>{Detail.Car_RegisNum} {Detail.Province_Name}</p>
                             <p><strong>รายละเอียดการจอง:</strong> {Detail.Booking_Description ? Detail.Booking_Description : "-"}</p>
-                            <p><strong>เลขทะเบียนรถ:</strong> {Detail.Booking_CarRegistration ? Detail.Booking_CarRegistration : "-"}</p>
                         </div>
                         <div className="flex justify-center">
                             <button type='button' onClick={CloseDetailModal} className="px-6 py-2 text-white bg-green-500 hover:bg-green-700 rounded-lg transition">ตกลง</button>

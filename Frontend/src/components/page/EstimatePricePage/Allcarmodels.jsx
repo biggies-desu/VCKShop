@@ -236,12 +236,17 @@ function Allcarmodels() {
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                             {Array.isArray(groupedBrands[selectedBrand]) &&
-                            [...new Set(groupedBrands[selectedBrand].map((m) => m.model))].map((model, i) => (
-                                <div key={i} className="cursor-pointer" onClick={() => setSelectedModel(model)}>
-                                    <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_${groupedBrands[selectedBrand].find(m => m.model === model && (m.year === "2024" || m.year === "2022"))?.modelId}.png`} alt={model} className="h-48 w-full object-contain rounded-lg" />
+                            [...new Set(groupedBrands[selectedBrand].map((m) => m.model))].map((model, i) => {
+                                const firstModelItem = groupedBrands[selectedBrand].find((m) => m.model === model);
+                                const imageSrc = firstModelItem
+                                  ? `${import.meta.env.VITE_MODEL_IMAGE_URL}/modelId_${firstModelItem.modelId}.png` : `${import.meta.env.VITE_IMAGE_BASE_URL}/model_images/no-image.png`;
+                                return (
+                                  <div key={i} className="cursor-pointer" onClick={() => setSelectedModel(model)}>
+                                    <img src={imageSrc} alt={model} className="h-48 w-full object-contain rounded-lg" />
                                     <p className="text-2xl font-bold">{model}</p>
-                                </div>
-                            ))}
+                                  </div>
+                                );
+                              })}
                         </div>
                     </div>
                 ) : selectedYear === null ? (
@@ -261,7 +266,8 @@ function Allcarmodels() {
                             groupedBrands[selectedBrand]
                                 .filter((m) => m.model === selectedModel).map((m, i) => (
                                 <div key={i} className="cursor-pointer" onClick={() => {setSelectedYear(m.year);setModelId(m.modelId);}}>
-                                    <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/modelId_${m.modelId}.png`} alt={`${m.model} ${m.year}`} className="h-48 w-full object-contain rounded-lg" />
+                                    <img src={m.modelId ? `${import.meta.env.VITE_MODEL_IMAGE_URL}/modelId_${m.modelId}.png` : `${import.meta.env.VITE_MODEL_IMAGE_URL}/no-image.png`}
+                                    alt={`${m.Model_Name} ${m.Model_Year}`} className="h-48 w-full object-contain rounded-lg" />
                                     <p className="text-2xl font-bold">ปี : {m.year}</p>
                                 </div>
                             ))}

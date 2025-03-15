@@ -4,6 +4,8 @@ import Footer from "../Footer.jsx"
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import Select from "react-select";
+import CreatableSelect from 'react-select/creatable';
 
 function Queue()
 {
@@ -20,11 +22,15 @@ function Queue()
     const [errorTime, setErrorTime] = useState('');
     const [errorCarRegistration, setErrorCarRegistration] = useState('');
     const [isModalOpen, setIsModalOpen] = useState('');
-    const [serviceType, setServiceType] = useState('');
     const [details, setDetails] = useState(``);
-    const [userID, setuserID] = useState('');
     const [disabledTimes, setDisabledTimes] = useState([]);
-    const [servicedropdown, setservicedropdown] = useState([])
+    const [province, setprovince] = useState('')
+    const [provincedropdown, setprovincedropdown] = useState([])
+    const [carOptions, setCarOptions] = useState([]);
+    const [carRegisSelected, setCarRegisSelected] = useState(null);
+    const [modelOptions, setModelOptions] = useState([]);
+    const [selectedModel, setSelectedModel] = useState(null);
+    
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
@@ -36,12 +42,14 @@ function Queue()
     const userid = jwtDecode(token).user_id
 
     const location = useLocation();
-    const { cart, selectedServices } = location.state || { cart: [], selectedServices: [] };
+    const { cart, selectedServices, modelId } = location.state || { cart: [], selectedServices: [] };
 
     const handleDateChange = (selectedDate) => {
         setDate(selectedDate);  // กำหนดวันที่ใหม่
         setTime("");    // รีเซ็ตเวลาเมื่อเลือกวันใหม่
     };
+
+    
 
     const handleTimeChange = (selectedTime) => {
         setTime(selectedTime);
@@ -65,40 +73,83 @@ function Queue()
     };
 
     useEffect(() => {
+        if (!modelId) {
+          axios.get(`${import.meta.env.VITE_API_URL}/getdropdownmodel`)
+            .then((res) => {
+              const options = res.data.map((item) => ({
+                label: `${item.Brand_Name} ${item.Model_Name} ${item.Model_Year}`,
+                value: item.Model_ID,
+              }));
+              setModelOptions(options);
+            })
+            .catch(err => console.log(err));
+        }
+      }, []);
+
+    useEffect(() => {
+        const modelidToUse = modelId || 'null'; // ถ้าไม่มี modelId ให้ส่ง 'null'
+        axios.get(`${import.meta.env.VITE_API_URL}/getcarregisbyuser/${userid}/${modelidToUse}`)
+          .then((res) => {
+            const options = res.data.map((item) => ({
+              label: `${item.Car_RegisNum}`,
+              value: item.Car_RegisNum,
+              province: item.Province_Name,
+              modelId: item.Model_ID
+            }));
+            setCarOptions(options);
+          })
+          .catch(err => console.log(err));
+      }, []);
+
+    useEffect(() => {
+        axios.get(`${import.meta.env.VITE_API_URL}/getdropdownprovince`)
+          .then((res) => {
+            setprovincedropdown(res.data);
+          })
+          .catch((err) => console.log(err));
+    }, []);
+    // for province dropdown
+    const provincesoptions = provincedropdown.map((p) => ({
+        label: p.Province_Name,
+        value: p.Province_Name,
+    }));
+
+    useEffect(() => {
         //fetch userid so i can put it in input
         console.log(cart)
         console.log(selectedServices)
+        console.log(modelId)
         cart.map(item => console.log(`${item.SparePart_Name} - Quantity: ${item.quantity}`));
 
             axios.get(`${import.meta.env.VITE_API_URL}/getcurrentprofile/${userid}`)
             .then((res) => {
                 const data = res.data[0]
-                const fn = `${data.User_Firstname} ${data.User_Lastname}`
-                setFullName(fn)
+                const fn = `${data.User_Firstname || ''} ${data.User_Lastname || ''}`.trim();
+                setFullName(fn);
                 setPhoneNumber(data.User_Telephone)
-                setEmail(data.User_Email || "-")
+                setEmail(data.User_Email?.trim() || '')
                 prevdetail()
             })
             .catch((err) => console.log(err))
             
-        if (date) {
-            axios.post(`${import.meta.env.VITE_API_URL}/checkQueue`, { date })
-                .then((res) => {
-                    const bookedTimes = res.data; 
-                    const disabled = [];
-        
-                    // ตรวจสอบว่าเวลาที่เต็มมีหรือไม่
-                    for (const time in bookedTimes) {
-                        if (bookedTimes[time] >= 3) {
-                            disabled.push(time);
-                        }
+    if (date) {
+        axios.post(`${import.meta.env.VITE_API_URL}/checkQueue`, { date })
+            .then((res) => {
+                const bookedTimes = res.data; 
+                const disabled = [];
+    
+                // ตรวจสอบว่าเวลาที่เต็มมีหรือไม่
+                for (const time in bookedTimes) {
+                    if (bookedTimes[time] >= 3) {
+                        disabled.push(time);
                     }
-                    setDisabledTimes(disabled);
-                    console.log(disabledTimes)
-                })
-                .catch((err) => console.log(err));
-            }
-        }, [date]);
+                }
+                setDisabledTimes(disabled);
+                console.log(disabledTimes)
+            })
+            .catch((err) => console.log(err));
+        }
+    }, [date]);
     
 
     const handleSubmit = (e) => {
@@ -112,10 +163,11 @@ function Queue()
         console.log(time)
         
 
-        if (!fullName) {
-            setErrorFullName("กรุณากรอกชื่อ-นามสกุล");
-        } else if (fullName) {
-            setErrorFullName(''); // หากกรอกแล้ว ให้เคลียร์ข้อความเตือน
+        if (!fullName || fullName.trim().split(" ").length < 2) {
+            setErrorFullName("กรุณากรอกชื่อและนามสกุลให้ครบถ้วน");
+            return;
+        } else {
+            setErrorFullName('');
         }
 
         if (!phoneNumber) {
@@ -147,6 +199,13 @@ function Queue()
         } else if (CarRegistration) {
             setErrorCarRegistration('');
         }
+
+        if (!selectedModel) {
+            setErrorCarRegistration("กรุณาเลือกรุ่นและยี่ห้อของรถ");
+        } else if (!selectedModel) {
+            setErrorCarRegistration('');
+        }
+
 
         // ตรวจสอบว่าไม่มีข้อผิดพลาดในฟิลด์ทั้งหมดหรือไม่
         if (fullName && phoneNumber && date && time && CarRegistration) {
@@ -181,6 +240,7 @@ function Queue()
                 time: time,
                 details: details,
                 userID: userid,
+                province: province,
                 //post a quantity to this api
                 cart: cart.map(item => ({
                     SparePart_ID: item.SparePart_ID,
@@ -190,7 +250,8 @@ function Queue()
                     Service_ID: item.Service_ID,
                     Service_Name: item.Service_Name,
                     Service_Price: item.Service_Price,
-                }))
+                })),
+                modelId: modelId || selectedModel?.value
             }
         )
         .then((res) =>{
@@ -252,7 +313,6 @@ function Queue()
                         <label class="block text-sm font-normal max-md:mt-5">เบอร์โทรศัพท์ <span class="text-red-500">*</span></label>
                         <input type="tel" inputMode="numeric" class="w-full border border-gray-300 p-2 rounded" placeholder="เบอร์โทรศัพท์" value={phoneNumber}
                             maxlength="10" onChange={(e) => {
-                                // ตรวจสอบให้กรอกเฉพาะตัวเลข
                                 const value = e.target.value.replace(/[^0-9]/g, ''); 
                                 setPhoneNumber(value);
                             }}>
@@ -261,23 +321,54 @@ function Queue()
                     </div>
                 </div>
                 <div class="md:flex md:space-x-4">
-                    <div class="md:w-1/3">
-                        <label class="block text-sm font-normal">อีเมล <span class="text-red-500 text-xs">(ไม่บังคับ)</span></label>
+                    <div class="md:w-1/4">
+                        <label class="block text-sm font-normal max-md:mt-5">อีเมล <span class="text-red-500 text-xs">(ไม่บังคับ)</span></label>
                         <input type="email" class="w-full border border-gray-300 p-2 rounded" placeholder="อีเมล" value={email} onChange={(e) => setEmail(e.target.value)}></input>
                     </div>
-                    <div class="md:w-1/3">
+                    {!modelId && (
+                    <div className="md:w-1/3">
+                        <label>เลือกรุ่นรถ</label>
+                        <Select options={modelOptions} value={selectedModel}
+                        onChange={(option) => setSelectedModel(option)}
+                        isDisabled={carRegisSelected && carRegisSelected.modelId} placeholder="เลือกรุ่นรถ..."/>
+                    </div>
+                    )}
+                    <div class="md:w-1/5">
                         <label class="block text-sm font-normal max-md:mt-5">เลขทะเบียนรถ <span class="text-red-500 text-xs">*</span></label>
-                        <input type="CarRegistration" class="w-full border border-gray-300 p-2 rounded" placeholder="เลขทะเบียนรถ" value={CarRegistration} onChange={(e) => setCarRegistration(e.target.value)}></input>
+                        <CreatableSelect options={carOptions} value={carRegisSelected} onChange={(selectedOption) => {
+                            setCarRegisSelected(selectedOption);
+                            setCarRegistration(selectedOption?.value || "");
+                            if (selectedOption?.province) setprovince(selectedOption.province);
+                            if (selectedOption?.modelId) {
+                                setSelectedModel(modelOptions.find(m => m.value === selectedOption.modelId));
+                            } else {
+                                setSelectedModel(null);
+                            }}}
+                            onCreateOption={(inputValue) => {
+                            const newOption = { label: inputValue, value: inputValue };
+                            setCarOptions([...carOptions, newOption]);
+                            setCarRegisSelected(newOption);
+                            setCarRegistration(inputValue);
+                        }}
+                            isClearable placeholder="เลือกหรือกรอกทะเบียนรถ"/>
                         {errorCarRegistration && <p className="text-red-500 text-sm mt-2">{errorCarRegistration}</p>}
                     </div>
+                    <div class="md:w-1/5">
+                        <label className="block text-sm font-normal max-md:mt-5">จังหวัด</label>
+                        <Select options={provincesoptions} value={province ? { label: province, value: province } : null}
+                            onChange={(selectedOption) => setprovince(selectedOption ? selectedOption.value : "")}
+                            placeholder="เลือกจังหวัด..." isClearable/>
+                    </div>
                 </div>
-                <div>
+
+                <div class="md:w-2/3 mt-4 md:mt-0">
                     <label className="block text-sm font-normal">รายละเอียด</label>
-                    <textarea type="text" id="detailed" class="w-full border border-gray-300 p-2 min-h-10 rounded" rows="4" value={details} onChange={(e) => setDetails(e.target.value)}/>
+                    <textarea type="text" id="detailed" class="w-full border border-gray-300 p-2 min-h-10 rounded"
+                    rows="4" value={details} onChange={(e) => setDetails(e.target.value)}/>
                 </div>
                     <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">ยืนยันการจอง</button>
             </form>
-    </div>
+        </div>
     </div>
 
     {isModalOpen && ( //แสดงผล Modal confirm
