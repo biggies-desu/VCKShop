@@ -186,7 +186,7 @@ function Allcarmodels() {
             ...prevCart, [val.SparePart_ID]: 1 }));
     };
 
-    const NavigateEstimate = () => navigate("/estimateprice", { state: { cart } });
+    const NavigateEstimate = () => navigate("/estimateprice", { state: { cart, modelId } });
 
     // ฟังก์ชันเพื่อแสดงผลข้อมูลในหน้าแต่ละหน้า
     const filteredSpareParts = Array.isArray(sparepart) ? sparepart.filter(item => item.SparePart_Amount > 0): [];

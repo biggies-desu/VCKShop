@@ -4,12 +4,13 @@ const router = express.Router();
 
 router.get('/allsparepart',(req,res) => {
   const sqlcommand = `SELECT s.*, c.Category_Name, 
-                      GROUP_CONCAT(DISTINCT CONCAT(b.Brand_Name, ' ', m.Model_Name, ' (', m.Model_Year, ')') ORDER BY m.Model_ID ASC SEPARATOR ' , ') AS Model_Details
+                      GROUP_CONCAT(DISTINCT CONCAT(b.Brand_Name, ' ', mn.Model_Name, ' (', m.Model_Year, ')') ORDER BY m.Model_ID ASC SEPARATOR ' , ') AS Model_Details
                       FROM Sparepart s
                       JOIN Category c ON s.Category_ID = c.Category_ID
                       JOIN Model_Link ml ON s.SparePart_ID = ml.SparePart_ID
                       JOIN Model m ON ml.Model_ID = m.Model_ID
                       JOIN Brand b ON m.Brand_ID = b.Brand_ID
+                      JOIN Model_Name mn ON m.Model_Name_ID = mn.Model_Name_ID
                       GROUP BY s.SparePart_ID
                       ORDER BY s.SparePart_ID DESC;`
   db.query(sqlcommand,(err,data) => {
@@ -90,12 +91,13 @@ router.post('/searchquery',function (req,res) {
   let condition = [];
 
   let sqlcommand = `SELECT s.*, c.Category_Name, 
-                      GROUP_CONCAT(DISTINCT CONCAT(b.Brand_Name, ' ', m.Model_Name, ' (', m.Model_Year, ')') ORDER BY m.Model_ID ASC SEPARATOR ' , ') AS Model_Details
+                      GROUP_CONCAT(DISTINCT CONCAT(b.Brand_Name, ' ', mn.Model_Name, ' (', m.Model_Year, ')') ORDER BY m.Model_ID ASC SEPARATOR ' , ') AS Model_Details
                       FROM Sparepart s
                       JOIN Category c ON s.Category_ID = c.Category_ID
                       JOIN Model_Link ml ON s.SparePart_ID = ml.SparePart_ID
                       JOIN Model m ON ml.Model_ID = m.Model_ID
                       JOIN Brand b ON m.Brand_ID = b.Brand_ID
+                      JOIN Model_Name mn ON m.Model_Name_ID = mn.Model_Name_ID
                       `
 
   //if category have selected
@@ -205,9 +207,10 @@ router.get("/categories", (req, res) => {
 });
 
 router.get('/model-list', (req, res) => {
-  const sql = `SELECT b.Brand_Name AS brand, m.Model_Name AS model, m.Model_Year AS year, m.Model_ID AS modelId 
-               FROM Model m
-               JOIN Brand b ON m.Brand_ID = b.Brand_ID;`;
+  const sql = `SELECT b.Brand_Name AS brand, mn.Model_Name AS model, m.Model_Year AS year, m.Model_ID AS modelId 
+              FROM Model m
+              JOIN Brand b ON m.Brand_ID = b.Brand_ID
+              JOIN Model_Name mn ON m.Model_Name_ID = mn.Model_Name_ID;`;
   db.query(sql, (err, results) => {
     if (err) return res.status(500).json({ error: err });
     return res.json(results);

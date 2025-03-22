@@ -21,6 +21,7 @@ function Queue()
     const [errorDate, setErrorDate] = useState('');
     const [errorTime, setErrorTime] = useState('');
     const [errorCarRegistration, setErrorCarRegistration] = useState('');
+    const [errorModel, setErrorModel] = useState('')
     const [isModalOpen, setIsModalOpen] = useState('');
     const [details, setDetails] = useState(``);
     const [disabledTimes, setDisabledTimes] = useState([]);
@@ -200,10 +201,10 @@ function Queue()
             setErrorCarRegistration('');
         }
 
-        if (!selectedModel) {
-            setErrorCarRegistration("กรุณาเลือกรุ่นและยี่ห้อของรถ");
+        if (!modelId && !selectedModel) {
+            setErrorModel("กรุณาเลือกรุ่นและยี่ห้อของรถ");
         } else if (!selectedModel) {
-            setErrorCarRegistration('');
+            setErrorModel('');
         }
 
 
@@ -326,33 +327,42 @@ function Queue()
                         <input type="email" class="w-full border border-gray-300 p-2 rounded" placeholder="อีเมล" value={email} onChange={(e) => setEmail(e.target.value)}></input>
                     </div>
                     {!modelId && (
-                    <div className="md:w-1/3">
-                        <label>เลือกรุ่นรถ</label>
-                        <Select options={modelOptions} value={selectedModel}
-                        onChange={(option) => setSelectedModel(option)}
-                        isDisabled={carRegisSelected && carRegisSelected.modelId} placeholder="เลือกรุ่นรถ..."/>
-                    </div>
-                    )}
-                    <div class="md:w-1/5">
-                        <label class="block text-sm font-normal max-md:mt-5">เลขทะเบียนรถ <span class="text-red-500 text-xs">*</span></label>
-                        <CreatableSelect options={carOptions} value={carRegisSelected} onChange={(selectedOption) => {
+                        <div className="md:w-1/3">
+                            <label>เลือกรุ่นรถ</label>
+                            <Select options={modelOptions} value={selectedModel}
+                            onChange={(option) => setSelectedModel(option)} isDisabled={carRegisSelected && carRegisSelected.modelId}
+                            placeholder="เลือกรุ่นรถ..."/>
+                            {errorModel && <p className="text-red-500 text-sm mt-2">{errorModel}</p>}
+                        </div>
+                        )}
+                    <div className="md:w-1/5">
+                        <label className="block text-sm font-normal max-md:mt-5">
+                            เลขทะเบียนรถ <span className="text-red-500 text-xs">*</span>
+                        </label>
+                        <CreatableSelect
+                            options={carOptions}
+                            value={carRegisSelected}
+                            onChange={(selectedOption) => {
                             setCarRegisSelected(selectedOption);
                             setCarRegistration(selectedOption?.value || "");
                             if (selectedOption?.province) setprovince(selectedOption.province);
                             if (selectedOption?.modelId) {
-                                setSelectedModel(modelOptions.find(m => m.value === selectedOption.modelId));
+                                setSelectedModel(modelOptions.find((m) => m.value === selectedOption.modelId));
                             } else {
                                 setSelectedModel(null);
-                            }}}
+                            }
+                            }}
                             onCreateOption={(inputValue) => {
                             const newOption = { label: inputValue, value: inputValue };
                             setCarOptions([...carOptions, newOption]);
                             setCarRegisSelected(newOption);
                             setCarRegistration(inputValue);
-                        }}
-                            isClearable placeholder="เลือกหรือกรอกทะเบียนรถ"/>
+                            }}
+                            isClearable
+                            placeholder="เลือกหรือกรอกทะเบียนรถ"
+                        />
                         {errorCarRegistration && <p className="text-red-500 text-sm mt-2">{errorCarRegistration}</p>}
-                    </div>
+                        </div>
                     <div class="md:w-1/5">
                         <label className="block text-sm font-normal max-md:mt-5">จังหวัด</label>
                         <Select options={provincesoptions} value={province ? { label: province, value: province } : null}

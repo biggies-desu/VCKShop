@@ -17,42 +17,30 @@ router.get('/getdropdowncategory',(req,res) => {
     })
   })
   
-router.post('/getdropdownmodel',function (req,res) {
-  let brandname = req.body.brandname
-  console.log(req.body)
-  const sqlcommand = `SELECT DISTINCT Model.Model_Name, Brand.Brand_Name FROM Model
-                    JOIN Brand ON Model.Brand_ID = Brand.Brand_ID
-                    WHERE Brand.Brand_Name in (?)`;
-  db.query(sqlcommand,[brandname],function(err,results)
-  {
-      if (err)
-      {
-        return res.json(err)
-      }
-      else
-      {
-        res.json(results)
-      }
-  })
-})
+router.post('/getdropdownmodel', (req, res) => {
+  const brandname = req.body.brandname;
+  const sqlcommand = `SELECT DISTINCT mn.Model_Name, b.Brand_Name 
+                      FROM Model m
+                      JOIN Brand b ON m.Brand_ID = b.Brand_ID
+                      JOIN Model_Name mn ON m.Model_Name_ID = mn.Model_Name_ID
+                      WHERE b.Brand_Name IN (?);`;
+  db.query(sqlcommand, [brandname], (err, results) => {
+    if (err) return res.json(err);
+    res.json(results);
+  });
+});
   
-router.post('/getdropdownyear',function (req,res) {
-  let modelname = req.body.modelname
-  console.log(req.body)
-  const sqlcommand = `SELECT DISTINCT Model_ID, Model_Name, Model_Year 
-                  FROM Model WHERE Model_Name IN (?);`
-  db.query(sqlcommand,[modelname],function(err,results)
-  {
-      if (err)
-      {
-        return res.json(err)
-      }
-      else
-      {
-        res.json(results)
-      }
-  })
-})
+router.post('/getdropdownyear', (req, res) => {
+  const modelNameId = req.body.modelNameId;
+  const sqlcommand = `SELECT DISTINCT m.Model_ID, mn.Model_Name, m.Model_Year 
+                      FROM Model m
+                      JOIN Model_Name mn ON m.Model_Name_ID = mn.Model_Name_ID
+                      WHERE m.Model_Name_ID = ?;`;
+  db.query(sqlcommand, [modelNameId], (err, results) => {
+    if (err) return res.json(err);
+    res.json(results);
+  });
+});
   
 router.get('/getdropdownservice', function(req,res)
 { const sqlcommand = `SELECT * from Service`
@@ -140,8 +128,10 @@ router.get('/getdropdownprovince', (req,res) => {
 })
 
 router.get('/getdropdownmodel', (req,res) => {
-  const sqlcommand = `SELECT m.*, b.Brand_Name from Model m 
-  join Brand b on b.Brand_ID = m.Brand_ID`
+  const sqlcommand = `SELECT m.*, b.Brand_Name, mn.Model_Name 
+                      FROM Model m 
+                      JOIN Brand b ON b.Brand_ID = m.Brand_ID
+                      JOIN Model_Name mn ON mn.Model_Name_ID = m.Model_Name_ID`
   db.query(sqlcommand,(err,data) => {
     if(err)
     {
