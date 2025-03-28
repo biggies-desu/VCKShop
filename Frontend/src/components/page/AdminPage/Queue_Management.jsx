@@ -248,7 +248,6 @@ function Queue_Management()
 
     return <>
     {!ishistorymodal && (
-     
         <div className="p-6 bg-gray-100 min-h-screen">
             <div className='kanit-bold flex flex-col md:flex-row justify-between items-center bg-white p-4 shadow-md rounded-lg space-y-4 md:space-y-0'>
                 <div></div>
@@ -301,12 +300,12 @@ function Queue_Management()
                     <thead className="text-sm md:text-base text-white bg-blue-500">
                         <tr>
                             <th className='px-4 py-3'>วันที่เข้าใช้บริการ</th>
-                            <th className='px-6 py-3'>เวลาที่จอง</th>
-                            <th className='text-center px-6 py-3'>เลขทะเบียนรถ</th>
-                            <th className='text-center px-6 py-3'>ดูรายละเอียด</th>
-                            <th className='text-center px-6 py-3'>แก้ไข</th>
-                            <th className='text-center px-6 py-3'>สถานะ</th>
-                            <th className='text-center px-6 py-3'>ลบคิว</th>
+                            <th className='px-4 py-3'>เวลาที่จอง</th>
+                            <th className='text-center px-4 py-3'>เลขทะเบียนรถ</th>
+                            <th className='text-center px-4 py-3'>ดูรายละเอียด</th>
+                            <th className='text-center px-4 py-3'>แก้ไขวัน/เวลา</th>
+                            <th className='text-center px-4 py-3'>สถานะ</th>
+                            <th className='text-center px-4 py-3'>ลบคิว</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -401,7 +400,7 @@ function Queue_Management()
         {isEditModalOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl mx-4">
-                    <h2 className="text-xl font-bold mb-4">แก้ไขวัน/เวลาที่เข้าใช้บริการ</h2>
+                    <h2 className="text-xl font-bold mb-4 kanit-bold">แก้ไขวัน/เวลาที่เข้าใช้บริการ</h2>
                     <form onSubmit={e => { e.preventDefault(); updateQueue(); }}>
                         <div className="mb-4">
                             <label className="block text-gray-700">วันที่เข้าใช้บริการ</label>

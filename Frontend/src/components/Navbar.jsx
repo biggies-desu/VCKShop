@@ -20,11 +20,9 @@ const profileMenuItems = [
 ];
 
 function Navbar() {
-    const [isOpen, setIsOpen] = useState(false); // ใช้ useState เพื่อควบคุมเมนูมือถือ
+    const [isOpen, setIsOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const toggleMenu = () => setIsOpen(!isOpen);
-
-    // ดึง token จาก localStorage และ decode ข้อมูล user
     const token = localStorage.getItem('token');
     let decodeuser = null;
     if (token) {
@@ -34,8 +32,6 @@ function Navbar() {
             console.error("Invalid token", error);
         }
     }
-
-    const navigate = useNavigate();
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -82,7 +78,17 @@ function Navbar() {
                             isActive ? "text-yellow-400 no-underline" : "text-white hover:text-yellow-400 hover:scale-125 group no-underline"
                         }
                     >
-                        ประเมินราคาและจองเข้าใช้
+                        ประเมินราคา
+                        <span className="absolute -bottom-1 left-1/2 w-0 transition-all h-0.5 bg-yellow-400 group-hover:w-3/6 group-hover:left-0"></span>
+                        <span className="absolute -bottom-1 right-1/2 w-0 transition-all h-0.5 bg-yellow-400 group-hover:w-3/6 group-hover:right-0"></span>
+                    </NavLink>
+                    <NavLink
+                        to="/queue"
+                        className={({ isActive }) =>
+                            isActive ? "text-yellow-400 no-underline" : "text-white hover:text-yellow-400 hover:scale-125 group no-underline"
+                        }
+                    >
+                        จองเข้าใช้
                         <span className="absolute -bottom-1 left-1/2 w-0 transition-all h-0.5 bg-yellow-400 group-hover:w-3/6 group-hover:left-0"></span>
                         <span className="absolute -bottom-1 right-1/2 w-0 transition-all h-0.5 bg-yellow-400 group-hover:w-3/6 group-hover:right-0"></span>
                     </NavLink>

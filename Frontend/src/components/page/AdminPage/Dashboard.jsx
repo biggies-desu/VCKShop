@@ -154,10 +154,10 @@ function Dashboard()
             </div>
         </div>
         </div>
-    {chart1 && <Chart chartType="ColumnChart" width="100%" height="100%" data={chart1} />}
+    {chart1.length > 1 && <Chart chartType="ColumnChart" width="100%" height="100%" data={chart1} />}
     {chart2.length > 1 && <Chart chartType="ColumnChart" width="100%" height="100%" data={chart2} />}
     {isListoflowsupplyModalOpen && (<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 kanit-regular">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-3xl mx-4 max-h-[90vh] overflow-auto">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-3xl mx-4 max-h-[75vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl text-center">รายการสินค้าที่เหลือน้อย</h2>
                 <div onClick={() => closelowsupplymodal()}><button type ='button'>
@@ -167,7 +167,7 @@ function Dashboard()
                 </button></div>
                 
                 </div>
-                
+
                 <div className="relative overflow-x-auto">
                 <table className="w-full text-sm md:text-base table-auto border-collapse">
                     <thead>

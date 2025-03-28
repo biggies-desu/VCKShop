@@ -8,7 +8,6 @@ function Login()
     event.preventDefault()
     const [username, setusername] = useState()
     const [password, setpassword] = useState()
-    const [emailreg, setemailreg] = useState()
     const [usernamereg, setusernamereg] = useState()
     const [passwordreg, setpasswordreg] = useState()
     const [confirmpasswordreg, setconfirmpasswordreg] = useState()
@@ -172,8 +171,7 @@ function registerfunction()
         <div className="top-blue w-[250px] h-[250px] bg-blue-400 rounded-full absolute top-[10%] left-[50%] transform -translate-x-1/2"></div>
         <div className="bottom-pink w-[280px] h-[280px] rounded-full absolute top-[50%] left-[12%] lg:left-[30%]"></div>
         <div className="top-orange w-[300px] h-[300px] rounded-full absolute top-[5%] left-[5%] md:left-[23%] lg:left-[30%]"></div>
-        {/* <div className="bg-animate inset-0 flex items-center justify-center bg-black bg-opacity-50 h-screen" ref={modalRef}> */}
-        {/* <div className="bg-animate p-8 rounded-lg max-w-lg h-1/2 mx-auto flex items-center justify-center inset-0 z-50 fixed mt-auto mb-auto"> */}
+
             <div className="container_login p-8 rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-500 w-[350px] sm:w-[500px] justify-center items-center">
                 <div className="flex flex-row justify-between">
                     <h1></h1>

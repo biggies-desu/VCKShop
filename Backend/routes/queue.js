@@ -138,12 +138,13 @@ router.delete('/deletequeue/:id', (req, res) => {
 
 router.get('/allqueue', function (req, res) {
   const sqlcommand = `
-    SELECT b.*, m.*, c.Car_RegisNum, c.Model_ID, p.Province_Name ,u.User_Firstname,u.User_Lastname, bs.Booking_Status_Name,
+    SELECT b.*, m.*, mn.Model_Name, c.Car_RegisNum, c.Model_ID, p.Province_Name ,u.User_Firstname,u.User_Lastname, bs.Booking_Status_Name,
     GROUP_CONCAT(t.Technician_Name SEPARATOR ', ') AS Technician_Names
     FROM Booking b JOIN Car c ON b.Car_ID = c.Car_ID JOIN User u ON c.User_ID = u.User_ID           
     JOIN Booking_Status bs ON b.Booking_Status_ID = bs.Booking_Status_ID
     JOIN Province p on c.Province_ID = p.Province_ID
     JOIN Model m on m.Model_ID = c.Model_ID
+    JOIN Model_Name mn on m.Model_Name_ID = mn.Model_Name_ID
     LEFT JOIN Booking_Technician bt ON b.Booking_ID = bt.Booking_ID 
     LEFT JOIN Technician t ON bt.Technician_ID = t.Technician_ID    
     WHERE b.Booking_Status_ID != 3
@@ -184,12 +185,13 @@ router.put('/updatequeue/:id', function (req, res) {
 })
 
 router.get('/queuehistory', function (req, res) {
-  const sqlcommand = `SELECT b.*, m.*, c.Car_RegisNum, c.Model_ID, p.Province_Name ,u.User_Firstname,u.User_Lastname, bs.Booking_Status_Name,
+  const sqlcommand = `SELECT b.*, m.*, mn.Model_Name, c.Car_RegisNum, c.Model_ID, p.Province_Name ,u.User_Firstname,u.User_Lastname, bs.Booking_Status_Name,
     GROUP_CONCAT(t.Technician_Name SEPARATOR ', ') AS Technician_Names
     FROM Booking b JOIN Car c ON b.Car_ID = c.Car_ID JOIN User u ON c.User_ID = u.User_ID           
     JOIN Booking_Status bs ON b.Booking_Status_ID = bs.Booking_Status_ID
     JOIN Province p on c.Province_ID = p.Province_ID
     JOIN Model m on m.Model_ID = c.Model_ID
+    JOIN Model_Name mn on m.Model_Name_ID = mn.Model_Name_ID
     LEFT JOIN Booking_Technician bt ON b.Booking_ID = bt.Booking_ID 
     LEFT JOIN Technician t ON bt.Technician_ID = t.Technician_ID
     GROUP BY b.Booking_ID
@@ -211,12 +213,13 @@ router.post('/searchqueuehistory', (req, res) => {
   let condition = [];
   console.log(req.body)
 
-  let sqlcommand = `SELECT b.*, m.*, c.Car_RegisNum, c.Model_ID, p.Province_Name ,u.User_Firstname,u.User_Lastname, bs.Booking_Status_Name,
+  let sqlcommand = `SELECT b.*, m.*, mn.Model_Name, c.Car_RegisNum, c.Model_ID, p.Province_Name ,u.User_Firstname,u.User_Lastname, bs.Booking_Status_Name,
     GROUP_CONCAT(t.Technician_Name SEPARATOR ', ') AS Technician_Names
     FROM Booking b JOIN Car c ON b.Car_ID = c.Car_ID JOIN User u ON c.User_ID = u.User_ID           
     JOIN Booking_Status bs ON b.Booking_Status_ID = bs.Booking_Status_ID
     JOIN Province p on c.Province_ID = p.Province_ID
     JOIN Model m on m.Model_ID = c.Model_ID
+    JOIN Model_Name mn on m.Model_Name_ID = mn.Model_Name_ID
     LEFT JOIN Booking_Technician bt ON b.Booking_ID = bt.Booking_ID 
     LEFT JOIN Technician t ON bt.Technician_ID = t.Technician_ID`;
   if (search_time && search_time2) {
@@ -298,12 +301,13 @@ router.post('/searchqueue', (req, res) => {
   let condition = [];
 
   // base SQL
-  let sqlcommand = `SELECT b.*, m.*, c.Car_RegisNum, c.Model_ID, p.Province_Name ,u.User_Firstname,u.User_Lastname, bs.Booking_Status_Name,
+  let sqlcommand = `SELECT b.*, m.*, mn.Model_Name, c.Car_RegisNum, c.Model_ID, p.Province_Name ,u.User_Firstname,u.User_Lastname, bs.Booking_Status_Name,
     GROUP_CONCAT(t.Technician_Name SEPARATOR ', ') AS Technician_Names
     FROM Booking b JOIN Car c ON b.Car_ID = c.Car_ID JOIN User u ON c.User_ID = u.User_ID           
     JOIN Booking_Status bs ON b.Booking_Status_ID = bs.Booking_Status_ID
     JOIN Province p on c.Province_ID = p.Province_ID
     JOIN Model m on m.Model_ID = c.Model_ID
+    JOIN Model_Name mn on m.Model_Name_ID = mn.Model_Name_ID
     LEFT JOIN Booking_Technician bt ON b.Booking_ID = bt.Booking_ID 
     LEFT JOIN Technician t ON bt.Technician_ID = t.Technician_ID`;
 

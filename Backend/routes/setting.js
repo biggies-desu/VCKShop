@@ -18,58 +18,57 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.post("/insertbrandmodel", upload.single("Model_Image"), (req, res) => {
-  let Brand_Name = req.body.Brand_Name;
-  let Model_Name = req.body.Model_Name;
-  let Model_Year = req.body.Model_Year;
+  const Brand_Name = req.body.Brand_Name;
+  const Model_Name = req.body.Model_Name;
+  const Model_Year = req.body.Model_Year;
   const tempImage = req.file ? req.file.filename : null;
 
-  // Check if Brand exists
-  const checkBrand = `SELECT Brand_ID FROM Brand WHERE Brand_Name = ?`;
-  db.query(checkBrand, [Brand_Name], (err, brandResult) => {
+  //Check or Insert Brand
+  const checkBrandSql = `SELECT Brand_ID FROM Brand WHERE Brand_Name = ?`;
+  db.query(checkBrandSql, [Brand_Name], (err, brandResult) => {
       if (err) return res.status(500).json(err);
 
-      let brandId;
       if (brandResult.length > 0) {
-          brandId = brandResult[0].Brand_ID;
-          checkModelName();
+          const brandId = brandResult[0].Brand_ID;
+          checkOrInsertModelName(brandId);
       } else {
           const insertBrandSql = `INSERT INTO Brand (Brand_Name) VALUES (?)`;
-          db.query(insertBrandSql, [Brand_Name], (err2, brandInsertResult) => {
+          db.query(insertBrandSql, [Brand_Name], (err2, brandInsert) => {
               if (err2) return res.status(500).json(err2);
-              brandId = brandInsertResult.insertId;
-              checkModelName();
+              const brandId = brandInsert.insertId;
+              checkOrInsertModelName(brandId);
           });
       }
   });
 
-  // Check if Model_Name exists in Model_Name table
-  function checkModelName() {
-      const checkModelSql = `SELECT Model_Name_ID FROM Model_Name WHERE Model_Name = ?`;
-      db.query(checkModelSql, [Model_Name], (err, modelResult) => {
+  //Check or Insert Model_Name
+  function checkOrInsertModelName(brandId) {
+      const checkModelNameSql = `SELECT Model_Name_ID FROM Model_Name WHERE Model_Name = ?`;
+      db.query(checkModelNameSql, [Model_Name], (err, modelNameResult) => {
           if (err) return res.status(500).json(err);
 
-          let modelNameId;
-          if (modelResult.length > 0) {
-              modelNameId = modelResult[0].ModelName_ID;
-              insertModel(modelNameId);
+          if (modelNameResult.length > 0) {
+              const modelNameId = modelNameResult[0].Model_Name_ID;
+              insertModel(brandId, modelNameId);
           } else {
               const insertModelNameSql = `INSERT INTO Model_Name (Model_Name) VALUES (?)`;
-              db.query(insertModelNameSql, [Model_Name], (err2, modelNameInsertResult) => {
+              db.query(insertModelNameSql, [Model_Name], (err2, insertModelNameResult) => {
                   if (err2) return res.status(500).json(err2);
-                  modelNameId = modelNameInsertResult.insertId;
-                  insertModel(modelNameId);
+                  const modelNameId = insertModelNameResult.insertId;
+                  insertModel(brandId, modelNameId);
               });
           }
       });
   }
 
-  // Insert into Model using ModelName_ID
-  function insertModel(modelNameId) {
+  //Insert Model and Handle Image
+  function insertModel(brandId, modelNameId) {
       const insertModelSql = `INSERT INTO Model (Brand_ID, Model_Name_ID, Model_Year) VALUES (?, ?, ?)`;
       db.query(insertModelSql, [brandId, modelNameId, Model_Year], (err, modelInsertResult) => {
           if (err) return res.status(500).json(err);
 
           const modelId = modelInsertResult.insertId;
+
           if (tempImage) {
               const oldPath = path.join(__dirname, "model_images", tempImage);
               const newFileName = `modelId_${modelId}${path.extname(tempImage)}`;
@@ -81,11 +80,11 @@ router.post("/insertbrandmodel", upload.single("Model_Image"), (req, res) => {
                   const updateSql = `UPDATE Model SET Model_Image = ? WHERE Model_ID = ?`;
                   db.query(updateSql, [newFileName, modelId], (err4) => {
                       if (err4) return res.status(500).json(err4);
-                      return res.json({ success: true, message: "Inserted with image", modelId, image: newFileName });
+                      return res.json({ success: true, message: "เพิ่มข้อมูลและอัปโหลดรูปสำเร็จ", modelId, image: newFileName });
                   });
               });
           } else {
-              return res.json({ success: true, message: "Inserted successfully", modelId });
+              return res.json({ success: true, message: "เพิ่มข้อมูลสำเร็จ", modelId });
           }
       });
   }
@@ -162,6 +161,21 @@ router.post('/insertsubcategory', (req, res) => {
           }
     });
 });
+
+router.post('/insertdefaultvat', (req, res) => {
+  let Vat_Value = req.body.Vat_Value;
+
+  const sqlcommand = `INSERT INTO Default_Vat (Vat_Value) VALUES (?)`;
+  db.query(sqlcommand, [Vat_Value], (err, result) => {
+      if(err){
+          res.send(err)
+        }
+        else{
+          res.json(result)
+        }
+  });
+});
+
 
 router.put('/updatetechnician/:id', (req, res) => {
     let Technician_ID = req.params.id;
@@ -246,53 +260,63 @@ router.put('/updatesubcategory/:id', (req, res) => {
 });
 
 router.put('/updatebrandmodel/:id', (req, res) => {
-  let Model_ID = req.params.id;
-  let Brand_ID = req.body.Brand_ID;
-  let Model_Name = req.body.Model_Name;
-  let Model_Year = req.body.Model_Year;
+  const Model_ID = req.params.id;
+  const { Brand_ID, Model_Name, Model_Year } = req.body;
 
-  const getBrandId = `SELECT Brand_ID FROM Model WHERE Model_ID = ?`;
-  db.query(getBrandId, [Model_ID], (err, brandResult) => {
-    if (err) {
-      return res.status(500).json(err);
-    }
-    if (brandResult.length === 0) {
-        return res.json({ message: "ไม่พบ Model ที่ต้องการลบ" });
-    }
+  const getBrandIdSql = `SELECT Brand_ID FROM Model WHERE Model_ID = ?`;
+  db.query(getBrandIdSql, [Model_ID], (err, brandResult) => {
+    if (err) return res.status(500).json(err);
+    if (brandResult.length === 0) return res.status(404).json({ message: "ไม่พบ Model ที่ต้องการอัปเดต" });
 
-      const brandId = brandResult[0].Brand_ID;
-      const updateModel = `UPDATE Model SET Brand_ID = ?, Model_Name_ID = ?, Model_Year = ? WHERE Model_ID = ?`;
-      db.query(updateModel, [Brand_ID, Model_Name, Model_Year, Model_ID], (err, updateResult) => {
-          if (err) {
-            return res.status(500).json(err);
+    const oldBrandId = brandResult[0].Brand_ID;
+
+    const getModelNameIdSql = `SELECT Model_Name_ID FROM Model_Name WHERE Model_Name = ?`;
+    db.query(getModelNameIdSql, [Model_Name], (err2, modelResult) => {
+      if (err2) return res.status(500).json(err2);
+      if (modelResult.length === 0) return res.status(400).json({ message: "ไม่พบชื่อรุ่นในตาราง Model_Name" });
+
+      const modelNameId = modelResult[0].Model_Name_ID;
+
+      const updateModelSql = `UPDATE Model SET Brand_ID = ?, Model_Name_ID = ?, Model_Year = ? WHERE Model_ID = ?`;
+      db.query(updateModelSql, [Brand_ID, modelNameId, Model_Year, Model_ID], (err3, updateResult) => {
+        if (err3) return res.status(500).json(err3);
+        if (updateResult.affectedRows === 0) return res.status(404).json({ message: "ไม่พบ Model ที่ต้องการอัปเดต" });
+
+        const checkOldBrandSql = `SELECT COUNT(*) AS modelCount FROM Model WHERE Brand_ID = ?`;
+        db.query(checkOldBrandSql, [oldBrandId], (err4, checkResult) => {
+          if (err4) return res.status(500).json(err4);
+
+          const modelCount = checkResult[0].modelCount;
+          if (modelCount === 0) {
+            const deleteOldBrandSql = `DELETE FROM Brand WHERE Brand_ID = ?`;
+            db.query(deleteOldBrandSql, [oldBrandId], (err5, deleteResult) => {
+              if (err5) return res.status(500).json(err5);
+              return res.json({ message: "อัปเดต Model และลบ Brand เก่าที่ไม่มี Model แล้วสำเร็จ" });
+            });
+          } else {
+            return res.json({ message: "อัปเดต Model สำเร็จ (Brand เก่ายังมี Model อื่นอยู่)" });
           }
-          if (updateResult.affectedRows === 0) {
-              return res.json({ message: "ไม่พบ Model ที่ต้องการอัพเดต" });
-          }
-
-          const checkBrand = `SELECT COUNT(*) AS modelCount FROM Model WHERE Brand_ID = ?`;
-          db.query(checkBrand, [brandId], (err, checkResult) => {
-              if (err) {
-                return res.status(500).json(err);
-              }
-
-              const modelCount = checkResult[0].modelCount;
-              if (modelCount === 0) {
-                  const deleteBrand = `DELETE FROM Brand WHERE Brand_ID = ?`;
-                  db.query(deleteBrand, [brandId], (err, deleteBrandResult) => {
-                      if (err) return res.status(500).json(err);
-
-                      console.log("ผลลัพธ์จากการลบ", deleteBrandResult);
-                      return res.json({ message: "อัพเดต Model และลบ Brand ที่ไม่มี Model สำเร็จ" });
-                  });
-              } else {
-                  return res.json({ message: "อัพเดต Model สำเร็จ แต่ Brand ยังมี Model อื่นอยู่" });
-              }
-          });
+        });
       });
+    });
   });
 });
 
+router.put('/updatedefaultvat/:id', (req, res) => {
+  let Vat_ID = req.params.id;
+  let Vat_Value = req.body.Vat_Value;
+
+  const sqlcommand = `UPDATE Default_Vat SET Vat_Value = ?
+                      WHERE Vat_ID = ?`;
+  db.query(sqlcommand, [Vat_Value, Vat_ID], (err, result) => {
+      if(err){
+          res.send(err)
+        }
+        else{
+          res.json(result)
+        }
+  });
+});
 
 router.delete('/deletecategory/:id', (req, res) => {
     const id = req.params.id;
@@ -433,6 +457,25 @@ router.delete('/deletesubcategory/:id', (req, res) => {
         }
       }
     });
+});
+
+router.delete('/deletedefaultvat/:id', (req, res) => {
+  const id = req.params.id;
+  const sql = `DELETE FROM Default_Vat WHERE Vat_ID = ?`;
+
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      return res.json(err);
+    } else {
+      console.log("ผลลัพธ์จากการลบ", result);
+      if (result.affectedRows === 0) {
+        // ถ้าไม่มีแถวใดถูกลบเลย (ID ไม่ตรง)
+        return res.json({ message: "ไม่พบ Default_Vat ที่ต้องการลบ" });
+      } else {
+        return res.json({ message: "ลบประเภทอะไหล่สำเร็จ" });
+      }
+    }
+  });
 });
   
 module.exports = router;

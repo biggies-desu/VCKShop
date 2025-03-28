@@ -125,7 +125,7 @@ function Queue_History({setishistorymodal})
             <table className="w-full text-sm text-left text-gray-600 bg-white shadow-md rounded-xl">
                 <thead className="text-sm md:text-base text-white bg-blue-500">
                     <tr>
-                        <th className='text-start px-4 py-3'>วันที่จอง</th>
+                        <th className='text-start px-4 py-3'>วันที่เข้าใช้บริการ</th>
                         <th className='text-start px-6 py-3'>เวลาที่จอง</th>
                         <th className='text-center px-6 py-3'>เลขทะเบียนรถ</th>
                         <th className='text-center px-6 py-3'>ช่างผู้รับผิดชอบ</th>

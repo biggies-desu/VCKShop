@@ -7,15 +7,13 @@ import Menu from './Layout/Menu'
 import Content from './Layout/Content'
 
 
-function Admin()
-{   
-    return <>
-    <div>
-        <Header/>
-        <Menu/>
-        <Content/>
-    </div>
-    </>
-}
-
+function Admin() {
+    return (
+      <div className="wrapper">
+        <Header />
+        <Menu />
+        <Content />
+      </div>
+    );
+  }
 export default Admin

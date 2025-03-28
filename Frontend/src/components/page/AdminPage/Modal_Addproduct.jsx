@@ -83,9 +83,10 @@ function Modal_Addproduct({ setisaddproductmodal }) {
     useEffect(() => {
         if (selectedbrand.length > 0 && selectedmodel.length > 0) { // Only call if productbrand is set
             //console.log(brand);
+            console.log(selectedmodel)
             axios.post(`${import.meta.env.VITE_API_URL}/getdropdownyear`,
                 {
-                    modelname: selectedmodel
+                    modelNameId: selectedmodel
                 }
             )
                 .then((res) => {
@@ -108,12 +109,11 @@ function Modal_Addproduct({ setisaddproductmodal }) {
         console.log(selectedbrand)
     };
 
-    const toggleModel = (brand) => {
+    const toggleModel = (modelId) => {
         setselectedmodel((prev) =>
-          prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand]
+          prev.includes(modelId) ? prev.filter((m) => m !== modelId): [...prev, modelId]
         );
-        console.log(selectedmodel)
-    };
+      };
 
     const toggleYear = (brand) => {
         setselectedyear((prev) =>
@@ -256,9 +256,17 @@ function Modal_Addproduct({ setisaddproductmodal }) {
                         )}
                         <div className="flex flex-wrap gap-3">
                             {dropdownmodel?.map((item) => (
-                                <button key={item.Model_Name} onClick={() => toggleModel(item.Model_Name)} className={`px-4 py-2 rounded-full border ${selectedmodel.includes(item.Model_Name)? "bg-blue-500 text-white border-blue-500": "bg-gray-100 text-gray-700 border-gray-300 hover:bg-blue-200"} transition duration-300`}>
-                                    {item.Brand_Name} {item.Model_Name}
-                                </button>
+                                <button
+                                key={item.Model_Name_ID}
+                                onClick={() => toggleModel(item.Model_Name_ID)}
+                                className={`px-4 py-2 rounded-full border ${
+                                  selectedmodel.includes(item.Model_Name_ID)
+                                    ? "bg-blue-500 text-white border-blue-500"
+                                    : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-blue-200"
+                                } transition duration-300`}
+                              >
+                                {item.Brand_Name} {item.Model_Name}
+                              </button>
                             ))}
                         </div>
                     </div>

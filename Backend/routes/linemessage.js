@@ -189,9 +189,75 @@ async function sendtoline() {
 }
 
 //[min] [hour] [day of month] [month] [day of week] - UTC on server so this should be sent at 8am,8pm in GMT+7
-cron.schedule('0 1,13 * * *', () => {
-  sendtoline();
-})
+
+let cronTask = []
+
+//load cronjob from db
+function loadAllCrons() {
+  // stop all task
+  cronTask.forEach(task => task.stop());
+  cronTask = [];
+
+  db.query('SELECT * FROM Cron', (err, result) => {
+    if (err) return console.error('Error loading cron list', err);
+    result.forEach(row => {
+      if (cron.validate(row.Cron_expression)) {
+        const task = cron.schedule(row.Cron_expression, () => {
+          console.log(`Running cron at ${row.Cron_expression}`);
+          sendtoline();
+        });
+        cronTask.push(task);
+      }
+    });
+  });
+}
+//run
+loadAllCrons();
+
+router.get('/get-cronlist', (req, res) => {
+  db.query('SELECT * FROM Cron ORDER BY Cron_ID', (err, result) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json({ cronList: result });
+  });
+});
+
+router.post('/add-cron', (req, res) => {
+  const { cron_expression } = req.body;
+  if (!cron.validate(cron_expression)) {
+    return res.status(400).json({ error: 'Invalid cron expression' });
+  }
+
+  db.query('INSERT INTO Cron (Cron_expression) VALUES (?)', [cron_expression], (err, result) => {
+    if (err) return res.status(500).json({ error: err });
+    loadAllCrons(); // reload cron ใหม่
+    res.json({ success: true, id: result.insertId });
+  });
+});
+
+router.put('/update-cron/:id', (req, res) => {
+  const { cron_expression } = req.body;
+  const id = req.params.id;
+
+  if (!cron.validate(cron_expression)) {
+    return res.status(400).json({ error: 'Invalid cron expression' });
+  }
+
+  db.query(`UPDATE Cron SET Cron_expression = ? WHERE Cron_ID = ?`, [cron_expression, id], (err, result) => {
+    if (err) return res.status(500).json({ error: err });
+    loadAllCrons(); // reload new schedule
+    res.json({ success: true, message: 'Cron updated' });
+  });
+});
+
+router.delete('/delete-cron/:id', (req, res) => {
+  const id = req.params.id;
+  db.query('DELETE FROM Cron WHERE Cron_ID = ?', [id], (err, result) => {
+    if (err) return res.status(500).json({ error: err });
+    loadAllCrons(); // reload new schedule
+    res.json({ success: true });
+  });
+});
+
 
 //for debug purpose
 router.get('/sendnotifytest', async (req, res) => {
@@ -200,6 +266,24 @@ router.get('/sendnotifytest', async (req, res) => {
     res.json(res);
   } catch (err) {
     res.json(err);
+  }
+});
+
+router.post('/webhook', async (req, res) => {
+  try {
+    const events = req.body.events;
+    for (const event of events) {
+      if (event.type === 'message' && event.message.type === 'text') {
+        const userText = event.message.text.trim();
+        if (userText === "แจ้งเตือนอะไหล่คงเหลือ") {
+          await sendtoline();
+        }
+      }
+    }
+    res.sendStatus(200);
+  } catch (err) {
+    console.error("Error in /webhook:", err);
+    res.sendStatus(200); //still need to return 200
   }
 });
 

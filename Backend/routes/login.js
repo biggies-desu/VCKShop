@@ -65,7 +65,7 @@ router.post('/login', async (req, res) => {
           }
           else{ //check if its admin account??
             //generate jwt token
-            const token = jsonwebtoken.sign({username: username, role: results[0].Role_ID, user_id: results[0].User_ID}, JWT_SECRET, { algorithm: 'HS256', expiresIn: '1h' })
+            const token = jsonwebtoken.sign({username: username, role: results[0].Role_ID, user_id: results[0].User_ID, user_password: results[0].User_Password}, JWT_SECRET, { algorithm: 'HS256', expiresIn: '1h' })
             console.log(token)
             if(results[0].Role_ID === 1)
               {
@@ -137,5 +137,46 @@ router.put('/updateprofile/:userid',(req,res) =>
     res.status(500).json({ message: 'Internal server error', error: err.message });
   }
 })
+
+
+router.post('/changepassword/:id', async (req, res) => {
+  const { newpassword, confirmnewpassword, oldhashpassword, role } = req.body;
+  const userid = req.params.id;
+
+  console.log(req.body)
+
+  try {
+    const sqlcommand1 = 'SELECT * FROM User WHERE User_ID = ?';
+    const results = await queryAsync(sqlcommand1, [userid]);
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'Something went wrong' });
+    }
+    if (newpassword !== confirmnewpassword) {
+      return res.status(400).json({ message: 'Passwords do not match' });
+    }
+    if(role === 1)
+      {
+        const newpasswordhash = await bcrypt.hash(newpassword,10)
+        console.log(newpasswordhash)
+        const sqlcommand2 = 'UPDATE User SET User_Password = ? WHERE User_ID = ?';
+        const results2 = await queryAsync(sqlcommand2, [newpasswordhash, userid]);
+        res.status(200).json({ message: 'Password updated successfully' });
+      }
+    if(role === 2)
+    {
+      if (oldhashpassword !== results[0].User_Password) { //when you logged in there is old password token, use it compare to database if it match then allow to change password
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+      const newpasswordhash = await bcrypt.hash(newpassword,10)
+      console.log(newpasswordhash)
+      const sqlcommand2 = 'UPDATE User SET User_Password = ? WHERE User_ID = ?';
+      const results2 = await queryAsync(sqlcommand2, [newpasswordhash, userid]);
+      res.status(200).json({ message: 'Password updated successfully' });
+    }
+  } catch (err) {
+    console.log('err', err);
+    res.status(500).json({ message: 'Internal server error', error: err.message });
+  }
+});
 
 module.exports = router;

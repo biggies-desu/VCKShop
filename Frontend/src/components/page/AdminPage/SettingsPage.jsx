@@ -12,6 +12,7 @@ function SettingsPage() {
   const [dropdownsubcategory, setdropdownsubcategory] = useState([])
   const [dropdownmodel, setdropdownmodel] = useState([])
   const [dropdownbrand, setdropdownbrand] = useState([])
+  const [dropdowndefaultvat, setdropdowndefaultvat] = useState([])
   const [category, setcategory] = useState('')
   const [brand, setbrand] = useState('')
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -23,6 +24,7 @@ function SettingsPage() {
   const [newModelName, setnewModelName] = useState("");
   const [newBrandName, setnewBrandName] = useState("");
   const [newModelYear, setnewModelYear] = useState("");
+  const [newVat_Value, setnewVat_Value] = useState("");
   const [modelImageFile, setModelImageFile] = useState("");
   const [editTechnicianId, setEditTechnicianId] = useState("");
   const [editTechnicianName, setEditTechnicianName] = useState("");
@@ -39,11 +41,19 @@ function SettingsPage() {
   const [editModelId, setEditModelId] = useState("");
   const [editModelName, setEditModelName] = useState("");
   const [editModelYear, setEditModelYear] = useState("");
+  const [editVat_ID, seteditVat_ID] = useState("");
+  const [editVat_Value, seteditVat_Value] = useState("");
   const [deleteType, setDeleteType] = useState("");
   const [deleteId, setDeleteId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12); // จำนวนรายการที่จะแสดงในแต่ละหน้า
   const [totalPages, setTotalPages] = useState(1);
+  const [dropdownModelName, setDropdownModelName] = useState([]);
+  //cronjob
+  const [newHour, setNewHour] = useState('8');
+  const [newMinute, setNewMinute] = useState('0');
+  const [newDays, setNewDays] = useState(['*']);
+  const [cronList, setCronList] = useState([]);
 
   function fetchdata(){
     axios.all([
@@ -53,9 +63,11 @@ function SettingsPage() {
       axios.get(`${import.meta.env.VITE_API_URL}/getdropdownquetestatus`),
       axios.get(`${import.meta.env.VITE_API_URL}/getdropdownsubcategory`),
       axios.get(`${import.meta.env.VITE_API_URL}/getdropdownmodel`),
-      axios.get(`${import.meta.env.VITE_API_URL}/getdropdownbrand`)
+      axios.get(`${import.meta.env.VITE_API_URL}/getdropdownbrand`),
+      axios.get(`${import.meta.env.VITE_API_URL}/get-cronlist`),
+      axios.get(`${import.meta.env.VITE_API_URL}/getdropdowndefaultvat`)
     ])
-    .then(([res1, res2, res3, res4, res5, res6, res7]) => {
+    .then(([res1, res2, res3, res4, res5, res6, res7, res8, res9]) => {
       console.log("Category Response:", res1.data);
       console.log("Technician Response:", res2.data);
       console.log("Service Response:", res3.data);
@@ -63,6 +75,8 @@ function SettingsPage() {
       console.log("subcategory Response:", res5.data);
       console.log("Model Response:", res6.data);
       console.log("Brand Response:", res7.data);
+      console.log("cron", res8.data);
+      console.log("VAT Response:", res9.data);
       setdropdowncategory(res1.data);
       setdropdowntechnician(res2.data);
       setdropdownservice(res3.data);
@@ -70,6 +84,8 @@ function SettingsPage() {
       setdropdownsubcategory(res5.data);
       setdropdownmodel(res6.data);
       setdropdownbrand(res7.data);
+      setCronList(res8.data.cronList)
+      setdropdowndefaultvat(res9.data);
     })
     .catch((err) => {
       console.error("API Error:", err);
@@ -95,6 +111,7 @@ function SettingsPage() {
       Sub_Category_Name: dropdownsubcategory,
       Service_Name: dropdownservice,
       ModelBrand_Name: dropdownmodel,
+      Vat_Value: dropdowndefaultvat,
     };
   
     const currentData = dataMap[activeTab] || [];
@@ -102,11 +119,19 @@ function SettingsPage() {
   
     setTotalPages(pages > 0 ? pages : 1);
     setCurrentPage(1);
-  }, [activeTab,dropdowntechnician,dropdowncategory,dropdownstatus,dropdownsubcategory,dropdownservice,dropdownmodel,]);
+  }, [activeTab,dropdowntechnician,dropdowncategory,dropdownstatus,dropdownsubcategory,dropdownservice,dropdownmodel,dropdowndefaultvat]);
   
   useEffect(() => {
     fetchdata()
   }, []);
+
+  useEffect(() => {
+    if (editBrandId) {
+      axios.get(`${import.meta.env.VITE_API_URL}/getdropdownmodelname/${editBrandId}`)
+        .then(res => setDropdownModelName(res.data))
+        .catch(err => console.error("Fetch Model_Name Error:", err));
+    }
+  }, [editBrandId]);
 
   const handleAddBrandModel = () => {
     const brandToUse = brand === "other" ? newBrandName : dropdownbrand.find(b => b.Brand_ID == brand)?.Brand_Name;
@@ -231,6 +256,24 @@ function SettingsPage() {
     });
   };
 
+  const handleAddVat = () => {
+    if (!newVat_Value) {
+      setisModalWarning(true);
+      return;
+    }
+    axios.post(`${import.meta.env.VITE_API_URL}/insertdefaultvat`, {
+      Vat_Value: newVat_Value,
+    })
+    .then((res) => {
+      setisModalSuccess(true);
+      setnewVat_Value("");
+    })
+    .catch((err) => {
+      console.error("Insert Vat Error:", err);
+      console.log(err)
+    });
+  };
+
   const handleUpdateTechnician = () => {
     if (!editTechnicianName || !editTechnicianId) return;
     axios.put(`${import.meta.env.VITE_API_URL}/updatetechnician/${editTechnicianId}`, {
@@ -322,6 +365,68 @@ function SettingsPage() {
       console.log(err)
     });
   };
+
+  const handleUpdateVat = () => {
+    if (!editVat_Value || !editVat_ID) return;
+    axios.put(`${import.meta.env.VITE_API_URL}/updatedefaultvat/${editVat_ID}`, {
+      Vat_Value: editVat_Value
+    }).then(() => {
+      setisModalSuccess(true);
+      seteditVat_ID("");
+      seteditVat_Value("");
+    }).catch(err => {
+      console.error("Update Vat Error:", err);
+      console.log(err)
+    });
+  };
+
+  function convertToUTC(hour) {
+    let utcHour = parseInt(hour, 10) - 7;
+    if (utcHour < 0) utcHour += 24;
+    return utcHour.toString();
+  }
+
+  const handleAddCron = () => {
+    const cronExpression = `${newMinute} ${convertToUTC(newHour)} * * ${newDays}`;
+    axios.post(`${import.meta.env.VITE_API_URL}/add-cron`, { cron_expression: cronExpression })
+      .then(() => {
+        setisModalSuccess(true);
+        fetchdata();
+      })
+      .catch((err) => {
+        console.error("Add cron error:", err);
+      });
+  };
+
+  const handleDeleteCron = (id) => {
+    axios.delete(`${import.meta.env.VITE_API_URL}/delete-cron/${id}`)
+      .then(() => fetchdata())
+      .catch((err) => console.error("Delete cron error:", err));
+  };
+  
+  function formatCronExpression(cronExpr) {
+    const [minute, hours, , , days] = cronExpr.split(" ");
+    const hourList = hours.split(",").map(h => {
+      let localHour = parseInt(h, 10) + 7; // UTC+7
+      if (localHour >= 24) localHour -= 24;
+      return localHour.toString().padStart(2, "0");
+    });
+    const minuteStr = minute.padStart(2, "0");
+  
+    const timeList = hourList.map(h => `${h}:${minuteStr}`);
+    const dayStr = days === "*" ? "ทุกวัน" :
+                   days === "1-5" ? "จันทร์-ศุกร์" :
+                   days === "0,6" ? "เสาร์-อาทิตย์" :
+                   days === "0" ? "อาทิตย์" :
+                   days === "1" ? "จันทร์" :
+                   days === "2" ? "อังคาร" :
+                   days === "3" ? "พุธ" :
+                   days === "4" ? "พฤหัส" :
+                   days === "5" ? "ศุกร์" :
+                   days === "6" ? "เสาร์" :
+                   `วัน ${days}`;
+    return `เวลาแจ้งเตือน: ${timeList.join(", ")} ${dayStr}`;
+  }
   
   const handleConfirmDelete = () => {
     if (deleteType === "category") {
@@ -366,6 +471,13 @@ function SettingsPage() {
           cancelDelete();
         })
         .catch(err => console.error("Delete model Error:", err));
+    } else if (deleteType === "vat") {
+      axios.delete(`${import.meta.env.VITE_API_URL}/deletedefaultvat/${deleteId}`)
+        .then(() => {
+          fetchdata();
+          cancelDelete();
+        })
+        .catch(err => console.error("Delete vat Error:", err));
     }
   };  
 
@@ -428,6 +540,8 @@ function SettingsPage() {
         <button onClick={() => setActiveTab("Category_Name")} className={`px-4 py-2 rounded ${activeTab === "Category_Name" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>เพิ่มประเภทอะไหล่</button>
         <button onClick={() => setActiveTab("Sub_Category_Name")} className={`px-4 py-2 rounded ${activeTab === "Sub_Category_Name" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>เพิ่มหมวดหมู่ย่อยของประเภทอะไหล่</button>
         <button onClick={() => setActiveTab("Service_Name")} className={`px-4 py-2 rounded ${activeTab === "Service_Name" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>เพิ่มประเภทการบริการ</button>
+        <button onClick={() => setActiveTab("Cron_Settings")} className={`px-4 py-2 rounded ${activeTab === "Cron_Settings" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>ตั้งค่าเวลาแจ้งเตือน</button>
+        <button onClick={() => setActiveTab("VAT_Name")} className={`px-4 py-2 rounded ${activeTab === "VAT_Name" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>เพิ่มจำนวนภาษี</button>
       </div>
 
       {activeTab === "ModelBrand_Name" && (
@@ -480,7 +594,14 @@ function SettingsPage() {
                       </select>
                     </span>
                     <span className="col-span-1">
-                      <input type="text" className="border px-2 py-1 rounded w-full" value={editModelName} onChange={(e) => setEditModelName(e.target.value)}/>
+                    <select className="border px-2 py-1 rounded w-full" value={editModelName} onChange={(e) => setEditModelName(e.target.value)}>
+                        <option value="" disabled>-- เลือกรุ่นรถ --</option>
+                        {dropdownModelName.map((model) => (
+                          <option key={model.Model_Name_ID} value={model.Model_Name}>
+                            {model.Model_Name}
+                          </option>
+                        ))}
+                      </select>
                     </span>
                     <span className="col-span-1">
                       <input type="text" className="border px-2 py-1 rounded w-full" value={editModelYear} onChange={(e) => setEditModelYear(e.target.value)}/>
@@ -715,6 +836,91 @@ function SettingsPage() {
           </div>
         </div>
       )}
+
+      {activeTab === "Cron_Settings" && (
+        <div className="p-6 border rounded-lg shadow-sm">
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            <div>
+              <label className="block font-medium">เวลา</label>
+              <input
+                  type="time" className="w-full border p-2 rounded"
+                  value={`${newHour.toString().padStart(2, '0')}:${newMinute.toString().padStart(2, '0')}`}
+                  onChange={(e) => {const [hour, minute] = e.target.value.split(':');
+                    setNewHour(hour);
+                    setNewMinute(minute);
+                  }}
+                />
+            </div>
+            <div>
+              <label className="block font-medium">วัน</label>
+              <select className="w-full border p-2 rounded" value={newDays} onChange={(e) => setNewDays(e.target.value)}>
+                <option value="*">ทุกวัน</option>
+                <option value="1-5">จันทร์-ศุกร์</option>
+                <option value="0,6">เสาร์-อาทิตย์</option>
+                <option value="1">จันทร์</option>
+                <option value="2">อังคาร</option>
+                <option value="3">พุธ</option>
+                <option value="4">พฤหัส</option>
+                <option value="5">ศุกร์</option>
+                <option value="6">เสาร์</option>
+                <option value="0">อาทิตย์</option>
+              </select>
+            </div>
+          </div>
+          <button className="mt-2 px-4 py-2 bg-blue-600 text-white rounded" onClick={handleAddCron}>เพิ่มเวลาแจ้งเตือน</button>
+
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold mb-2">รายการเวลาแจ้งเตือน</h3>
+            <ul className="space-y-2">
+            {cronList.map((cron, idx) => (
+                <li key={cron.Cron_ID} className="grid grid-cols-3 items-center border p-2 rounded">
+                  <div className="col-span-2">{formatCronExpression(cron.Cron_expression)}</div>
+                  <div className="col-span-1 text-right space-x-3">
+                    <button className="text-red-600 hover:text-red-800" onClick={() => handleDeleteCron(cron.Cron_ID)}>ลบ</button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+      {activeTab === "VAT_Name" && (
+        <div className="p-6 border rounded-lg shadow-sm">
+          <div className="mb-4">
+            <label className="block font-medium">จำนวนภาษี</label>
+            <input className="w-full px-4 py-2 border rounded" placeholder="กรอกจำนวนภาษีที่ต้องการเพิ่ม" value={newVat_Value} onChange={(e) => setnewVat_Value(e.target.value)}/>
+          </div>
+          <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded" onClick={handleAddVat}>บันทึกการตั้งค่า</button>
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold mb-2">รายการจำนวนภาษี</h3>
+            <ul className="space-y-2">
+              {paginateData(dropdowndefaultvat).map((vat) => {
+                return editVat_ID && editVat_ID === vat.Vat_ID ? (
+                  <li key={vat.Vat_ID} className="flex justify-between items-center border p-2 rounded">
+                    <span>
+                      <input type="text" className="border px-2 py-1 rounded" value={editVat_Value} onChange={(e) => seteditVat_Value(e.target.value)}/>
+                    </span>
+                    <div className="flex space-x-6">
+                      <button onClick={handleUpdateVat} className="text-green-600 hover:text-green-800">บันทึก</button>
+                      <button onClick={() => { seteditVat_ID(""); seteditVat_Value(""); }} className="text-gray-600 hover:text-gray-800">ยกเลิก</button>
+                    </div>
+                  </li>
+                ) : (
+                  <li key={vat.Vat_ID} className="flex justify-between items-center border p-2 rounded">
+                    <span>{vat.Vat_Value}%</span>
+                    <div className="flex space-x-6">
+                      <button onClick={() => { seteditVat_ID(vat.Vat_ID); seteditVat_Value(vat.Vat_Value); }} className="text-blue-600 hover:text-blue-800">แก้ไข</button>
+                      <button onClick={() => handleClickDeleteVat(vat.Vat_ID)} className="text-red-600 hover:text-red-800">ลบ</button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+      )}
+
+        
       <ul class="flex space-x-5 justify-center font-[sans-serif] p-10">
             <button className="flex items-center justify-center shrink-0 bg-gray-100 w-9 h-9 rounded-md cursor-pointer hover:bg-blue-400" onClick={() => changePage(currentPage > 1 ? currentPage - 1 : 1)}>
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3 fill-gray-400" viewBox="0 0 55.753 55.753">

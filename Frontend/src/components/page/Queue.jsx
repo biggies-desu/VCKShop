@@ -54,7 +54,6 @@ function Queue()
 
     const handleTimeChange = (selectedTime) => {
         setTime(selectedTime);
-    
         // ตรวจสอบวันที่และเวลาที่เลือก
         if (date && selectedTime) {
             axios.post(`${import.meta.env.VITE_API_URL}/checkQueue`, { date, time: selectedTime })
@@ -209,7 +208,7 @@ function Queue()
 
 
         // ตรวจสอบว่าไม่มีข้อผิดพลาดในฟิลด์ทั้งหมดหรือไม่
-        if (fullName && phoneNumber && date && time && CarRegistration) {
+        if (fullName && phoneNumber && date && time && CarRegistration && (modelId || selectedModel?.value) && province) {
             openModal();
         }
     };

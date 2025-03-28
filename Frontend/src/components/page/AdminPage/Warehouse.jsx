@@ -158,8 +158,11 @@ function Warehouse() {
                 <div className='kanit-bold flex flex-row justify-center bg-white p-4 shadow-md rounded-lg'>
                     <h1 className="max-md:text-lg md:text-4xl text-gray-700">คลังสินค้า</h1>
                 </div>
-                <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex flex-wrap gap-2 md:flex-nowrap md:items-center md:space-x-4">
-                <select id="ีcategory" className="shadow border rounded-lg w-full md:w-1/3 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"
+                <form className="mt-4 p-4 bg-white shadow-md rounded-lg flex-row md:flex md:space-x-4 items-center">
+                <div className="flex flex-col md:flex-row md:items-end md:gap-4 gap-2 w-full">
+                <div className="w-full md:w-1/3">
+                <label htmlFor="category" className="block text-gray-700 text-sm font-medium mb-1">หมวดหมู่สินค้า</label>
+                <select id="ีcategory" className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"
                     type="text" value={category} placeholder='ประเภทอะไหล่' onChange={(e) => setcategory(e.target.value)}>
                     <option selected value=''>ทั้งหมด</option>
                     {dropdowncategory.map((category, index) => (
@@ -168,44 +171,51 @@ function Warehouse() {
                     </option>
                     ))}
                 </select>
-                    <input value={search_query} type="search" id="search_query" className="w-full md:flex-1 px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-300" placeholder="ค้นหาชื่อ/รหัสสินค้า" onChange={e => setsearch_query(e.target.value)} onKeyPress={(e) => { if (e.key === 'Enter') { search(e); }}}/> 
-                    <button type="button" id="search" onClick={search} className="px-4 py-2 max-md:mt-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">ค้นหา</button>
-                    <button type="button" id="add" onClick={addproduct} className="px-4 py-2 max-md:mt-2 max-md:mx-5 bg-green-500 text-white rounded-lg hover:bg-green-600">เพิ่มสินค้า</button>
+                </div>
+                <div className="w-full md:w-2/3">
+                <label htmlFor="category" className="block text-gray-700 text-sm font-medium mb-1">คำค้นหา</label>
+                    <input value={search_query} type="search" id="search_query" className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="ค้นหาชื่อ/รหัสสินค้า" onChange={e => setsearch_query(e.target.value)} onKeyPress={(e) => { if (e.key === 'Enter') { search(e); }}}/>
+                </div>
+                <div className="flex gap-2 w-full md:w-auto mt-2 md:mt-0">
+                    <button type="button" id="search" onClick={search} className="px-6 py-2 bg-blue-500 max-md:mt-2 text-white rounded-lg hover:bg-blue-600 whitespace-nowrap">ค้นหา</button>
+                    <button type="button" id="add" onClick={addproduct} className="px-6 py-2 bg-green-500 max-md:mt-2 text-white rounded-lg hover:bg-green-600 whitespace-nowrap">เพิ่มสินค้า</button>
+                </div>
+                </div>
                 </form>
                 <div className="relative overflow-auto shadow-md rounded-2xl mt-6">
                     <table className="w-full text-gray-700">
                         <thead className="text-sm md:text-base text-white bg-blue-500">
                             <tr>
-                                <th className="px-4 py-2">รูปภาพ</th>
-                                <th className="px-4 py-2">รหัสสินค้า</th>
-                                <th className="px-4 py-2">ชื่อสินค้า</th>
-                                <th className="px-4 py-2">ประเภท</th>
-                                <th className="px-4 py-2">จำนวนคงเหลือ</th>
-                                <th className="px-4 py-2">ราคาต่อหน่วย</th>
-                                <th className="px-4 py-2">รายละเอียด</th>
-                                <th className="px-4 py-2">แก้ไข</th>
-                                <th className="px-4 py-2">ลบ</th>
+                                <th className="px-4 py-3">รูปภาพ</th>
+                                <th className="px-4 py-3">รหัสสินค้า</th>
+                                <th className="px-4 py-3">ชื่อสินค้า</th>
+                                <th className="px-4 py-3">ประเภท</th>
+                                <th className="px-4 py-3">จำนวนคงเหลือ</th>
+                                <th className="px-4 py-3">ราคาต่อหน่วย</th>
+                                <th className="px-4 py-3">รายละเอียด</th>
+                                <th className="px-4 py-3">แก้ไข</th>
+                                <th className="px-4 py-3">ลบ</th>
                             </tr>
                         </thead>
                         <tbody>
                             {currentApidata.map((item, index) => (
                                 <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100 md:text-lg">
-                                    <td className="px-6 py-4">{item.SparePart_Image ? (
+                                    <td className="px-6 py-3">{item.SparePart_Image ? (
                                         <img src={`${import.meta.env.VITE_API_URL}/uploads/${item.SparePart_Image}`} alt={item.SparePart_Image}  className="h-[50px] w-[50px] object-cover rounded"/>) : ('ไม่มีรูป')}
                                     </td>
-                                    <td className="px-6 py-4">{item.SparePart_ProductID}</td>
-                                    <td className="px-6 py-4">{item.SparePart_Name}</td>
-                                    <td className="px-6 py-4">{item.Category_Name}</td>
-                                    <td className="px-6 py-4">{item.SparePart_Amount}</td>
-                                    <td className="px-6 py-4">{Number(item.SparePart_Price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                                    <td className="px-6 py-4">
-                                        <button className="px-6 py-4" type="button" onClick={() => openDetailModal(item)}>📄</button>
+                                    <td className="px-6 py-3">{item.SparePart_ProductID}</td>
+                                    <td className="px-6 py-3">{item.SparePart_Name}</td>
+                                    <td className="px-6 py-3">{item.Category_Name}</td>
+                                    <td className="px-6 py-3">{item.SparePart_Amount}</td>
+                                    <td className="px-6 py-3 text-end">{Number(item.SparePart_Price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                    <td className="px-6 py-3">
+                                        <button className="px-6 py-3" type="button" onClick={() => openDetailModal(item)}>📄</button>
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <button className="px-6 py-4" type="button" onClick={() => openEditModal(item)}>✏️</button>
+                                    <td className="px-6 py-3">
+                                        <button className="px-6 py-3" type="button" onClick={() => openEditModal(item)}>✏️</button>
                                     </td>
-                                    <td className="py-4">
-                                        <button className="px-6 py-4" type="button" onClick={() => deleteitem(item.SparePart_ID)}>❌</button>
+                                    <td className="py-3">
+                                        <button className="px-6 py-3" type="button" onClick={() => deleteitem(item.SparePart_ID)}>❌</button>
                                     </td>
                                 </tr>
                             ))}
@@ -240,8 +250,25 @@ function Warehouse() {
                     <form onSubmit={e => { e.preventDefault(); updateProduct(); }}>
                         <div className="mb-4">
                             <label className="block text-gray-700">จำนวนสินค้า</label>
-                            <input type="number" className="w-full px-4 py-2 border border-gray-300 rounded" value={editProduct.SparePart_Amount} onChange={e => setEditProduct({ ...editProduct, SparePart_Amount: e.target.value })}/>
-                        </div>
+                            <input
+                                type="number"
+                                min="0"
+                                step="1"
+                                className="w-full px-4 py-2 border border-gray-300 rounded"
+                                value={editProduct.SparePart_Amount}
+                                onKeyDown={(e) => {
+                                    if ([".", "e", "-", "+"].includes(e.key)) {
+                                    e.preventDefault();
+                                    }
+                                }}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    if (/^\d*$/.test(val)) {
+                                    setEditProduct({ ...editProduct, SparePart_Amount: val });
+                                    }
+                                }}
+                                />
+                            </div>
                         <div className="mb-4">
                             <label className="block text-gray-700">ราคาต่อหน่วย</label>
                             <input type="number" className="w-full px-4 py-2 border border-gray-300 rounded" value={editProduct.SparePart_Price} onChange={e => setEditProduct({ ...editProduct, SparePart_Price: e.target.value })}/>
