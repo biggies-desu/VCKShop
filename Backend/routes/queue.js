@@ -139,6 +139,8 @@ router.delete('/deletequeue/:id', (req, res) => {
 router.get('/allqueue', function (req, res) {
   const sqlcommand = `
     SELECT b.*, m.*, mn.Model_Name, c.Car_RegisNum, c.Model_ID, p.Province_Name ,u.User_Firstname,u.User_Lastname, bs.Booking_Status_Name,
+    GROUP_CONCAT(DISTINCT s.Service_Name SEPARATOR '\n') AS Service,
+    GROUP_CONCAT(DISTINCT CONCAT(sp.SparePart_Name, ' (จำนวน : ', bsp.Booking_SparePart_Quantity, ')') SEPARATOR '\n') AS SparePart_Details,
     GROUP_CONCAT(t.Technician_Name SEPARATOR ', ') AS Technician_Names
     FROM Booking b JOIN Car c ON b.Car_ID = c.Car_ID JOIN User u ON c.User_ID = u.User_ID           
     JOIN Booking_Status bs ON b.Booking_Status_ID = bs.Booking_Status_ID
@@ -146,10 +148,14 @@ router.get('/allqueue', function (req, res) {
     JOIN Model m on m.Model_ID = c.Model_ID
     JOIN Model_Name mn on m.Model_Name_ID = mn.Model_Name_ID
     LEFT JOIN Booking_Technician bt ON b.Booking_ID = bt.Booking_ID 
-    LEFT JOIN Technician t ON bt.Technician_ID = t.Technician_ID    
+    LEFT JOIN Technician t ON bt.Technician_ID = t.Technician_ID
+    LEFT JOIN Booking_Service bsr ON bsr.Booking_ID = b.Booking_ID
+    LEFT JOIN Service s ON s.Service_ID = bsr.Service_ID
+    LEFT JOIN Booking_Sparepart bsp ON bsp.Booking_ID = b.Booking_ID
+    LEFT JOIN Sparepart sp ON sp.SparePart_ID = bsp.SparePart_ID
     WHERE b.Booking_Status_ID != 3
     GROUP BY b.Booking_ID
-    ORDER BY DATE(b.Booking_Date) DESC, b.Booking_Time ASC;
+    ORDER BY DATE(b.Booking_Date) DESC, b.Booking_Time DESC;
   `;
 
   db.query(sqlcommand, function (err, results) {
@@ -186,6 +192,8 @@ router.put('/updatequeue/:id', function (req, res) {
 
 router.get('/queuehistory', function (req, res) {
   const sqlcommand = `SELECT b.*, m.*, mn.Model_Name, c.Car_RegisNum, c.Model_ID, p.Province_Name ,u.User_Firstname,u.User_Lastname, bs.Booking_Status_Name,
+    GROUP_CONCAT(DISTINCT s.Service_Name SEPARATOR '\n') AS Service,
+    GROUP_CONCAT(DISTINCT CONCAT(sp.SparePart_Name, ' (จำนวน : ', bsp.Booking_SparePart_Quantity, ')') SEPARATOR '\n') AS SparePart_Details,
     GROUP_CONCAT(t.Technician_Name SEPARATOR ', ') AS Technician_Names
     FROM Booking b JOIN Car c ON b.Car_ID = c.Car_ID JOIN User u ON c.User_ID = u.User_ID           
     JOIN Booking_Status bs ON b.Booking_Status_ID = bs.Booking_Status_ID
@@ -194,8 +202,12 @@ router.get('/queuehistory', function (req, res) {
     JOIN Model_Name mn on m.Model_Name_ID = mn.Model_Name_ID
     LEFT JOIN Booking_Technician bt ON b.Booking_ID = bt.Booking_ID 
     LEFT JOIN Technician t ON bt.Technician_ID = t.Technician_ID
+    LEFT JOIN Booking_Service bsr ON bsr.Booking_ID = b.Booking_ID
+    LEFT JOIN Service s ON s.Service_ID = bsr.Service_ID
+    LEFT JOIN Booking_Sparepart bsp ON bsp.Booking_ID = b.Booking_ID
+    LEFT JOIN Sparepart sp ON sp.SparePart_ID = bsp.SparePart_ID
     GROUP BY b.Booking_ID
-    ORDER BY DATE(b.Booking_Date) DESC, b.Booking_Time ASC`;
+    ORDER BY DATE(b.Booking_Date) DESC, b.Booking_Time DESC`;
 
   db.query(sqlcommand, function (err, results) {
     if (err) {
@@ -214,6 +226,8 @@ router.post('/searchqueuehistory', (req, res) => {
   console.log(req.body)
 
   let sqlcommand = `SELECT b.*, m.*, mn.Model_Name, c.Car_RegisNum, c.Model_ID, p.Province_Name ,u.User_Firstname,u.User_Lastname, bs.Booking_Status_Name,
+    GROUP_CONCAT(DISTINCT s.Service_Name SEPARATOR '\n') AS Service,
+    GROUP_CONCAT(DISTINCT CONCAT(sp.SparePart_Name, ' (จำนวน : ', bsp.Booking_SparePart_Quantity, ')') SEPARATOR '\n') AS SparePart_Details,
     GROUP_CONCAT(t.Technician_Name SEPARATOR ', ') AS Technician_Names
     FROM Booking b JOIN Car c ON b.Car_ID = c.Car_ID JOIN User u ON c.User_ID = u.User_ID           
     JOIN Booking_Status bs ON b.Booking_Status_ID = bs.Booking_Status_ID
@@ -221,7 +235,11 @@ router.post('/searchqueuehistory', (req, res) => {
     JOIN Model m on m.Model_ID = c.Model_ID
     JOIN Model_Name mn on m.Model_Name_ID = mn.Model_Name_ID
     LEFT JOIN Booking_Technician bt ON b.Booking_ID = bt.Booking_ID 
-    LEFT JOIN Technician t ON bt.Technician_ID = t.Technician_ID`;
+    LEFT JOIN Technician t ON bt.Technician_ID = t.Technician_ID
+    LEFT JOIN Booking_Service bsr ON bsr.Booking_ID = b.Booking_ID
+    LEFT JOIN Service s ON s.Service_ID = bsr.Service_ID
+    LEFT JOIN Booking_Sparepart bsp ON bsp.Booking_ID = b.Booking_ID
+    LEFT JOIN Sparepart sp ON sp.SparePart_ID = bsp.SparePart_ID`;
   if (search_time && search_time2) {
     condition.push("b.Booking_Date BETWEEN ? AND ?");
     querydata.push(search_time, search_time2);
@@ -241,7 +259,7 @@ router.post('/searchqueuehistory', (req, res) => {
     sqlcommand += " WHERE " + condition.join(" AND ");
   }
 
-  sqlcommand += " GROUP BY b.Booking_ID ORDER BY b.Booking_Date DESC, b.Booking_Time ASC";
+  sqlcommand += " GROUP BY b.Booking_ID ORDER BY b.Booking_Date DESC, b.Booking_Time DESC";
 
   db.query(sqlcommand, querydata, (err, results) => {
     if (err) {
@@ -302,6 +320,8 @@ router.post('/searchqueue', (req, res) => {
 
   // base SQL
   let sqlcommand = `SELECT b.*, m.*, mn.Model_Name, c.Car_RegisNum, c.Model_ID, p.Province_Name ,u.User_Firstname,u.User_Lastname, bs.Booking_Status_Name,
+    GROUP_CONCAT(DISTINCT s.Service_Name SEPARATOR '\n') AS Service,
+    GROUP_CONCAT(DISTINCT CONCAT(sp.SparePart_Name, ' (จำนวน : ', bsp.Booking_SparePart_Quantity, ')') SEPARATOR '\n') AS SparePart_Details,
     GROUP_CONCAT(t.Technician_Name SEPARATOR ', ') AS Technician_Names
     FROM Booking b JOIN Car c ON b.Car_ID = c.Car_ID JOIN User u ON c.User_ID = u.User_ID           
     JOIN Booking_Status bs ON b.Booking_Status_ID = bs.Booking_Status_ID
@@ -309,7 +329,11 @@ router.post('/searchqueue', (req, res) => {
     JOIN Model m on m.Model_ID = c.Model_ID
     JOIN Model_Name mn on m.Model_Name_ID = mn.Model_Name_ID
     LEFT JOIN Booking_Technician bt ON b.Booking_ID = bt.Booking_ID 
-    LEFT JOIN Technician t ON bt.Technician_ID = t.Technician_ID`;
+    LEFT JOIN Technician t ON bt.Technician_ID = t.Technician_ID
+    LEFT JOIN Booking_Service bsr ON bsr.Booking_ID = b.Booking_ID
+    LEFT JOIN Service s ON s.Service_ID = bsr.Service_ID
+    LEFT JOIN Booking_Sparepart bsp ON bsp.Booking_ID = b.Booking_ID
+    LEFT JOIN Sparepart sp ON sp.SparePart_ID = bsp.SparePart_ID`;
 
   // Add WHERE clause base
   condition.push("b.Booking_Status_ID != 3"); // always exclude status 3

@@ -24,6 +24,7 @@ function Allcarmodels() {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(8);  // จำนวนรายการที่จะแสดงในแต่ละหน้า
     const [totalPages, setTotalPages] = useState(1);
+    const [showLimitModal, setShowLimitModal] = useState(false);
     const navigate = useNavigate();
     const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
     const totalCategoryAmount = Object.values(categoryTotal).reduce((sum, val) => sum + val, 0);
@@ -166,25 +167,37 @@ function Allcarmodels() {
             console.error(error);
         });
     };
-
+   
     const AddToCart = (val) => {
         setCart((prevCart) => {
-            const existingItemIndex = prevCart.findIndex((item) => item.SparePart_ID === val.SparePart_ID);
             const selectedQty = quantities[val.SparePart_ID] || 1;
+            const existingItemIndex = prevCart.findIndex((item) => item.SparePart_ID === val.SparePart_ID);
+            const existingQty = existingItemIndex !== -1 ? prevCart[existingItemIndex].quantity : 0;
+            const totalRequested = existingQty + selectedQty;
+    
+            if (totalRequested > val.SparePart_Amount) {
+                setShowLimitModal(true);
+                return prevCart;
+            }
+    
             if (existingItemIndex !== -1) {
-                // ถ้ามีสินค้าชนิดนี้อยู่ในตะกร้าแล้ว ให้เพิ่มจำนวน
-                return prevCart.map((item, index) => 
-                    (index === existingItemIndex 
-                        ? { ...item, quantity: item.quantity + selectedQty } : item)
+                // ถ้ามีสินค้าชนิดนี้อยู่ในตะกร้าแล้ว ให้เพิ่มจำนวน (แต่ไม่เกิน stock)
+                return prevCart.map((item, index) =>
+                    index === existingItemIndex
+                        ? { ...item, quantity: Math.min(item.quantity + selectedQty, val.SparePart_Amount) } : item
                 );
             } else {
                 // ถ้ายังไม่มีในตะกร้า เพิ่มใหม่
                 return [...prevCart, { ...val, quantity: selectedQty }];
             }
         });
-        setQuantities((prevCart) => ({ 
-            ...prevCart, [val.SparePart_ID]: 1 }));
+    
+        // Reset จำนวนในช่อง input กลับเป็น 1
+        setQuantities((prevCart) => ({
+            ...prevCart, [val.SparePart_ID]: 1
+        }));
     };
+    
 
     const NavigateEstimate = () => navigate("/estimateprice", { state: { cart, modelId } });
 
@@ -230,7 +243,7 @@ function Allcarmodels() {
                                     <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                                 </button>
                             </div>
-                            <div className="flex p-4 justify-center items-center w-full">
+                            <div className="flex p-4 justify-center items-center w-full kanit-regular">
                                 <h1 className="text-3xl font-semibold mb-6">ค้นหารถยนต์จากยี่ห้อ {selectedBrand}</h1>
                             </div>
                         </div>
@@ -257,7 +270,7 @@ function Allcarmodels() {
                                     <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                                 </button>
                             </div>
-                            <div className="flex p-4 justify-center items-center w-full">
+                            <div className="flex p-4 justify-center items-center w-full kanit-regular">
                                 <h1 className="text-3xl font-semibold mb-6">ค้นหารถยนต์ {selectedBrand} รุ่น {selectedModel}</h1>
                             </div>
                         </div>
@@ -282,7 +295,7 @@ function Allcarmodels() {
                                         <img src={`${import.meta.env.VITE_IMAGE_BASE_URL}/back-icon.png`} className="h-10 w-10" alt="ย้อนกลับ"/>
                                     </button>
                                 </div>
-                                <div className="flex p-4 justify-center items-center w-full">
+                                <div className="flex p-4 justify-center items-center w-full kanit-regular">
                                     <h1 className="text-3xl font-semibold text-center mb-6">ค้นหาจากรถยี่ห้อ Honda รุ่น {selectedModel} ({selectedYear})</h1>
                                 </div>
                             </div>
@@ -486,6 +499,17 @@ function Allcarmodels() {
                 )}
             </div>
             <Footer />
+            {showLimitModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-xl w-full text-center">
+                        <h2 className="text-xl font-semibold text-red-600 mb-4">⚠️ไม่สามารถเพิ่มสินค้าได้⚠️</h2>
+                        <p className="text-gray-700">คุณไม่สามารถเพิ่มจำนวนสินค้ามากกว่าที่มีในสต๊อกได้</p>
+                        <button className="mt-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onClick={() => setShowLimitModal(false)}>
+                            ปิด
+                        </button>
+                    </div>
+                </div>
+            )}
         </>
     );
 }

@@ -1,5 +1,6 @@
 const logger = (req, res, next) => {
-    console.log(`${req.method} request to ${req.url}`);
+    const now = new Date().toISOString();
+    console.log(`[${now}] ${req.method} request to ${req.url}`);
     next(); // Pass control to the next middleware/route
 };
 

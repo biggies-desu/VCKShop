@@ -26,11 +26,6 @@ function Account()
     const [showNotification, setShowNotification] = useState(false);
     const [carregis,setcarregis] = useState('')
 
-    const [newpassword, setnewpassword] = useState()
-    const [confirmnewpassword, setconfirmnewpassword] = useState()
-    const [changepassuserid, setchangepassuserid] = useState('')
-
-
     //fetch data
     useEffect(() => {
         fetchdata()
@@ -110,18 +105,6 @@ function Account()
         closeModal();
     }
 
-    function openchangepassModal(item) {
-        setchangepassuserid(item.User_ID);
-        setnewpassword('');
-        setconfirmnewpassword('');
-        setischangepassModalOpen(true);
-    }
-
-    function closechangepassModel()
-    {
-        setischangepassModalOpen(false)
-    }
-
 
     function fetchdata()
     {
@@ -160,8 +143,14 @@ function Account()
             fetchdata()
         })
     }
+    function clearsearch()
+    {
+        setsearchname('')
+        setrole('')
+        fetchdata()
+    }
 
-    function search_func()
+    function search()
     {
         axios.post(`${import.meta.env.VITE_API_URL}/searchuser`,
             {
@@ -214,64 +203,6 @@ function Account()
         })
     }
 
-    function changepassword(event)
-    {
-        event.preventDefault();
-        const ispasswordvalid = validatepassword()
-        if(!ispasswordvalid)
-        {
-            return; //exit funtion due invalid username or password
-        }
-        setShowNotification(true);
-        axios.post(`${import.meta.env.VITE_API_URL}/changepassword/${changepassuserid}`,
-        {
-            newpassword: newpassword,
-            confirmnewpassword: confirmnewpassword,
-            role: 1
-
-        })
-        .then((res)=>{
-            if(res.status === 200){
-                console.log(res);
-                setTimeout(() => {
-                setShowNotification(false);
-                closechangepassModel();
-            }, 3000);
-            }
-        })
-        .catch((err) => {
-            console.log(err)
-            if(err.response.data.message === 'Something went wrong')
-            {
-                document.getElementById("errchangepass").innerHTML = "Something went wrong!";
-            }
-            if(err.response.data.message === 'Passwords do not match')
-            {
-                document.getElementById("errchangepass").innerHTML = "Passwords do not match!";
-            }
-            if(err.response.data.message === 'Old password is incorrect')
-            {
-                document.getElementById("errchangepass").innerHTML = "Old password is incorrect!";
-            }
-        })
-    }
-
-    function validatepassword(){
-        const regex = /^(?=.*\d).{8,}$/;
-        if (!regex.test(newpassword)){
-            document.getElementById("errchangepass").innerHTML = "Must contain at least one number and at least 8 or more characters";
-            return false
-        }
-        if (confirmnewpassword !== newpassword)
-        {
-            document.getElementById("errchangepass").innerHTML = "Password is not match";
-            return false
-        }
-        else{
-            document.getElementById("errchangepass").innerHTML = "";
-            return true
-        }
-    }
 
     const currentQueuedata = accountdata.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -304,11 +235,17 @@ function Account()
         <label htmlFor="search" className="block text-gray-700 text-sm font-medium mb-1">คำค้นหา</label>
             <input className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" id="search" type="text" placeholder="คำค้นหา (ชื่่อ, Username, ทะเบียนรถ)" required onChange={(e) => setsearchname(e.target.value)}/>
         </div>
-            <button type='button' id="search_func" className="max-md:mt-2 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition" required onClick={() => search_func()}>
-                <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
-                </svg>
-            </button>
+        <div className="flex gap-2 w-full md:w-auto mt-2 md:mt-0">
+                <button type="button" onClick={clearsearch}
+                className="p-2 bg-red-500 text-white rounded-lg hover:bg-blue-700 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                <button type="button" onClick={search} className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition">
+                    <svg className="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+                    </svg>
+                </button>
+                </div>
         </div>
         </form>
         <div className="relative overflow-x-auto shadow-md rounded-2xl mt-6">
@@ -319,7 +256,6 @@ function Account()
                         <th className='text-start px-3 py-3'>Role</th>
                         <th className="text-end py-3">ประวัติจองคิว</th>
                         <th className="text-end py-3">แก้ไขข้อมูลผู้ใช้</th>
-                        <th className="text-end py-3">เปลื่ยนรหัสผ่าน</th>
                         <th className='text-end px-4 py-3'>ลบบัญชี</th>
                     </tr>
                 </thead>
@@ -341,9 +277,6 @@ function Account()
                         </td>
                         <td className="text-end px-6 py-3">
                             <button className="px-3 py-3" type="button" onClick={() => openEditModal(item)}>✏️</button>
-                        </td>
-                        <td className="text-end px-6 py-3">
-                            <button className="px-3 py-3" type="button" onClick={() => openchangepassModal(item)}>🔓</button>
                         </td>
                         <td className='text-end px-3 py-2'>
                             <button className="px-6 py-3" type="button" onClick={() => deleteitem(item.User_ID)}>❌</button>
@@ -473,12 +406,33 @@ function Account()
                         </tr>
                     </thead>
                     <tbody>
-                        {historydata.map((item,index) => (
+                    {historydata.map((item,index) => (
                             <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100">
                                 <td className="text-start py-3">{new Date(item.Booking_Date).toLocaleDateString('th-TH')} {item.Booking_Time}</td>
                                 <td className="text-start py-3">{item.Brand_Name} {item.Model_Name} {item.Model_Year}</td>
-                                <td className="text-end py-3">{item.Car_RegisNum} {item.Province_Name}</td>
-                                <td className="text-end py-3">{item.Booking_Description}</td>
+                                <td className="text-start py-3">{item.Car_RegisNum} {item.Province_Name}</td>
+                                <td className="text-end py-3">
+                                {item.SparePart_Details === null ? (
+                                    <>
+                                    <div><b>คำอธิบาย:</b></div>
+                                    {item.Booking_Description}</>
+                                ) : (
+                                    <>
+                                    <div><b>อะไหล่ :</b></div>
+                                    {item.SparePart_Details.split('\n').map((item, i) => (
+                                        <div key={i}>{item}</div>
+                                    ))}
+                                    {item.Service && (
+                                        <>
+                                        <div className="mt-2"><b>บริการ :</b></div>
+                                        {item.Service.split('\n').map((item, i) => (
+                                            <div key={i}>{item}</div>
+                                        ))}
+                                        </>
+                                    )}
+                                    </>
+                                )}
+                                </td>
                             </tr>
                         ))}
                     </tbody>
@@ -487,51 +441,6 @@ function Account()
             </div>
         </div>
         )}
-
-    {ischangepassModalOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl mx-4">
-                <h2 className="text-xl font-bold mb-4 text-center">เปลื่ยนรหัสผ่าน</h2>
-                {showNotification && (
-                <div role="alert" className="flex justify-center absolute left-1/2 transform -translate-x-1/2 -translate-y-28 rounded-xl border border-gray-100 shadow-2xl bg-white p-4 w-full max-w-md">
-                    <div className="flex gap-4">
-                        <span className="text-green-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </span>
-                        <div className="flex-1">
-                            <strong className="block font-medium text-gray-900">Changes saved</strong>
-                            <p className="mt-1 text-sm text-gray-700">Password changes have been saved.</p>
-                        </div>
-                        <button className="text-gray-500 transition hover:text-gray-600" onClick={() => setShowNotification(false)}>
-                            <span className="sr-only">Dismiss popup</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                )}
-                    <form className="space-y-3">
-                    <div className="flex justify-start font-bold">รหัสผ่านใหม่</div>
-                    <div className="relative">
-                        <input value={newpassword} onChange={e => setnewpassword(e.target.value)} type="password" required pattern="^(?=.*\d).{8,}$" name="newpassword" id="newpassword" placeholder="รหัสผ่านใหม่" className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"></input>
-                    </div>             
-                    <div className="flex justify-start font-bold">ยืนยันรหัสผ่านใหม่</div>
-                    <div className="relative">
-                        <input value={confirmnewpassword} onChange={e => setconfirmnewpassword(e.target.value)} type="password" required pattern="^(?=.*\d).{8,}$" name="confirmnewpassword" id="confirmnewpassword" placeholder="ยืนยันรหัสผ่านใหม่" className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"></input>
-                    </div>
-                    <div class="text-red-600 mt-3" id="errchangepass"></div>
-                    <div className="flex justify-center space-x-4">
-                        <button className="px-4 py-2 text-gray-700 bg-red-400 hover:bg-red-600 rounded" onClick={closechangepassModel}>ยกเลิก</button>
-                        <button className="px-4 py-2 text-gray-700 bg-green-400 hover:bg-green-600 rounded" onClick={(e) => changepassword(e)}>บันทึก</button>
-                    </div>
-                </form> 
-                </div>
-            </div>
-        )}
-
     </>
 }
 

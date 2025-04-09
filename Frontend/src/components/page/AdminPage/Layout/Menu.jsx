@@ -46,6 +46,10 @@ export default function Menu() {
             <i className="fas fa-history nav-icon" style={{ marginRight: "25px" }}/>
             Warehouse History
             </NavLink>
+            <NavLink to='passwordlog' className="nav-link">
+            <i className="fas fa-history nav-icon" style={{ marginRight: "25px" }}/>
+            Password Change Log
+            </NavLink>
             </li>
             <li class="nav-header">Other</li>
             <li className="nav-item">

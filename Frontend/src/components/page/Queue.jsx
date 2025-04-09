@@ -392,7 +392,14 @@ function Queue()
                     <p className="text-gray-700 mb-2"><strong>วันที่จอง:</strong> {date}</p>
                     <p className="text-gray-700 mb-2"><strong>เวลาที่จอง:</strong> {time}</p>
                     <p className="text-gray-700 mb-2"><strong>เลขทะเบียนรถ:</strong> {CarRegistration}</p>
-                    <p className="text-gray-700"><strong>รายละเอียด:</strong> {details}</p>
+                    <div className="text-gray-700 whitespace-pre-line">
+                        <strong>รายละเอียด:</strong>
+                        <div className="mt-1">
+                            {details.split('\n').map((line, id) => (
+                            <div key={id}>• {line}</div>
+                            ))}
+                        </div>
+                        </div>
                 </div>
                 <button onClick={closeModal} className="text-black font-medium rounded-lg text-base px-4 py-2 mt-4 mr-16">ยกเลิก</button>
                 <button onClick={() => submitqueue()} className="text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 font-medium rounded-lg text-base px-4 py-2 mt-4">ยืนยัน</button>

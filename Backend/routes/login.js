@@ -65,7 +65,7 @@ router.post('/login', async (req, res) => {
           }
           else{ //check if its admin account??
             //generate jwt token
-            const token = jsonwebtoken.sign({username: username, role: results[0].Role_ID, user_id: results[0].User_ID, user_password: results[0].User_Password}, JWT_SECRET, { algorithm: 'HS256', expiresIn: '1h' })
+            const token = jsonwebtoken.sign({username: username, role: results[0].Role_ID, user_id: results[0].User_ID}, JWT_SECRET, { algorithm: 'HS256', expiresIn: '1h' })
             console.log(token)
             if(results[0].Role_ID === 1)
               {
@@ -140,40 +140,52 @@ router.put('/updateprofile/:userid',(req,res) =>
 
 
 router.post('/changepassword/:id', async (req, res) => {
-  const { newpassword, confirmnewpassword, oldhashpassword, role } = req.body;
+  const { newpassword, confirmnewpassword, oldpassword, role} = req.body;
   const userid = req.params.id;
-
-  console.log(req.body)
-
+  const timestamp = new Date(new Date().getTime()+7*60*60*1000).toISOString().slice(0, 19).replace('T', ' '); //utc -> gmt+7 thingy
   try {
     const sqlcommand1 = 'SELECT * FROM User WHERE User_ID = ?';
     const results = await queryAsync(sqlcommand1, [userid]);
+
+    const logAction = async (desciption) => {
+      const logSql = 'INSERT INTO ChangePass_Log (User_ID, CPL_Time, CPL_Description) VALUES (?, ?, ?)';
+      await queryAsync(logSql, [userid, timestamp, desciption]);
+    };
+
     if (results.length === 0) {
       return res.status(404).json({ message: 'Something went wrong' });
     }
     if (newpassword !== confirmnewpassword) {
-      return res.status(400).json({ message: 'Passwords do not match' });
+      return res.status(400).json({ message: 'Confirmed Passwords do not match' });
     }
+
     if(role === 1)
-      {
-        const newpasswordhash = await bcrypt.hash(newpassword,10)
-        console.log(newpasswordhash)
-        const sqlcommand2 = 'UPDATE User SET User_Password = ? WHERE User_ID = ?';
-        const results2 = await queryAsync(sqlcommand2, [newpasswordhash, userid]);
-        res.status(200).json({ message: 'Password updated successfully' });
-      }
-    if(role === 2)
     {
-      if (oldhashpassword !== results[0].User_Password) { //when you logged in there is old password token, use it compare to database if it match then allow to change password
-        return res.status(401).json({ message: 'Unauthorized' });
-      }
       const newpasswordhash = await bcrypt.hash(newpassword,10)
-      console.log(newpasswordhash)
       const sqlcommand2 = 'UPDATE User SET User_Password = ? WHERE User_ID = ?';
       const results2 = await queryAsync(sqlcommand2, [newpasswordhash, userid]);
-      res.status(200).json({ message: 'Password updated successfully' });
+      await logAction(`Admin : ${results[0].User_Username} have change password`);
+
+      res.status(200).json({ message: 'Password updated successfully by Admin' });
     }
-  } catch (err) {
+
+    if(role === 2)
+    {
+      const hashcompare = await bcrypt.compare(oldpassword, results[0].User_Password)
+      if(!hashcompare){ //check that password is match?
+        return res.status(401).json({message: 'Password is wrong'})
+      }
+      else{{
+          const newpasswordhash = await bcrypt.hash(newpassword,10)
+          const sqlcommand2 = 'UPDATE User SET User_Password = ? WHERE User_ID = ?';
+          const results2 = await queryAsync(sqlcommand2, [newpasswordhash, userid]);
+          await logAction(`User : ${results[0].User_Username} have change password`);
+
+          res.status(200).json({ message: 'Password updated successfully by User' });
+        }}
+}
+    }
+  catch (err) {
     console.log('err', err);
     res.status(500).json({ message: 'Internal server error', error: err.message });
   }

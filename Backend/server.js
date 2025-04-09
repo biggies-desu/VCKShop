@@ -21,6 +21,7 @@ const tax = require('./routes/tax')
 const email = require('./routes/email')
 const account = require('./routes/account')
 const setting = require('./routes/setting')
+const passchangelog  = require('./routes/passchangelog')
 
 app.use(express.json())
 app.use(bodyParser())
@@ -46,6 +47,7 @@ app.use(tax)
 app.use(email)
 app.use(account)
 app.use(setting)
+app.use(passchangelog)
 app.use('/uploads', express.static('uploads'));
 app.use('/model_images', express.static(path.join(__dirname, 'routes', 'model_images')));
 app.use('/model_images', express.static(path.resolve(__dirname, 'routes/model_images')));

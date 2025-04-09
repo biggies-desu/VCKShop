@@ -44,7 +44,7 @@ router.post("/upload", upload.single('productimage'), (req, res) => {
     return res.status(400).json({ error: "No file uploaded" });
   }
   const filePath = path.join(__dirname, 'uploads', req.file.filename);
-  setTimeout(() => { //for some reason if i dont set time out, its just not work
+  setTimeout(() => {
     fs.chown(filePath, 33, 33, (err) => {
       if (err) {
         console.error(err);

@@ -12,6 +12,7 @@ function Profile()
     const [lastname, setlastname] = useState()
     const [telephone, settelephone] = useState()
     const [email, setemail] = useState()
+    const [oldpassword, setoldpassword] = useState()
     const [newpassword, setnewpassword] = useState()
     const [confirmnewpassword, setconfirmnewpassword] = useState()
     const [showNotification, setShowNotification] = useState(false);
@@ -22,7 +23,6 @@ function Profile()
 
     const token = localStorage.getItem('token')
     const userid = jwtDecode(token).user_id
-    const oldhashpassword = jwtDecode(token).user_password
     const role = jwtDecode(token).role
 
     useEffect(() => {
@@ -107,9 +107,8 @@ function Profile()
         {
             newpassword: newpassword,
             confirmnewpassword: confirmnewpassword,
-            oldhashpassword: oldhashpassword,
+            oldpassword: oldpassword,
             role: role
-
         })
         .then((res)=>{
             if(res.status === 200){
@@ -117,6 +116,7 @@ function Profile()
                 setShowNotification(true);
                 setTimeout(() => {
                     setShowNotification(false);
+                    window.location.reload()
                 }, 3000);
             }
         })
@@ -126,9 +126,9 @@ function Profile()
             {
                 document.getElementById("errchangepass").innerHTML = "Something went wrong!";
             }
-            if(err.response.data.message === 'Passwords do not match')
+            if(err.response.data.message === 'Confirmed Passwords do not match')
             {
-                document.getElementById("errchangepass").innerHTML = "Passwords do not match!";
+                document.getElementById("errchangepass").innerHTML = "Confirmed Passwords do not match!";
             }
             if(err.response.data.message === 'Unauthorized')
             {
@@ -158,14 +158,15 @@ function Profile()
     return <>
 
     <Navbar />
-    <div className="max-w-5xl mx-auto p-6 flex">
-        <div className="w-1/4 pr-4">
+    <div className="max-w-5xl mx-auto p-4 flex flex-col md:flex-row gap-4">
+        <div className="w-full md:w-1/4">
             <div className="bg-gray-100 p-4 rounded-lg space-y-4">
                 <button onClick={() => setActiveTab("EditPersonalHistory")} className={`w-full text-left px-4 py-2 rounded ${activeTab === "EditPersonalHistory" ? "bg-blue-500 text-white" : "bg-gray-300"}`}>แก้ไขประวัติส่วนตัว</button>
                 <button onClick={() => setActiveTab("ChangePassword")} className={`w-full text-left px-4 py-2 rounded ${activeTab === "ChangePassword" ? "bg-blue-500 text-white" : "bg-gray-300"}`}>เปลี่ยนรหัสผ่าน</button>
                 <button onClick={() => setActiveTab("ViewBookingHistory")} className={`w-full text-left px-4 py-2 rounded ${activeTab === "ViewBookingHistory" ? "bg-blue-500 text-white" : "bg-gray-300"}`}>ดูประวัติการจอง</button>
             </div>
         </div>
+        
 
         {showNotification && (
         <div role="alert" className="flex justify-center absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-xl border border-gray-100 bg-white p-4 mb-4 w-full max-w-md">
@@ -190,7 +191,8 @@ function Profile()
         )}
 
 
-        <div className="w-3/4 pl-4">
+
+        <div className="w-full md:w-3/4">
             {activeTab === "EditPersonalHistory" && (
                 <form className="bg-white p-8 space-y-4">
                     <div className="bg-opacity-80 p-8 rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-500 justify-center items-center border-4">
@@ -239,7 +241,7 @@ function Profile()
                         <tr>
                             <th className="text-start px-3 py-2">วันที่/เวลา</th>
                             <th className="text-start px-3 py-2">รุ่นรถ</th>
-                            <th className="text-start px-6 py-2">ทะเบียนรถ</th>
+                            <th className="text-start px-3 py-2">ทะเบียนรถ</th>
                             <th className="text-end px-2 py-2">รายละเอียด</th>
                         </tr>
                     </thead>
@@ -248,8 +250,29 @@ function Profile()
                             <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100">
                                 <td className="text-start py-3">{new Date(item.Booking_Date).toLocaleDateString('th-TH')} {item.Booking_Time}</td>
                                 <td className="text-start py-3">{item.Brand_Name} {item.Model_Name} {item.Model_Year}</td>
-                                <td className="text-end py-3">{item.Car_RegisNum} {item.Province_Name}</td>
-                                <td className="text-end py-3">{item.Booking_Description}</td>
+                                <td className="text-start py-3">{item.Car_RegisNum} {item.Province_Name}</td>
+                                <td className="text-end py-3">
+                                {item.SparePart_Details === null ? (
+                                    <>
+                                    <div><b>คำอธิบาย:</b></div>
+                                    {item.Booking_Description}</>
+                                ) : (
+                                    <>
+                                    <div><b>อะไหล่ :</b></div>
+                                    {item.SparePart_Details.split('\n').map((item, i) => (
+                                        <div key={i}>{item}</div>
+                                    ))}
+                                    {item.Service && (
+                                        <>
+                                        <div className="mt-2"><b>บริการ :</b></div>
+                                        {item.Service.split('\n').map((item, i) => (
+                                            <div key={i}>{item}</div>
+                                        ))}
+                                        </>
+                                    )}
+                                    </>
+                                )}
+                                </td>
                             </tr>
                         ))}
                     </tbody>
@@ -264,6 +287,10 @@ function Profile()
                     <div className="bg-opacity-80 p-8 rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-500 justify-center items-center border-4">
                     <h1 className="text-2xl font-bold mb-4">เปลื่ยนรหัสผ่าน</h1>
                         <form className="space-y-6">
+                        <div className="flex justify-start font-bold">รหัสผ่านเดิม</div>
+                                <div className="relative">
+                                    <input value={oldpassword} onChange={e => setoldpassword(e.target.value)} type="password" required pattern="^(?=.*\d).{8,}$" name="newpassword" id="newpassword" placeholder="รหัสผ่านใหม่" className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"></input>
+                                </div>
                             <div className="flex justify-start font-bold">รหัสผ่านใหม่</div>
                                 <div className="relative">
                                     <input value={newpassword} onChange={e => setnewpassword(e.target.value)} type="password" required pattern="^(?=.*\d).{8,}$" name="newpassword" id="newpassword" placeholder="รหัสผ่านใหม่" className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400"></input>

@@ -27,13 +27,21 @@ router.get('/role', (req,res) => {
 })
 
 router.get('/bookinghistory', (req,res) => {
-  const sqlcommand = `SELECT p.Province_Name, br.Brand_Name, m.Model_Year, mn.Model_Name, c.Car_RegisNum, u.User_ID, b.* FROM Booking b
-        JOIN Car c ON c.Car_ID = b.Car_ID
-        JOIN Province p ON c.Province_ID = p.Province_ID
-        JOIN Model m ON c.Model_ID = m.Model_ID
-        JOIN Model_Name mn ON mn.Model_Name_ID = m.Model_Name_ID
-        JOIN User u ON c.User_ID = u.User_ID
-        Join Brand br on br.Brand_ID = m.Brand_ID
+  const sqlcommand = `SELECT p.Province_Name, br.Brand_Name, m.Model_Year, mn.Model_Name, c.Car_RegisNum, u.User_ID, b.*,
+      GROUP_CONCAT(DISTINCT sv.Service_Name SEPARATOR '\n') AS Service,
+      GROUP_CONCAT(DISTINCT CONCAT(sp.SparePart_Name, ' (จำนวน : ', bsp.Booking_SparePart_Quantity, ')') SEPARATOR '\n') AS SparePart_Details
+      FROM Booking b
+      JOIN Car c ON c.Car_ID = b.Car_ID
+      JOIN Province p ON c.Province_ID = p.Province_ID
+      JOIN Model m ON c.Model_ID = m.Model_ID
+      JOIN Model_Name mn ON mn.Model_Name_ID = m.Model_Name_ID
+      JOIN User u ON c.User_ID = u.User_ID
+      JOIN Brand br ON br.Brand_ID = m.Brand_ID
+      LEFT JOIN Booking_Service bsrv ON bsrv.Booking_ID = b.Booking_ID
+      LEFT JOIN Service sv ON sv.Service_ID = bsrv.Service_ID
+      LEFT JOIN Booking_Sparepart bsp ON bsp.Booking_ID = b.Booking_ID
+      LEFT JOIN Sparepart sp ON sp.SparePart_ID = bsp.SparePart_ID
+	    GROUP BY b.Booking_ID ORDER BY b.Booking_Date DESC, b.Booking_Time DESC;
   `
   db.query(sqlcommand, (err,result) => {
     if (err)
@@ -53,21 +61,29 @@ router.post('/bookinghistory/:id', (req, res) => {
 
   let querydata = [id];
   let sqlcommand = `
-    SELECT p.Province_Name, br.Brand_Name, m.Model_Year, mn.Model_Name, 
-    c.Car_RegisNum, u.User_ID, b.* FROM Booking b
-    JOIN Car c ON c.Car_ID = b.Car_ID
-    JOIN Province p ON c.Province_ID = p.Province_ID
-    JOIN Model m ON c.Model_ID = m.Model_ID
-    JOIN Model_Name mn ON mn.Model_Name_ID = m.Model_Name_ID
-    JOIN User u ON c.User_ID = u.User_ID
-    JOIN Brand br ON br.Brand_ID = m.Brand_ID
-    WHERE u.User_ID = ?
+      SELECT p.Province_Name, br.Brand_Name, m.Model_Year, mn.Model_Name, c.Car_RegisNum, u.User_ID, b.*,
+      GROUP_CONCAT(DISTINCT sv.Service_Name SEPARATOR '\n') AS Service,
+      GROUP_CONCAT(DISTINCT CONCAT(sp.SparePart_Name, ' (จำนวน : ', bsp.Booking_SparePart_Quantity, ')') SEPARATOR '\n') AS SparePart_Details
+      FROM Booking b
+      JOIN Car c ON c.Car_ID = b.Car_ID
+      JOIN Province p ON c.Province_ID = p.Province_ID
+      JOIN Model m ON c.Model_ID = m.Model_ID
+      JOIN Model_Name mn ON mn.Model_Name_ID = m.Model_Name_ID
+      JOIN User u ON c.User_ID = u.User_ID
+      JOIN Brand br ON br.Brand_ID = m.Brand_ID
+      LEFT JOIN Booking_Service bsrv ON bsrv.Booking_ID = b.Booking_ID
+      LEFT JOIN Service sv ON sv.Service_ID = bsrv.Service_ID
+      LEFT JOIN Booking_Sparepart bsp ON bsp.Booking_ID = b.Booking_ID
+      LEFT JOIN Sparepart sp ON sp.SparePart_ID = bsp.SparePart_ID
+      WHERE u.User_ID = ?
   `;
 
   if (carID && carID !== '') {
     sqlcommand += ` AND c.Car_ID = ?`;
     querydata.push(carID);
   }
+
+  sqlcommand += " GROUP BY b.Booking_ID ORDER BY b.Booking_Date DESC, b.Booking_Time DESC"
 
   db.query(sqlcommand, querydata, (err, result) => {
     if (err) {

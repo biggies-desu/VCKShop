@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+
 
 function SettingsPage() {
   const [activeTab, setActiveTab] = useState("ModelBrand_Name");
@@ -54,6 +56,14 @@ function SettingsPage() {
   const [newMinute, setNewMinute] = useState('0');
   const [newDays, setNewDays] = useState(['*']);
   const [cronList, setCronList] = useState([]);
+  //password
+  const [oldPassword, setOldPassword] = useState("")
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const token = localStorage.getItem('token')
+  const userid = jwtDecode(token).user_id
+  const role = jwtDecode(token).role
 
   function fetchdata(){
     axios.all([
@@ -479,7 +489,65 @@ function SettingsPage() {
         })
         .catch(err => console.error("Delete vat Error:", err));
     }
-  };  
+  };
+
+  const handleChangePassword = () => {
+    console.log(userid)
+    const ispasswordvalid = validatepassword()
+    if(!ispasswordvalid)
+    {
+          return; //exit funtion due invalid username or password
+    }
+    axios.post(`${import.meta.env.VITE_API_URL}/changepassword/${userid}`,
+    {
+        newpassword: newPassword,
+        confirmnewpassword: confirmPassword,
+        oldpassword: oldPassword,
+        role: role
+    })
+    .then((res)=>{
+      if(res.status === 200){
+          console.log(res)
+          setisModalSuccess(true);
+          setTimeout(() => {
+              setisModalSuccess(false);
+              window.location.reload()
+          }, 3000);
+      }
+    })
+    .catch((err) => {
+        console.log(err)
+        if(err.response.data.message === 'Something went wrong')
+        {
+            document.getElementById("errchangepass").innerHTML = "Something went wrong!";
+        }
+        if(err.response.data.message === 'Confirmed Passwords do not match')
+        {
+            document.getElementById("errchangepass").innerHTML = "Confirmed Passwords do not match!";
+        }
+        if(err.response.data.message === 'Unauthorized')
+        {
+            document.getElementById("errchangepass").innerHTML = "Unauthorized!";
+        }
+    })
+  }
+
+  function validatepassword(){
+    const regex = /^(?=.*\d).{8,}$/;
+    if (!regex.test(newPassword)){
+        document.getElementById("errchangepass").innerHTML = "Must contain at least one number and at least 8 or more characters";
+        return false
+    }
+    if (confirmPassword !== newPassword)
+    {
+        document.getElementById("errchangepass").innerHTML = "Password is not match";
+        return false
+    }
+    else{
+        document.getElementById("errchangepass").innerHTML = "";
+        return true
+    }
+}
 
   const handleClickDeleteCategory = (id) => {
     setDeleteType("category");
@@ -511,6 +579,11 @@ function SettingsPage() {
     setDeleteId(id);
   };
 
+  const handleClickDeleteVat = (id) => {
+    setDeleteType("vat");
+    setDeleteId(id);
+  };
+
   const cancelDelete = () => {
     setDeleteId();
   };
@@ -533,16 +606,35 @@ function SettingsPage() {
     </div>
 
     <div className="max-w-7xl mx-auto p-6">
-      <div className="mb-6 flex space-x-4 border-b pb-2">
+      <div className="mb-6 flex flex-col xl:flex-row gap-2 md:space-x-4 md:pb-2">
+        <button onClick={() => setActiveTab("ChangePassword")} className={`px-4 py-2 rounded ${activeTab === "ChangePassword" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>เปลี่ยนรหัสผ่านผู้ดูแล</button>
         <button onClick={() => setActiveTab("ModelBrand_Name")} className={`px-4 py-2 rounded ${activeTab === "ModelBrand_Name" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>เพิ่มยี่ห้อ/รุ่นรถ</button>
         <button onClick={() => setActiveTab("Status_Name")} className={`px-4 py-2 rounded ${activeTab === "Status_Name" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>เพิ่มสถานะ</button>
         <button onClick={() => setActiveTab("Technician_Name")} className={`px-4 py-2 rounded ${activeTab === "Technician_Name" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>เพิ่มชื่อช่าง</button>
         <button onClick={() => setActiveTab("Category_Name")} className={`px-4 py-2 rounded ${activeTab === "Category_Name" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>เพิ่มประเภทอะไหล่</button>
+      </div>
+      <div className="mb-6 mt-2 flex flex-col xl:flex-row gap-2 md:space-x-4 md:pb-2">
         <button onClick={() => setActiveTab("Sub_Category_Name")} className={`px-4 py-2 rounded ${activeTab === "Sub_Category_Name" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>เพิ่มหมวดหมู่ย่อยของประเภทอะไหล่</button>
         <button onClick={() => setActiveTab("Service_Name")} className={`px-4 py-2 rounded ${activeTab === "Service_Name" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>เพิ่มประเภทการบริการ</button>
         <button onClick={() => setActiveTab("Cron_Settings")} className={`px-4 py-2 rounded ${activeTab === "Cron_Settings" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>ตั้งค่าเวลาแจ้งเตือน</button>
         <button onClick={() => setActiveTab("VAT_Name")} className={`px-4 py-2 rounded ${activeTab === "VAT_Name" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>เพิ่มจำนวนภาษี</button>
       </div>
+
+      {activeTab === "ChangePassword" && (
+        <div className="p-6 border rounded-lg shadow-sm">
+          <div className="mb-4">
+            <label className="block font-medium">เปลี่ยนรหัสผ่านผู้ดูแล</label><div className="mb-4">
+            <input type="password" placeholder="รหัสผ่านเก่า" className="w-full px-4 py-2 mb-2 border rounded" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
+            <input type="password" placeholder="รหัสผ่านใหม่" className="w-full px-4 py-2 mb-2 border rounded" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+            <input type="password" placeholder="ยืนยันรหัสผ่านใหม่" className="w-full px-4 py-2 mb-2 border rounded" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+            <div class="text-red-600 mt-3" id="errchangepass"></div>
+            <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded" onClick={handleChangePassword}>
+            ยืนยันการเปลี่ยนรหัสผ่าน
+            </button>
+          </div>
+          </div>
+        </div>
+      )}
 
       {activeTab === "ModelBrand_Name" && (
         <div className="p-6 border rounded-lg shadow-sm">
@@ -921,29 +1013,26 @@ function SettingsPage() {
       )}
 
         
-      <ul class="flex space-x-5 justify-center font-[sans-serif] p-10">
+      {["ModelBrand_Name", "Technician_Name", "Category_Name", "Status_Name", "Sub_Category_Name", "Service_Name", "VAT_Name"].includes(activeTab) && (
+          <ul className="flex flex-wrap justify-center gap-2 md:gap-5 font-[sans-serif] p-6">
             <button className="flex items-center justify-center shrink-0 bg-gray-100 w-9 h-9 rounded-md cursor-pointer hover:bg-blue-400" onClick={() => changePage(currentPage > 1 ? currentPage - 1 : 1)}>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 fill-gray-400" viewBox="0 0 55.753 55.753">
-                    <path d="M12.745 23.915c.283-.282.59-.52.913-.727L35.266 1.581a5.4 5.4 0 0 1 7.637 7.638L24.294 27.828l18.705 18.706a5.4 5.4 0 0 1-7.636 7.637L13.658 32.464a5.367 5.367 0 0 1-.913-.727 5.367 5.367 0 0 1-1.572-3.911 5.369 5.369 0 0 1 1.572-3.911z" data-original="#000000" />
-                </svg>
             </button>
-                        
+
             {[...Array(totalPages)].map((_, index) => (
                 <li key={index} className={`flex items-center justify-center shrink-0 border cursor-pointer text-base font-bold text-gray-800 px-[13px] h-9 rounded-md ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'hover:border-blue-500'}`} onClick={() => changePage(index + 1)}>
                     {index + 1}
                 </li>
             ))}
+
             <button className="flex items-center justify-center shrink-0 bg-gray-100 w-9 h-9 rounded-md cursor-pointer hover:bg-blue-400" onClick={() => changePage(currentPage < totalPages ? currentPage + 1 : totalPages)}>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 fill-gray-400 rotate-180" viewBox="0 0 55.753 55.753">
-                    <path d="M12.745 23.915c.283-.282.59-.52.913-.727L35.266 1.581a5.4 5.4 0 0 1 7.637 7.638L24.294 27.828l18.705 18.706a5.4 5.4 0 0 1-7.636 7.637L13.658 32.464a5.367 5.367 0 0 1-.913-.727 5.367 5.367 0 0 1-1.572-3.911 5.369 5.369 0 0 1 1.572-3.911z"data-original="#000000" />
-                </svg>
             </button>
-        </ul>
+          </ul>
+        )}
     </div>
 
     {isModalSuccess && (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-        <div class="relative p-8 text-center bg-white max-w-xl w-full rounded-xl shadow-xl dark:bg-gray-800">
+        <div className="relative p-6 md:p-8 text-center bg-white max-w-xl w-full mx-4 rounded-xl shadow-xl">
             <button onClick={closeSuccessPopup} type="button" class="text-gray-400 absolute top-4 right-4 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-lg p-2 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
                 <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
@@ -964,7 +1053,7 @@ function SettingsPage() {
 
     {isModalWarning && (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-        <div className="relative p-8 text-center bg-white max-w-xl w-full rounded-xl shadow-xl dark:bg-gray-800">
+        <div className="relative p-6 md:p-8 text-center bg-white max-w-xl w-full mx-4 rounded-xl shadow-xl">
           <button onClick={closeWarningPopup} type="button" className="text-gray-400 absolute top-4 right-4 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-lg p-2 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
             <svg aria-hidden="true" className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />

@@ -69,6 +69,13 @@ function Warehouse() {
         }
     };
 
+    function clearsearch()
+    {
+        setcategory('')
+        setsearch_query('')
+        fetchdata()
+    }
+
 
     function search(event) {
         event.preventDefault();
@@ -177,6 +184,10 @@ function Warehouse() {
                     <input value={search_query} type="search" id="search_query" className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="ค้นหาชื่อ/รหัสสินค้า" onChange={e => setsearch_query(e.target.value)} onKeyPress={(e) => { if (e.key === 'Enter') { search(e); }}}/>
                 </div>
                 <div className="flex gap-2 w-full md:w-auto mt-2 md:mt-0">
+                <button type="button" onClick={clearsearch}
+                className="p-2 bg-red-500 text-white rounded-lg hover:bg-blue-700 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
                     <button type="button" id="search" onClick={search} className="px-6 py-2 bg-blue-500 max-md:mt-2 text-white rounded-lg hover:bg-blue-600 whitespace-nowrap">ค้นหา</button>
                     <button type="button" id="add" onClick={addproduct} className="px-6 py-2 bg-green-500 max-md:mt-2 text-white rounded-lg hover:bg-green-600 whitespace-nowrap">เพิ่มสินค้า</button>
                 </div>
@@ -200,22 +211,22 @@ function Warehouse() {
                         <tbody>
                             {currentApidata.map((item, index) => (
                                 <tr key={index} className="odd:bg-white even:bg-gray-50 border-b hover:bg-blue-100 md:text-lg">
-                                    <td className="px-6 py-3">{item.SparePart_Image ? (
+                                    <td className="mx-6 py-3">{item.SparePart_Image ? (
                                         <img src={`${import.meta.env.VITE_API_URL}/uploads/${item.SparePart_Image}`} alt={item.SparePart_Image}  className="h-[50px] w-[50px] object-cover rounded"/>) : ('ไม่มีรูป')}
                                     </td>
-                                    <td className="px-6 py-3">{item.SparePart_ProductID}</td>
-                                    <td className="px-6 py-3">{item.SparePart_Name}</td>
-                                    <td className="px-6 py-3">{item.Category_Name}</td>
-                                    <td className="px-6 py-3">{item.SparePart_Amount}</td>
-                                    <td className="px-6 py-3 text-end">{Number(item.SparePart_Price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                                    <td className="px-6 py-3">
-                                        <button className="px-6 py-3" type="button" onClick={() => openDetailModal(item)}>📄</button>
+                                    <td className="mx-6 py-3">{item.SparePart_ProductID}</td>
+                                    <td className="px-6 py-3 max-w-xs">{item.SparePart_Name}</td>
+                                    <td className="mx-6 py-3">{item.Category_Name}</td>
+                                    <td className="mx-6 py-3 text-center">{item.SparePart_Amount}</td>
+                                    <td className="mx-6 py-3 text-center">{Number(item.SparePart_Price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                                    <td className="mx-6 py-3 text-center">
+                                        <button type="button" onClick={() => openDetailModal(item)}>📄</button>
                                     </td>
-                                    <td className="px-6 py-3">
-                                        <button className="px-6 py-3" type="button" onClick={() => openEditModal(item)}>✏️</button>
+                                    <td className="mx-6 py-3 text-center">
+                                        <button type="button" onClick={() => openEditModal(item)}>✏️</button>
                                     </td>
-                                    <td className="py-3">
-                                        <button className="px-6 py-3" type="button" onClick={() => deleteitem(item.SparePart_ID)}>❌</button>
+                                    <td className="mx-6 py-3 text-center">
+                                        <button type="button" onClick={() => deleteitem(item.SparePart_ID)}>❌</button>
                                     </td>
                                 </tr>
                             ))}

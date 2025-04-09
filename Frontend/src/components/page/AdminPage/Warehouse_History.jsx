@@ -19,6 +19,10 @@ function Warehouse_History()
     const [searchname, setsearchname] = useState('')
 
     useEffect(() => {
+        fetchdata()
+    }, []);
+
+    const fetchdata = () => {
         axios.all([
             axios.get(`${import.meta.env.VITE_API_URL}/warehouselog`),
             axios.get(`${import.meta.env.VITE_API_URL}/getadminuser`),
@@ -35,14 +39,25 @@ function Warehouse_History()
         .catch((err) => {
             console.log(err)
         });
-    }, []);
+    }
 
     useEffect(() => {
         if (logdata.length > 0) {
             const totalPages = Math.ceil(logdata.length / itemsPerPage);
             setTotalPages(totalPages); 
         }
-    }, [logdata, itemsPerPage]); 
+    }, [logdata, itemsPerPage]);
+
+    function clearsearch()
+    {
+        setsearch_time('')
+        setsearch_time2('')
+        setsearchname('')
+        setaction('')
+        setuser('')
+        setCategory('')
+        fetchdata()
+    }
 
     function searchtime(event) {
         event.preventDefault();
@@ -108,12 +123,14 @@ function Warehouse_History()
         <label htmlFor="date1" className="block text-gray-700 text-sm mb-1">วันที่เริ่มต้น</label>
         <input id="date1" type="date"
             onChange={(e) => setsearch_time(e.target.value)}
+            value={search_time}
             className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" />
         </div>
         <div className="w-full md:w-1/5 max-md:mt-2">
         <label htmlFor="date2" className="block text-gray-700 text-sm mb-1">วันที่สิ้นสุด</label>
         <input id="date2" type="date"
             onChange={(e) => setsearch_time2(e.target.value)}
+            value={search_time2}
             className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" />
         </div>
     </div>
@@ -137,6 +154,12 @@ function Warehouse_History()
         className="shadow border rounded-lg w-full py-2 px-4 text-gray-700 text-sm leading-[1.5rem] focus:outline-none focus:ring-2 focus:ring-blue-400"
         onChange={(e) => setsearchname(e.target.value)}
         />
+    </div>
+    <div className="mt-2 md:mt-2 flex items-end">
+        <button type="button" onClick={clearsearch}
+            className="p-2 bg-red-500 text-white rounded-lg hover:bg-blue-700 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
     </div>
     <div className="mt-2 md:mt-2 flex items-end">
         <button type="button" onClick={searchtime}

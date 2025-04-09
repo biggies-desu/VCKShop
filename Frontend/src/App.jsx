@@ -12,7 +12,7 @@ import EstimatePrice from './components/page/EstimatePricePage/EstimatePrice.jsx
 import Allcarmodels from './components/page/EstimatePricePage/Allcarmodels.jsx'
 
 import Aboutus from './components/page/Aboutus.jsx'
-import Login from './components/page/Login.jsx'
+import Login from './components/page/Login.jsx';
 import Profile from './components/page/Profile.jsx'
 
 import Admin from './components/page/AdminPage/Admin.jsx'
@@ -25,6 +25,7 @@ import Warehouse_History from './components/page/AdminPage/Warehouse_History.jsx
 import Tax from './components/page/AdminPage/Tax.jsx'
 import Notify from './components/page/AdminPage/Notify.jsx'
 import SettingsPage from './components/page/AdminPage/SettingsPage.jsx'
+import PasswordChangeLog from './components/page/AdminPage/PasswordChangeLog.jsx'
 
 import {jwtDecode} from "jwt-decode";
 import { useState, useEffect } from 'react'
@@ -81,7 +82,7 @@ function App() {
 
       <Route path='/allcarmodels' element={<Allcarmodels/>}/>
 
-      <Route element={<Protectroute role={[2]}/>}>
+      <Route element={<Protectroute role={[1,2]}/>}>
         <Route path='/queue' element={<Queue/>}/>
         <Route path='/profile' element={<Profile/>}/>
       </Route>
@@ -100,6 +101,7 @@ function App() {
           <Route path='tax' element={<Tax />} />
           <Route path='notify' element={<Notify />} />
           <Route path='settingsPage' element={<SettingsPage />} />
+          <Route path='passwordlog' element={<PasswordChangeLog />} />
         </Route>
       </Route>
     </Routes>

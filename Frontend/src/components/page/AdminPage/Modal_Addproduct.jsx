@@ -125,7 +125,7 @@ function Modal_Addproduct({ setisaddproductmodal }) {
     const selectAll = (type, dropdown, selected, setSelected) => {
         const allItems = dropdown.map(item => 
             type === "brand" ? item.Brand_Name :
-            type === "model" ? item.Model_Name :
+            type === "model" ? item.Model_Name_ID :
             item.Model_ID
         );
         
